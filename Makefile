@@ -3,7 +3,21 @@
 ######################################
 TARGET = control-base
 
+BOARD = typec
 
+BOARD_BASE = lib/${BOARD}-board-base
+
+ifeq ($(BOARD), typec)
+	STARTUP_POSTFIX = stm32f407xx
+	LINK_SCRIPT_PREFIX = STM32F407IGHx
+	BOARD_C_DEF = STM32F407xx
+endif
+
+ifeq ($(BOARD), typea)
+	STARTUP_POSTFIX = stm32f407xx
+	LINK_SCRIPT_PREFIX = STM32F407IGHx
+	BOARD_C_DEF = STM32F407xx
+endif
 ######################################
 # building variables
 ######################################
@@ -24,76 +38,76 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-Core/Src/main.c \
-Core/Src/gpio.c \
-Core/Src/freertos.c \
-Core/Src/can.c \
-Core/Src/dma.c \
-Core/Src/i2c.c \
-Core/Src/spi.c \
-Core/Src/tim.c \
-Core/Src/usart.c \
-Core/Src/stm32f4xx_it.c \
-Core/Src/stm32f4xx_hal_msp.c \
-Core/Src/stm32f4xx_hal_timebase_tim.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
-Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
-Core/Src/system_stm32f4xx.c \
-Middlewares/Third_Party/FreeRTOS/Source/croutine.c \
-Middlewares/Third_Party/FreeRTOS/Source/event_groups.c \
-Middlewares/Third_Party/FreeRTOS/Source/list.c \
-Middlewares/Third_Party/FreeRTOS/Source/queue.c \
-Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c \
-Middlewares/Third_Party/FreeRTOS/Source/tasks.c \
-Middlewares/Third_Party/FreeRTOS/Source/timers.c \
-Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c \
-Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
-Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c \
-Control-Library/Algo/Src/MahonyAHRS.c \
-Control-Library/Algo/Src/pid.c \
-Control-Library/Algo/Src/Swerve_Locomotion.c \
-Control-Library/BSP/Src/bsp_can.c \
-Control-Library/BSP/Src/bsp_delay.c \
-Control-Library/BSP/Src/bsp_pwm.c \
-Control-Library/BSP/Src/bsp_spi.c \
-Control-Library/BSP/Src/bsp_serial.c \
-Control-Library/Devices/Src/BMI088driver.c \
-Control-Library/Devices/Src/BMI088Middleware.c \
-Control-Library/Devices/Src/dji_motor.c \
-Control-Library/Devices/Src/dm4310.c \
-Control-Library/Devices/Src/ist8310driver.c \
-Control-Library/Devices/Src/ist8310driver_middleware.c \
-Control-Library/Devices/Src/mf_motor.c \
-Control-Library/Devices/Src/remote.c \
-Control-Library/Devices/Src/imu_task.c \
-Control-Library/app/src/motor_task.c \
-Control-Library/app/src/chassis_task.c \
-Control-Library/app/src/gimbal_task.c \
-Control-Library/app/src/launch_task.c \
-Control-Library/app/src/debug_task.c \
-Control-Library/app/src/robot.c
+$(BOARD_BASE)/Core/Src/main.c \
+$(BOARD_BASE)/Core/Src/gpio.c \
+$(BOARD_BASE)/Core/Src/freertos.c \
+$(BOARD_BASE)/Core/Src/can.c \
+$(BOARD_BASE)/Core/Src/dma.c \
+$(BOARD_BASE)/Core/Src/i2c.c \
+$(BOARD_BASE)/Core/Src/spi.c \
+$(BOARD_BASE)/Core/Src/tim.c \
+$(BOARD_BASE)/Core/Src/usart.c \
+$(BOARD_BASE)/Core/Src/stm32f4xx_it.c \
+$(BOARD_BASE)/Core/Src/stm32f4xx_hal_msp.c \
+$(BOARD_BASE)/Core/Src/stm32f4xx_hal_timebase_tim.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
+$(BOARD_BASE)/Core/Src/system_stm32f4xx.c \
+$(BOARD_BASE)/Middlewares/Third_Party/FreeRTOS/Source/croutine.c \
+$(BOARD_BASE)/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c \
+$(BOARD_BASE)/Middlewares/Third_Party/FreeRTOS/Source/list.c \
+$(BOARD_BASE)/Middlewares/Third_Party/FreeRTOS/Source/queue.c \
+$(BOARD_BASE)/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c \
+$(BOARD_BASE)/Middlewares/Third_Party/FreeRTOS/Source/tasks.c \
+$(BOARD_BASE)/Middlewares/Third_Party/FreeRTOS/Source/timers.c \
+$(BOARD_BASE)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c \
+$(BOARD_BASE)/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c \
+$(BOARD_BASE)/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c \
+src/algo/src/MahonyAHRS.c \
+src/algo/src/pid.c \
+src/algo/src/Swerve_Locomotion.c \
+src/bsp/src/bsp_can.c \
+src/bsp/src/bsp_delay.c \
+src/bsp/src/bsp_pwm.c \
+src/bsp/src/bsp_spi.c \
+src/bsp/src/bsp_serial.c \
+src/devices/src/BMI088driver.c \
+src/devices/src/BMI088Middleware.c \
+src/devices/src/dji_motor.c \
+src/devices/src/dm4310.c \
+src/devices/src/ist8310driver.c \
+src/devices/src/ist8310driver_middleware.c \
+src/devices/src/mf_motor.c \
+src/devices/src/remote.c \
+src/devices/src/imu_task.c \
+src/app/src/motor_task.c \
+src/app/src/chassis_task.c \
+src/app/src/gimbal_task.c \
+src/app/src/launch_task.c \
+src/app/src/debug_task.c \
+src/app/src/robot.c
 
 # ASM sources
 ASM_SOURCES =  \
-startup_stm32f407xx.s
+$(BOARD_BASE)/startup_stm32f407xx.s
 
 
 #######################################
@@ -138,26 +152,26 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
--DSTM32F407xx
+-D$(BOARD_C_DEF)
 
 # AS includes
 AS_INCLUDES =  \
--ICore/Inc
+-I$(BOARD_BASE)/Core/Inc
 
 # C includes
 C_INCLUDES =  \
--ICore/Inc \
--IDrivers/STM32F4xx_HAL_Driver/Inc \
--IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
--IMiddlewares/Third_Party/FreeRTOS/Source/include \
--IMiddlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
--IMiddlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
--IDrivers/CMSIS/Device/ST/STM32F4xx/Include \
--IDrivers/CMSIS/Include \
--IControl-Library/Algo/Inc \
--IControl-Library/Devices/Inc \
--IControl-Library/BSP/Inc \
--IControl-Library/app/Inc
+-I$(BOARD_BASE)/Core/Inc \
+-I$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Inc \
+-I$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy \
+-I$(BOARD_BASE)/Middlewares/Third_Party/FreeRTOS/Source/include \
+-I$(BOARD_BASE)/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS \
+-I$(BOARD_BASE)/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F \
+-I$(BOARD_BASE)/Drivers/CMSIS/Device/ST/STM32F4xx/Include \
+-I$(BOARD_BASE)/Drivers/CMSIS/Include \
+-Isrc/algo/inc \
+-Isrc/devices/inc \
+-Isrc/bsp/Inc \
+-Isrc/app/Inc
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -fdata-sections -ffunction-sections
@@ -177,7 +191,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = STM32F407IGHx_FLASH.ld
+LDSCRIPT = $(BOARD_BASE)/$(LINK_SCRIPT_PREFIX)_FLASH.ld
 
 # libraries
 LIBS = -lc -lm -lnosys 
