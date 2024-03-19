@@ -3,12 +3,13 @@
 
 #include "pid.h"
 #include <stdint.h>
-// MSB-LSB: is_serial for 1 (parellel for 0), torque, position, velocity)
-#define VELOCITY_CONTROL (0b0001)
-#define POSITION_CONTROL (0b0010)
-#define TORQUE_CONTROL (0b0100)
-#define POSITION_VELOCITY_SERIES (0b1011)
-#define POSITION_VELOCITY_PARALLEL (0b0011)
+// MSB-LSB: use_total_angle 1 (absolute 0), is_serial for 1 (parellel for 0), torque, position, velocity)
+#define VELOCITY_CONTROL (0b00001)
+#define POSITION_CONTROL (0b00010)
+#define TORQUE_CONTROL (0b00100)
+#define POSITION_VELOCITY_SERIES (0b01011)
+#define POSITION_VELOCITY_PARALLEL (0b00011)
+#define POSITION_CONTROL_TOTAL_ANGLE (0b10010)
 
 typedef enum Motor_Reversal_e
 {
@@ -25,6 +26,7 @@ typedef struct
     uint16_t offset;
     Motor_Reversal_t motor_reversal;
     uint8_t control_mode;
+    uint8_t pos_feedback_absolute_angle; // 0 for no, 1 for yes
 
     // external sensor information like imu or external encoders
     uint8_t use_external_feedback;  // 0 for no, 1 for yes
