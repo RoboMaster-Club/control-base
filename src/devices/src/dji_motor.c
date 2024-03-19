@@ -61,7 +61,8 @@ DJI_Motor_Handle_t *DJI_Motor_Init(Motor_Config_t *config, DJI_Motor_Type_t type
     motor_handle->motor_type = type;
     motor_handle->can_bus = config->can_bus;
     motor_handle->speed_controller_id = config->speed_controller_id;
-    motor_handle->control_type = config->control_mode;
+    motor_handle->control_mode = config->control_mode;
+    motor_handle->pos_feedback_absolute_angle = config->pos_feedback_absolute_angle;
     motor_handle->motor_reversal = config->motor_reversal;
     motor_handle->use_external_feedback = config->use_external_feedback;
     motor_handle->external_feedback_dir = config->external_feedback_dir;
@@ -78,37 +79,18 @@ DJI_Motor_Handle_t *DJI_Motor_Init(Motor_Config_t *config, DJI_Motor_Type_t type
     motor_stats->temp = 0;
     motor_handle->stats = motor_stats;
     motor_handle->output_current = 0;
-    switch (config->control_mode)
-    {
-    case (VELOCITY_CONTROL):
+
+    if ((motor_handle->control_mode & VELOCITY_CONTROL) == VELOCITY_CONTROL) {
         motor_handle->velocity_pid = malloc(sizeof(PID_t));
         memcpy(motor_handle->velocity_pid, &config->velocity_pid, sizeof(PID_t));
-        break;
-    case POSITION_CONTROL:
+    }
+    if ((motor_handle->control_mode & POSITION_CONTROL) == POSITION_CONTROL) {
         motor_handle->angle_pid = malloc(sizeof(PID_t));
         memcpy(motor_handle->angle_pid, &config->angle_pid, sizeof(PID_t));
-        break;
-    case (VELOCITY_CONTROL | POSITION_CONTROL):
-        motor_handle->velocity_pid = malloc(sizeof(PID_t));
-        motor_handle->angle_pid = malloc(sizeof(PID_t));
-        memcpy(motor_handle->velocity_pid, &config->velocity_pid, sizeof(PID_t));
-        memcpy(motor_handle->angle_pid, &config->angle_pid, sizeof(PID_t));
-        break;
-    case TORQUE_CONTROL:
+    }
+    if ((motor_handle->control_mode & TORQUE_CONTROL) == TORQUE_CONTROL) {
         motor_handle->torque_pid = malloc(sizeof(PID_t));
-        memmove(motor_handle->torque_pid, &config->torque_pid, sizeof(PID_t));
-        break;
-    case VELOCITY_CONTROL | POSITION_CONTROL | TORQUE_CONTROL:
-        motor_handle->velocity_pid = malloc(sizeof(PID_t));
-        motor_handle->angle_pid = malloc(sizeof(PID_t));
-        motor_handle->torque_pid = malloc(sizeof(PID_t));
-        memmove(motor_handle->velocity_pid, &config->velocity_pid, sizeof(PID_t));
-        memmove(motor_handle->angle_pid, &config->angle_pid, sizeof(PID_t));
-        memmove(motor_handle->torque_pid, &config->torque_pid, sizeof(PID_t));
-        break;
-    default:
-        // TODO: LOG ERROR
-        break;
+        memcpy(motor_handle->torque_pid, &config->torque_pid, sizeof(PID_t));
     }
 
     CAN_Instance_t *receiver_can_instance = NULL;
@@ -191,7 +173,8 @@ DJI_Motor_Handle_t *DJI_Motor_Init(Motor_Config_t *config, DJI_Motor_Type_t type
     return motor_handle;
 }
 
-float DJI_Motor_Get_Angle(DJI_Motor_Handle_t *motor_handle)
+// absolute angle of motor (does not account for gear reduction)
+float DJI_Motor_Get_Absolute_Angle(DJI_Motor_Handle_t *motor_handle)
 {
     switch (motor_handle->motor_reversal)
     {
@@ -200,6 +183,21 @@ float DJI_Motor_Get_Angle(DJI_Motor_Handle_t *motor_handle)
         break;
     case MOTOR_REVERSAL_REVERSED:
         return -motor_handle->stats->absolute_angle_rad;
+        break;
+    }
+    return -1;
+}
+
+// total angle of motor (accounts for gear reduction)
+float DJI_Motor_Get_Total_Angle(DJI_Motor_Handle_t *motor_handle)
+{
+    switch (motor_handle->motor_reversal)
+    {
+    case MOTOR_REVERSAL_NORMAL:
+        return motor_handle->stats->total_angle_rad;
+        break;
+    case MOTOR_REVERSAL_REVERSED:
+        return -motor_handle->stats->total_angle_rad;
         break;
     }
     return -1;
@@ -257,9 +255,9 @@ void DJI_Motor_Set_Torque(DJI_Motor_Handle_t *motor_handle, float torque)
     motor_handle->torque_pid->ref = torque;
 }
 
-void DJI_Motor_Set_Control_Mode(DJI_Motor_Handle_t *motor_handle, uint8_t control_type)
+void DJI_Motor_Set_Control_Mode(DJI_Motor_Handle_t *motor_handle, uint8_t control_mode)
 {
-    motor_handle->control_type = control_type;
+    motor_handle->control_mode = control_mode;
 }
 
 void DJI_Motor_Disable(DJI_Motor_Handle_t *motor_handle)
@@ -292,7 +290,7 @@ void DJI_Motor_Current_Calc()
             motor->output_current = 0;
             break;
         case 0:
-            switch (motor->control_type)
+            switch (motor->control_mode)
             {
             case VELOCITY_CONTROL:
             {
@@ -303,6 +301,12 @@ void DJI_Motor_Current_Calc()
             {
                 float error = motor->angle_pid->ref - angle_feedback;
                 __MAP_ANGLE_TO_UNIT_CIRCLE(error);
+                motor->output_current = PID(motor->angle_pid, error);
+                break;
+            }
+            case POSITION_CONTROL_TOTAL_ANGLE:
+            {
+                float error = motor->angle_pid->ref - motor->stats->total_angle_rad;
                 motor->output_current = PID(motor->angle_pid, error);
                 break;
             }
