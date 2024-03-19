@@ -91,6 +91,7 @@ void DJI_Motor_Send(void);
 void DJI_Motor_Set_Torque(DJI_Motor_Handle_t *motor, float torque);
 void DJI_Motor_Set_Velocity(DJI_Motor_Handle_t *motor, float velocity);
 void DJI_Motor_Set_Angle(DJI_Motor_Handle_t *motor, float angle);
+void DJI_Motor_Set_Control_Mode(DJI_Motor_Handle_t *motor, uint8_t control_mode);
 float DJI_Motor_Get_Velocity(DJI_Motor_Handle_t *motor);
 float DJI_Motor_Get_Angle(DJI_Motor_Handle_t *motor);
 void DJI_Motor_Disable(DJI_Motor_Handle_t *motor);

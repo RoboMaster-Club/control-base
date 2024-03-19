@@ -257,6 +257,11 @@ void DJI_Motor_Set_Torque(DJI_Motor_Handle_t *motor_handle, float torque)
     motor_handle->torque_pid->ref = torque;
 }
 
+void DJI_Motor_Set_Control_Mode(DJI_Motor_Handle_t *motor_handle, uint8_t control_type)
+{
+    motor_handle->control_type = control_type;
+}
+
 void DJI_Motor_Disable(DJI_Motor_Handle_t *motor_handle)
 {
     motor_handle->disabled = 1;
