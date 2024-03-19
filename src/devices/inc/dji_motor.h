@@ -51,7 +51,8 @@ typedef struct dji_motor
     uint8_t speed_controller_id;
     
     /* Motor Config */
-    uint8_t control_type;
+    uint8_t control_mode;
+    uint8_t pos_feedback_absolute_angle;
     Motor_Reversal_t motor_reversal;
     uint8_t disabled;
     DJI_Motor_Stats_t *stats;
@@ -93,6 +94,7 @@ void DJI_Motor_Set_Velocity(DJI_Motor_Handle_t *motor, float velocity);
 void DJI_Motor_Set_Angle(DJI_Motor_Handle_t *motor, float angle);
 void DJI_Motor_Set_Control_Mode(DJI_Motor_Handle_t *motor, uint8_t control_mode);
 float DJI_Motor_Get_Velocity(DJI_Motor_Handle_t *motor);
-float DJI_Motor_Get_Angle(DJI_Motor_Handle_t *motor);
+float DJI_Motor_Get_Absolute_Angle(DJI_Motor_Handle_t *motor);
+float DJI_Motor_Get_Total_Angle(DJI_Motor_Handle_t *motor);
 void DJI_Motor_Disable(DJI_Motor_Handle_t *motor);
 #endif
