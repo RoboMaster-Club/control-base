@@ -4,27 +4,18 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}\\**",
-                "${workspaceFolder}\\Core\\Inc",
-                "${workspaceFolder}\\Drivers\\STM32F4xx_HAL_Driver\\Inc",
-                "${workspaceFolder}\\Drivers\\STM32F4xx_HAL_Driver\\Inc\\Legacy",
-                "${workspaceFolder}\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
-                "${workspaceFolder}\\Middlewares\\Third_Party\\FreeRTOS\\Source\\CMSIS_RTOS",
-                "${workspaceFolder}\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM4F",
-                "${workspaceFolder}\\Drivers\\CMSIS\\Device\\ST\\STM32F4xx\\Include",
-                "${workspaceFolder}\\Drivers\\CMSIS\\Include",
-                "${workspaceFolder}\\Hardware-Library\\Devices\\Inc",
-                "${workspaceFolder}\\Hardware-Library\\Algo\\Inc",
-                "${workspaceFolder}\\Hardware-Library\\BSP\\Inc",
-                "${workspaceFolder}\\app\\inc",
-                "${workspaceFolder}\\MDK-ARM",
-                "${workspaceFolder}\\Core\\Src",
-                "${workspaceFolder}\\Drivers\\STM32F4xx_HAL_Driver\\Src",
-                "${workspaceFolder}\\Middlewares\\Third_Party\\FreeRTOS\\Source",
-                "${workspaceFolder}\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\MemMang",
-                "${workspaceFolder}\\Hardware-Library\\Devices\\Src",
-                "${workspaceFolder}\\Hardware-Library\\Algo\\Src",
-                "${workspaceFolder}\\Hardware-Library\\BSP\\Src",
-                "${workspaceFolder}\\app\\src"
+                "${workspaceFolder}\\lib\\typec-board-base\\Core\\Inc",
+                "${workspaceFolder}\\lib\\typec-board-base\\Drivers\\STM32F4xx_HAL_Driver\\Inc",
+                "${workspaceFolder}\\lib\\typec-board-base\\Drivers\\STM32F4xx_HAL_Driver\\Inc\\Legacy",
+                "${workspaceFolder}\\lib\\typec-board-base\\Middlewares\\Third_Party\\FreeRTOS\\Source\\include",
+                "${workspaceFolder}\\lib\\typec-board-base\\Middlewares\\Third_Party\\FreeRTOS\\Source\\CMSIS_RTOS",
+                "${workspaceFolder}\\lib\\typec-board-base\\Middlewares\\Third_Party\\FreeRTOS\\Source\\portable\\RVDS\\ARM_CM4F",
+                "${workspaceFolder}\\lib\\typec-board-base\\Drivers\\CMSIS\\Device\\ST\\STM32F4xx\\Include",
+                "${workspaceFolder}\\lib\\typec-board-base\\Drivers\\CMSIS\\Include",
+                "${workspaceFolder}\\src\\devices\\inc",
+                "${workspaceFolder}\\src\\algo\\inc",
+                "${workspaceFolder}\\src\\bsp\\inc",
+                "${workspaceFolder}\\src\\app\\inc"
             ],
             "defines": [
                 "_DEBUG",
@@ -218,7 +209,7 @@
             "cStandard": "c11",
             "cppStandard": "c++17",
             "intelliSenseMode": "gcc-arm"
-        },
+        }
     ],
     "version": 4
 }

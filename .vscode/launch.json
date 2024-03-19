@@ -4,13 +4,13 @@
         {
             "name": "cmsis-dap-debug (Darwin)",
             "cwd": "${workspaceRoot}",
-            "executable": "${workspaceRoot}/build/Control_Base_Template.elf",
+            "executable": "${workspaceRoot}/build/control-base.elf",
             "request": "launch",
             "type": "cortex-debug",
             "svdFile": "STM32F407.svd",
             "servertype": "openocd", //GDB server
             "configFiles": [
-                "openocd_cmsis_dap.cfg" // config
+                "${workspaceRoot}/config/openocd_cmsis_dap.cfg" // config
             ],
             "runToEntryPoint": "main", // stop at main
             "rtos": "FreeRTOS",
@@ -18,13 +18,13 @@
         {
             "name": "cmsis-dap-debug (Windows)",
             "cwd": "${workspaceRoot}",
-            "executable": "${workspaceRoot}\\build\\Control_Base_Template.elf",
+            "executable": "${workspaceRoot}\\build\\control-base.elf",
             "request": "launch",
             "type": "cortex-debug",
             "svdFile": "STM32F407.svd",
             "servertype": "openocd", //GDB server
             "configFiles": [
-                "openocd_cmsis_dap.cfg" // config
+                "${workspaceRoot}/config/openocd_cmsis_dap.cfg" // config
             ],
             // "runToEntryPoint": "main", // stop at main
             "rtos": "FreeRTOS",
