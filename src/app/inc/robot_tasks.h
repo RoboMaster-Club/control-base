@@ -87,7 +87,7 @@ void Robot_Tasks_Debug(void const *argument)
 {
     portTickType xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
-    const TickType_t TimeIncrement = pdMS_TO_TICKS(10);
+    const TickType_t TimeIncrement = pdMS_TO_TICKS(40);
     while (1)
     {
         Debug_Task_Loop();
