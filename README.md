@@ -2,21 +2,13 @@
 
 This is a shareable hardware library for robomaster embedded system. It contains board support packages, device-drivers, and algorithms for control systems.
 ## How To
-Add the submodule to your project
-```
-git submodule add <https://github.com/jia-xie/control-hardware-library.git> FOLDER-NAME
-```
-Initialize the submodule
-```
+Clone repo, initialize submodule (STM32-CubeMX project)
+``` shell
+git clone https://github.com/RoboMaster-Club/control-base.git
+cd control-base
 git submodule update --init
 ```
-The submodule will exist as a folder in the project. In Git environment, it is a link pointing to a specific commit version. To manipulate the library itself, you can open the library directory and treat it as a regular Git repository.
-```
-cd FOLDER-NAME
-git status
-```
-You should be able to view git information about this library.
-
+# Usage
 ## Motor Initialization
 
 an example usage
