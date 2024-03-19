@@ -1,0 +1,6 @@
+[submodule "lib/typec-board-base"]
+	path = lib/typec-board-base
+	url = https://github.com/RoboMaster-Club/typec-board-base.git
+[submodule "lib/typea-board-base"]
+	path = lib/typea-board-base
+	url = https://github.com/RoboMaster-Club/typea_board_base.git
