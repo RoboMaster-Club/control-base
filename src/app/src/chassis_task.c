@@ -16,10 +16,8 @@ void Chassis_Task_Init() {
 }
 
 void Chassis_Ctrl_Loop() {
-    if (g_robot_state.enabled) {
-        Swerve_Drive(g_remote.controller.left_stick.x / REMOTE_STICK_MAX,
-                    g_remote.controller.left_stick.y / REMOTE_STICK_MAX, 
-                    -g_remote.controller.right_stick.x / REMOTE_STICK_MAX);
+    if (g_robot_state.enabled && g_robot_state.chassis_enabled) {
+        Swerve_Drive(g_robot_state.chassis_x_speed, g_robot_state.chassis_y_speed, g_robot_state.chassis_omega);
     } else {
         Swerve_Disable();
     }

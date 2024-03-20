@@ -35,14 +35,14 @@ void Remote_BufferProcess()
 
 	// key decode
 	uint16_t key_buffer = remote_buffer[14] | (remote_buffer[15] << 8);
-	g_remote.key.W = (key_buffer >> 0) & 0x001;
-	g_remote.key.S = (key_buffer >> 1) & 0x001;
-	g_remote.key.A = (key_buffer >> 2) & 0x001;
-	g_remote.key.D = (key_buffer >> 3) & 0x001;
-	g_remote.key.Q = (key_buffer >> 4) & 0x001;
-	g_remote.key.E = (key_buffer >> 5) & 0x001;
-	g_remote.key.Shift = (key_buffer >> 6) & 0x001;
-	g_remote.key.Ctrl = (key_buffer >> 7) & 0x001;
+	g_remote.keyboard.W = (key_buffer >> 0) & 0x001;
+	g_remote.keyboard.S = (key_buffer >> 1) & 0x001;
+	g_remote.keyboard.A = (key_buffer >> 2) & 0x001;
+	g_remote.keyboard.D = (key_buffer >> 3) & 0x001;
+	g_remote.keyboard.Q = (key_buffer >> 4) & 0x001;
+	g_remote.keyboard.E = (key_buffer >> 5) & 0x001;
+	g_remote.keyboard.Shift = (key_buffer >> 6) & 0x001;
+	g_remote.keyboard.Ctrl = (key_buffer >> 7) & 0x001;
 
 	// Miss Lock Protection
 	if (g_remote.controller.left_stick.y == -660) 

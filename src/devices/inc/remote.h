@@ -28,7 +28,7 @@ struct Controller
     uint8_t right_switch;
 };
 
-struct Key
+struct Keyboard
 {
     uint8_t W;
     uint8_t S;
@@ -52,7 +52,7 @@ struct Mouse
 typedef struct
 {
     struct Controller controller;
-    struct Key key;
+    struct Keyboard keyboard;
     struct Mouse mouse;
 } Remote_t;
 
