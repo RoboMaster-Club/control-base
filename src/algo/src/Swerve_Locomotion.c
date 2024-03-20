@@ -110,7 +110,6 @@ Module_State_Array_t Desaturate_Wheel_Speeds(Module_State_Array_t module_state_a
     return module_state_array;
 }
 
-
 /* Convert chassis speeds to module states using inverse kinematics */
 Module_State_Array_t Chassis_Speeds_To_Module_States(Chassis_Speeds_t chassis_speeds)
 {
@@ -181,23 +180,32 @@ void Reset_Modules()
 Module_State_t Optimize_Module_Angle(Module_State_t input_state, float measured_angle)
 {
     Module_State_t optimized_module_state = {0};
-    float wheel_angle_delta = input_state.angle - measured_angle;
+    float delta = input_state.angle - measured_angle;
 
-    if (wheel_angle_delta > PI / 2 || wheel_angle_delta < -PI / 2)
-    { // if the delta is more than 90 degrees
-        optimized_module_state.speed = -1.0f * input_state.speed * 60.0f / (PI * Wheel_Diameter);
-        optimized_module_state.angle = input_state.angle + ((wheel_angle_delta > 0) ? -PI : PI);
+    //TODO check if we need to normalize the input state angle
+
+    // normalize wheel angle delta to be within -pi to pi
+    while (delta > PI)
+        delta -= 2 * PI;
+    while (delta < -PI)
+        delta += 2 * PI;
+
+    // adjust the wheel angle by pi if the wheel has to rotate more than pi/2
+    if (delta > PI / 2)
+    {
+        optimized_module_state.angle = input_state.angle - PI;
     }
-    // else if(wheel_angle_delta>PI || wheel_angle_delta<-PI)
-    // {
-    //     optimized_module_state.speed = 1.0f * input_state.speed * 60.0f / (PI * Wheel_Diameter);
-    // 	optimized_module_state.angle = input_state.angle + ((wheel_angle_delta>0) ? -2*PI:2*PI);
-    // }
+    else if (delta < -PI / 2)
+    {
+        optimized_module_state.angle = input_state.angle + PI;
+    }
     else
     {
-        optimized_module_state.speed = 1.0f * input_state.speed * 60.0f / (PI * Wheel_Diameter);
         optimized_module_state.angle = input_state.angle;
     }
+
+    // reverse the wheel speed if the wheel has to rotate more than pi/2
+    optimized_module_state.speed = fabsf(delta) > PI / 2 ? -input_state.speed : input_state.speed;
 
     return optimized_module_state;
 }
