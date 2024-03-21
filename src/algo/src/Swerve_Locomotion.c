@@ -28,7 +28,7 @@ void Swerve_Init()
     // define constants for each module in an array [0] == fl, [1] == rl, [2] == rr, [3] == fr
     int azimuth_can_bus_array[NUMBER_OF_MODULES] = {1, 1, 2, 2};
     int azimuth_speed_controller_id_array[NUMBER_OF_MODULES] = {1, 2, 3, 4};
-    int azimuth_offset_array[NUMBER_OF_MODULES] = {6070, 4830, 1940, 5450};
+    int azimuth_offset_array[NUMBER_OF_MODULES] = {1990, 730, 6060, 1362};
     Motor_Reversal_t azimuth_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED};
 
     int drive_can_bus_array[NUMBER_OF_MODULES] = {1, 1, 2, 2};
@@ -200,9 +200,9 @@ void Set_Module_Output(Swerve_Module_t *swerve_module, Module_State_t desired_st
     DJI_Motor_Set_Angle(swerve_module->azimuth_motor,desired_state.angle);
     DJI_Motor_Set_Velocity(swerve_module->drive_motor,desired_state.speed* 60 / (PI * Wheel_Diameter));
 
-    Module_State_t optimized_module_state = Optimize_Module_Angle(desired_state, DJI_Motor_Get_Absolute_Angle(swerve_module->azimuth_motor));
-    DJI_Motor_Set_Angle(swerve_module->azimuth_motor, optimized_module_state.angle);
-    DJI_Motor_Set_Velocity(swerve_module->drive_motor, optimized_module_state.speed);
+    // Module_State_t optimized_module_state = Optimize_Module_Angle(desired_state, DJI_Motor_Get_Absolute_Angle(swerve_module->azimuth_motor));
+    // DJI_Motor_Set_Angle(swerve_module->azimuth_motor, optimized_module_state.angle);
+    // DJI_Motor_Set_Velocity(swerve_module->drive_motor, optimized_module_state.speed);
 }
 
 #pragma message "change this comment"

@@ -29,9 +29,10 @@ float PID(PID_t *pid, float error)
 {
     if (fabs(error) < pid->dead_zone) error = 0;
     pid->i_out += error * pid->ki;
+    pid->f_out = pid->kf * pid->ref;
     __MAX_LIMIT(pid->i_out, -pid->integral_limit, pid->integral_limit);
-    
-    pid->output = pid->kp * error + pid->i_out + pid->kd * (error - pid->prev_error) + pid->kf * pid->ref;
+    __MAX_LIMIT(pid->f_out, -pid->feedforward_limit, pid->feedforward_limit);
+    pid->output = pid->kp * error + pid->i_out + pid->kd * (error - pid->prev_error) + pid->f_out;
     
     pid->prev_error = error;
     
