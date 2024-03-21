@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "cmsis-dap-debug",
+            "name": "cmsis-dap-debug (Windows)",
             "cwd": "${workspaceRoot}",
             "executable": "${workspaceRoot}\\build\\control-base.elf",
             "request": "launch",
@@ -17,7 +17,8 @@
             "liveWatch": { 
                 "enabled": true,
                 "samplesPerSecond": 4
-            }
+            },
+            "preLaunchTask": "build (Windows)" // build before debug
         },
         {
             "name": "cmsis-dap-debug (Darwin)",
@@ -35,7 +36,8 @@
             "liveWatch": { 
                 "enabled": true,
                 "samplesPerSecond": 4
-            }
+            },
+            "preLaunchTask": "build (Darwin)" // build before debug
         }
     ]
 }
