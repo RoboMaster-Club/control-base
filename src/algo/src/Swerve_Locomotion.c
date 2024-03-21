@@ -3,7 +3,8 @@
 #include "user_math.h"
 #include "dji_motor.h"
 
-Swerve_Module_t g_swerve_fl, g_swerve_fr, g_swerve_rl, g_swerve_rr;
+Swerve_Module_t g_swerve_fl, g_swerve_rl, g_swerve_rr, g_swerve_fr;
+Swerve_Module_t *swerve_modules[NUMBER_OF_MODULES] = {&g_swerve_fl, &g_swerve_rl, &g_swerve_rr, &g_swerve_fr};
 float last_swerve_angle[NUMBER_OF_MODULES] = {0.0f, 0.0f, 0.0f, 0.0f};
 
 // Inverse kinematics matrix for a 4 module swerve, defined counterclockwise from the front left
@@ -24,15 +25,15 @@ void Set_Module_Output(Swerve_Module_t *swerve_module, Module_State_t desired_st
 /* Initialize physical constants of each module */
 void Swerve_Init()
 {
-    // define constants for each module in an array
+    // define constants for each module in an array [0] == fl, [1] == rl, [2] == rr, [3] == fr
     int azimuth_can_bus_array[NUMBER_OF_MODULES] = {1, 1, 2, 2};
     int azimuth_speed_controller_id_array[NUMBER_OF_MODULES] = {1, 2, 3, 4};
     int azimuth_offset_array[NUMBER_OF_MODULES] = {6070, 4830, 1940, 5450};
-    Motor_Reversal_t azimuth_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_NORMAL, MOTOR_REVERSAL_NORMAL};
+    Motor_Reversal_t azimuth_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED};
 
     int drive_can_bus_array[NUMBER_OF_MODULES] = {1, 1, 2, 2};
     int drive_speed_controller_id_array[NUMBER_OF_MODULES] = {1, 2, 3, 4};
-    Motor_Reversal_t drive_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED};
+    Motor_Reversal_t drive_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_NORMAL, MOTOR_REVERSAL_NORMAL};
 
     // init common PID configuration for azimuth motors
     Motor_Config_t azimuth_motor_config = {
@@ -51,9 +52,6 @@ void Swerve_Init()
             .kp = 500.0f,
             .output_limit = M3508_MAX_CURRENT,
         }};
-
-    // create array of swerve modules
-    Swerve_Module_t *swerve_modules[NUMBER_OF_MODULES] = {&g_swerve_fl, &g_swerve_rl, &g_swerve_rr, &g_swerve_fr};
 
     for (int i = 0; i < NUMBER_OF_MODULES; i++)
     {
@@ -208,10 +206,10 @@ void Swerve_Drive(float x, float y, float omega)
     Chassis_Speeds_t desired_chassis_speeds = {.x = x, .y = y, .omega = omega};
     Set_Desired_States(Chassis_Speeds_To_Module_States(desired_chassis_speeds));
 
-    Set_Module_Output(&g_swerve_fr, g_swerve_fr.module_state);
-    Set_Module_Output(&g_swerve_fl, g_swerve_fl.module_state);
-    Set_Module_Output(&g_swerve_rr, g_swerve_rr.module_state);
-    Set_Module_Output(&g_swerve_rl, g_swerve_rl.module_state);
+    for (int i = 0; i < NUMBER_OF_MODULES; i++)
+    {
+        Set_Module_Output(swerve_modules[i], swerve_modules[i]->module_state);
+    }
 }
 
 void Swerve_Disable()
