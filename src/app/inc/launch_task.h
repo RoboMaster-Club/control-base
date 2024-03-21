@@ -2,8 +2,9 @@
 #define LAUNCH_TASK_H
 
 #include <stdint.h>
+#include "dji_motor.h"
 
-#define FLYWHEEL_VELOCITY_30 (2.0f)
+#define FLYWHEEL_VELOCITY_30 (6000.0f * M3508_REDUCTION_RATIO)
 #define FEED_HOLE_NUM (6.0f)
 #define FEED_1_PROJECTILE_ANGLE (2.0f*PI/FEED_HOLE_NUM)
 #define FEED_FREQUENCY_6 (6.0f / FEED_HOLE_NUM * 60.0f)
