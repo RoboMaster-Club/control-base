@@ -49,7 +49,7 @@ void Swerve_Init()
     azimuth_motor_config.can_bus = 1;
     drive_motor_config.can_bus = 1;
 
-    azimuth_motor_config.offset = 6070;
+    azimuth_motor_config.offset = 1990;
     azimuth_motor_config.speed_controller_id = 1;
     drive_motor_config.speed_controller_id = 1;
     drive_motor_config.motor_reversal = MOTOR_REVERSAL_REVERSED;
@@ -57,7 +57,7 @@ void Swerve_Init()
     g_swerve_fl.azimuth_motor = DJI_Motor_Init(&azimuth_motor_config, GM6020);
     g_swerve_fl.drive_motor = DJI_Motor_Init(&drive_motor_config, M3508);
 
-    azimuth_motor_config.offset = 4830;
+    azimuth_motor_config.offset = 730;
     azimuth_motor_config.speed_controller_id = 2;
     drive_motor_config.speed_controller_id = 2;
     drive_motor_config.motor_reversal = MOTOR_REVERSAL_REVERSED;
@@ -69,7 +69,7 @@ void Swerve_Init()
     azimuth_motor_config.can_bus = 2;
     drive_motor_config.can_bus = 2;
 
-    azimuth_motor_config.offset = 1940;
+    azimuth_motor_config.offset = 6060;
     azimuth_motor_config.speed_controller_id = 3;
     drive_motor_config.speed_controller_id = 3;
     drive_motor_config.motor_reversal = MOTOR_REVERSAL_NORMAL;
@@ -77,7 +77,7 @@ void Swerve_Init()
     g_swerve_rr.azimuth_motor = DJI_Motor_Init(&azimuth_motor_config, GM6020);
     g_swerve_rr.drive_motor = DJI_Motor_Init(&drive_motor_config, M3508);
 
-    azimuth_motor_config.offset = 5450;
+    azimuth_motor_config.offset = 1362;
     azimuth_motor_config.speed_controller_id = 4;
     drive_motor_config.speed_controller_id = 4;
     drive_motor_config.motor_reversal = MOTOR_REVERSAL_NORMAL;
