@@ -108,7 +108,7 @@ void Feed_Angle_Calc()
         DJI_Motor_Set_Angle(g_motor_feed,g_launch_target.feed_angle);
     }
     else if (g_launch_target.burst_launch_flag) {
-        g_launch_target.feed_velocity = FEED_FREQUENCY_18;
+        g_launch_target.feed_velocity = FEED_FREQUENCY_12;
         DJI_Motor_Set_Control_Mode(g_motor_feed, VELOCITY_CONTROL);
         DJI_Motor_Set_Velocity(g_motor_feed,g_launch_target.feed_velocity);
     }
