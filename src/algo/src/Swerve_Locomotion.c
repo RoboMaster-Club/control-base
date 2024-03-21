@@ -190,8 +190,8 @@ Module_State_t Optimize_Module_Angle(Module_State_t input_state, float measured_
 /* Command motors to output calculated module state*/
 void Set_Module_Output(Swerve_Module_t *swerve_module, Module_State_t desired_state)
 {
-    // DJI_Motor_Set_Angle(swerve_module->azimuth_motor,desired_state.angle);
-    // DJI_Motor_Set_Velocity(swerve_module->drive_motor,desired_state.speed* 60 / (PI * Wheel_Diameter));
+    DJI_Motor_Set_Angle(swerve_module->azimuth_motor,desired_state.angle);
+    DJI_Motor_Set_Velocity(swerve_module->drive_motor,desired_state.speed* 60 / (PI * Wheel_Diameter));
 
     Module_State_t optimized_module_state = Optimize_Module_Angle(desired_state, DJI_Motor_Get_Absolute_Angle(swerve_module->azimuth_motor));
     DJI_Motor_Set_Angle(swerve_module->azimuth_motor, optimized_module_state.angle);
