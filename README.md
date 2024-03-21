@@ -48,3 +48,7 @@ Motor_Config_t yaw_motor_config = {
 ## Modifications
 - Change ```samepleFreq``` in [MahonyAHRS.c](Algo/Src/MahonyAHRS.c?plain=1#L23), this will affect the fusion result
 - Initialize a task for imu in FreeRTOS environment
+
+## Debug SOP
+- Check IMU is attched firmly
+- Check remote functioning (especially the dial wheel)

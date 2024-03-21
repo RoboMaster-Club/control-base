@@ -13,7 +13,6 @@
 #define WHEEL_BASE 0.34f               // m, measured wheel to wheel (up and down)
 #define Wheel_Diameter 0.12f
 #define Azimuth_Gear_Ratio 1.0f
-
 #define NUMBER_OF_MODULES 4
 
 typedef struct
@@ -28,11 +27,6 @@ typedef struct
     DJI_Motor_Handle_t *azimuth_motor;
     DJI_Motor_Handle_t *drive_motor;
 }	Swerve_Module_t;
-
-// typedef struct
-// {
-//     // Swerve_Module_t modules[NUMBER_OF_MODULES];
-// } Swerve_t;
 
 typedef struct
 {
