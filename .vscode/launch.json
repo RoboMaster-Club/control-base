@@ -32,7 +32,7 @@
                 "${workspaceRoot}/config/openocd_stlink.cfg" // config
             ],
             //"runToEntryPoint": "main", // stop at main
-            "rtos": "FreeRTOS",
+            //"rtos": "FreeRTOS",
             "liveWatch": { 
                 "enabled": true,
                 "samplesPerSecond": 4
