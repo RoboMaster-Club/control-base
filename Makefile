@@ -89,6 +89,7 @@ src/bsp/src/bsp_delay.c \
 src/bsp/src/bsp_pwm.c \
 src/bsp/src/bsp_spi.c \
 src/bsp/src/bsp_serial.c \
+src/bsp/src/bsp_uart.c \
 src/devices/src/BMI088driver.c \
 src/devices/src/BMI088Middleware.c \
 src/devices/src/dji_motor.c \
@@ -98,6 +99,7 @@ src/devices/src/ist8310driver_middleware.c \
 src/devices/src/mf_motor.c \
 src/devices/src/remote.c \
 src/devices/src/imu_task.c \
+src/devices/src/jetson_orin.c \
 src/app/src/motor_task.c \
 src/app/src/chassis_task.c \
 src/app/src/gimbal_task.c \
@@ -243,5 +245,8 @@ clean:
 -include $(wildcard $(BUILD_DIR)/*.d)
 
 download_dap:
-	openocd -f openocd_cmsis_dap.cfg -c init -c halt -c "flash write_image erase $(BUILD_DIR)/$(TARGET).bin 0x08000000" -c reset -c shutdown
+	openocd -f config/openocd_cmsis_dap.cfg -c init -c halt -c "flash write_image erase $(BUILD_DIR)/$(TARGET).bin 0x08000000" -c reset -c shutdown
+
+download_stlink:
+	openocd -f config/openocd_stlink.cfg -c init -c halt -c "flash write_image erase $(BUILD_DIR)/$(TARGET).bin 0x08000000" -c reset -c shutdown
 # *** EOF ***
