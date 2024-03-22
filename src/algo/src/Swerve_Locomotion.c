@@ -3,12 +3,25 @@
 #include "user_math.h"
 #include "dji_motor.h"
 
-Swerve_Module_t g_swerve_fl, g_swerve_fr, g_swerve_rl, g_swerve_rr;
-float last_swerve_angle[4] = {.0f, .0f, .0f, .0f};
-float azimuth_zero_offset_array[4] = {0.0f, 0.0f, 0.0f, 0.0f}; // encoder ticks
-Module_State_t kanzhege;
-Module_State_t yekankanzhege;
-// Inverse kinematics matrix for a 4 module swerve, modules defined counterclockwise (like quadrants)
+Swerve_Module_t g_swerve_fl, g_swerve_rl, g_swerve_rr, g_swerve_fr;
+Swerve_Module_t *swerve_modules[NUMBER_OF_MODULES] = {&g_swerve_fl, &g_swerve_rl, &g_swerve_rr, &g_swerve_fr};
+float last_swerve_angle[NUMBER_OF_MODULES] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+/**
+ * @brief Inverse kinematics matrix for a 4 module swerve, defined counterclockwise from the front left
+ *
+ * This matrix represents the inverse kinematics for a 4 module swerve drive system. It is used to calculate the desired
+ * wheel speeds and angles based on the desired robot velocity and rotation. The matrix is defined in a counterclockwise
+ * order starting from the front left module.
+ *
+ * The values in the matrix are as follows:
+ * - Row 0-1: Front left module (ID 1)
+ * - Row 2-3: Rear left module (ID 2)
+ * - Row 4-5: Rear right module (ID 3)
+ * - Row 6-7: Front right module (ID 4)
+ *
+ * @note The values WHEEL_BASE and TRACK_WIDTH are used to calculate the offsets in the matrix.
+ */
 float swerve_state_matrix[8][3] = {
     {0, 1, -(WHEEL_BASE / 2)}, // front left id 1
     {1, 0, -(TRACK_WIDTH / 2)},
@@ -26,64 +39,49 @@ void Set_Module_Output(Swerve_Module_t *swerve_module, Module_State_t desired_st
 /* Initialize physical constants of each module */
 void Swerve_Init()
 {
+    // define constants for each module in an array [0] == fl, [1] == rl, [2] == rr, [3] == fr
+    int azimuth_can_bus_array[NUMBER_OF_MODULES] = {1, 1, 2, 2};
+    int azimuth_speed_controller_id_array[NUMBER_OF_MODULES] = {1, 2, 3, 4};
+    int azimuth_offset_array[NUMBER_OF_MODULES] = {1990, 730, 6060, 1362};
+    Motor_Reversal_t azimuth_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED};
+
+    int drive_can_bus_array[NUMBER_OF_MODULES] = {1, 1, 2, 2};
+    int drive_speed_controller_id_array[NUMBER_OF_MODULES] = {1, 2, 3, 4};
+    Motor_Reversal_t drive_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_NORMAL, MOTOR_REVERSAL_NORMAL};
+
+    // init common PID configuration for azimuth motors
     Motor_Config_t azimuth_motor_config = {
         .control_mode = POSITION_CONTROL,
-        .angle_pid =
-            {
-                .kp = 28000.0f,
-                .ki = .0f,
-                .output_limit = GM6020_MAX_CURRENT,
-                .integral_limit = 1000.0f,
-            },
-    };
+        .angle_pid = {
+            .kp = 28000.0f,
+            .ki = 0.0f,
+            .output_limit = GM6020_MAX_CURRENT,
+            .integral_limit = 1000.0f,
+        }};
 
+    // init common PID configuration for drive motors
     Motor_Config_t drive_motor_config = {
         .control_mode = VELOCITY_CONTROL,
-        .velocity_pid =
-            {
-                .kp = 500.0f,
-                .output_limit = M3508_MAX_CURRENT,
-            }};
-    azimuth_motor_config.motor_reversal = MOTOR_REVERSAL_REVERSED;
-    // left side
-    azimuth_motor_config.can_bus = 1;
-    drive_motor_config.can_bus = 1;
+        .velocity_pid = {
+            .kp = 500.0f,
+            .output_limit = M3508_MAX_CURRENT,
+        }};
 
-    azimuth_motor_config.offset = 6070;
-    azimuth_motor_config.speed_controller_id = 1;
-    drive_motor_config.speed_controller_id = 1;
-    drive_motor_config.motor_reversal = MOTOR_REVERSAL_REVERSED;
+    for (int i = 0; i < NUMBER_OF_MODULES; i++)
+    {
+        // configure azimuth motor
+        azimuth_motor_config.can_bus = azimuth_can_bus_array[i];
+        azimuth_motor_config.offset = azimuth_offset_array[i];
+        azimuth_motor_config.speed_controller_id = azimuth_speed_controller_id_array[i];
+        azimuth_motor_config.motor_reversal = azimuth_motor_reversal_array[i];
+        swerve_modules[i]->azimuth_motor = DJI_Motor_Init(&azimuth_motor_config, GM6020);
 
-    g_swerve_fl.azimuth_motor = DJI_Motor_Init(&azimuth_motor_config, GM6020);
-    g_swerve_fl.drive_motor = DJI_Motor_Init(&drive_motor_config, M3508);
-
-    azimuth_motor_config.offset = 4830;
-    azimuth_motor_config.speed_controller_id = 2;
-    drive_motor_config.speed_controller_id = 2;
-    drive_motor_config.motor_reversal = MOTOR_REVERSAL_REVERSED;
-
-    g_swerve_rl.azimuth_motor = DJI_Motor_Init(&azimuth_motor_config, GM6020);
-    g_swerve_rl.drive_motor = DJI_Motor_Init(&drive_motor_config, M3508);
-
-    // right side
-    azimuth_motor_config.can_bus = 2;
-    drive_motor_config.can_bus = 2;
-
-    azimuth_motor_config.offset = 1940;
-    azimuth_motor_config.speed_controller_id = 3;
-    drive_motor_config.speed_controller_id = 3;
-    drive_motor_config.motor_reversal = MOTOR_REVERSAL_NORMAL;
-
-    g_swerve_rr.azimuth_motor = DJI_Motor_Init(&azimuth_motor_config, GM6020);
-    g_swerve_rr.drive_motor = DJI_Motor_Init(&drive_motor_config, M3508);
-
-    azimuth_motor_config.offset = 5450;
-    azimuth_motor_config.speed_controller_id = 4;
-    drive_motor_config.speed_controller_id = 4;
-    drive_motor_config.motor_reversal = MOTOR_REVERSAL_NORMAL;
-
-    g_swerve_fr.azimuth_motor = DJI_Motor_Init(&azimuth_motor_config, GM6020);
-    g_swerve_fr.drive_motor = DJI_Motor_Init(&drive_motor_config, M3508);
+        // configure drive motor
+        drive_motor_config.can_bus = drive_can_bus_array[i];
+        drive_motor_config.speed_controller_id = drive_speed_controller_id_array[i];
+        drive_motor_config.motor_reversal = drive_motor_reversal_array[i];
+        swerve_modules[i]->drive_motor = DJI_Motor_Init(&drive_motor_config, M3508);
+    }
 }
 
 /* Scale wheel speeds to max possible speed while preserving ratio between modules.*/
@@ -110,8 +108,12 @@ Module_State_Array_t Desaturate_Wheel_Speeds(Module_State_Array_t module_state_a
     return module_state_array;
 }
 
-
-/* Convert chassis speeds to module states using inverse kinematics */
+/**
+ * Convert chassis speeds to module states using inverse kinematics.
+ *
+ * @param chassis_speeds The chassis speeds in meters per second in the x, y, and omega directions.
+ * @return The calculated module states.
+ */
 Module_State_Array_t Chassis_Speeds_To_Module_States(Chassis_Speeds_t chassis_speeds)
 {
     Module_State_Array_t calculated_module_states = {0};
@@ -173,49 +175,84 @@ void Set_Desired_States(Module_State_Array_t desired_states)
 /* Commands modules to stop moving and reset angle to 0. Should be called on robot enable */
 void Reset_Modules()
 {
-    Module_State_Array_t desired_states = {0};
+    Module_State_Array_t desired_states = {
+        .states = {
+            {0.0f, 0.0f},
+            {0.0f, 0.0f},
+            {0.0f, 0.0f},
+            {0.0f, 0.0f}
+        }};
     Set_Desired_States(desired_states);
 }
 
-/* Optimize wheel angle so wheel doesn't have to rotate more than 90deg*/
+/**
+ * @brief Optimize Module Angle
+ * Optimize the module angle and velocity to minimize the movement of the module
+ * @param input_state - the target state
+ * @param measured_angle - the current angle
+ * @return Module_State_t - the optimized state
+ */
 Module_State_t Optimize_Module_Angle(Module_State_t input_state, float measured_angle)
 {
     Module_State_t optimized_module_state = {0};
-    float wheel_angle_delta = input_state.angle - measured_angle;
-
-    if (wheel_angle_delta > PI / 2 || wheel_angle_delta < -PI / 2)
-    { // if the delta is more than 90 degrees
-        optimized_module_state.speed = -1.0f * input_state.speed * 60.0f / (PI * Wheel_Diameter);
-        optimized_module_state.angle = input_state.angle + ((wheel_angle_delta > 0) ? -PI : PI);
+    optimized_module_state.speed = input_state.speed;
+    float target_angle = fmodf(input_state.angle, 2.0f * PI); // get positive normalized target angle
+    if (target_angle < 0)
+    {
+        target_angle += 2.0f * PI;
     }
-    // else if(wheel_angle_delta>PI || wheel_angle_delta<-PI)
-    // {
-    //     optimized_module_state.speed = 1.0f * input_state.speed * 60.0f / (PI * Wheel_Diameter);
-    // 	optimized_module_state.angle = input_state.angle + ((wheel_angle_delta>0) ? -2*PI:2*PI);
-    // }
+
+    float curr_angle_normalized = fmodf(measured_angle, 2 * PI); // get normalized current angle
+    float delta = target_angle - curr_angle_normalized;          // calculate the angle delta
+
+    // these conditions essentially create the step function for angles to "snap" too offset from the measured angle to avoid flipping
+    if (PI / 2.0f < fabsf(delta) && fabsf(delta) < 3 * PI / 2.0f)
+    {
+        float beta = PI - fabsf(delta);
+        beta *= (delta > 0 ? 1.0f : -1.0f);
+        target_angle = measured_angle - beta;
+        optimized_module_state.speed = -1.0f * input_state.speed; // invert velocity if optimal angle 180 deg from target
+    }
+    else if (fabsf(delta) >= 3.0f * PI / 2.0f)
+    {
+        if (delta < 0)
+        {
+            target_angle = measured_angle + (2.0f * PI + delta);
+        }
+        else
+        {
+            target_angle = measured_angle - (2.0f * PI - delta);
+        }
+    }
     else
     {
-        optimized_module_state.speed = 1.0f * input_state.speed * 60.0f / (PI * Wheel_Diameter);
-        optimized_module_state.angle = input_state.angle;
+        target_angle = measured_angle + delta;
     }
 
+    optimized_module_state.angle = target_angle;
     return optimized_module_state;
 }
 
-/*Command motors to output calculated module state*/
+/**
+ * Sets the output of a swerve module to the desired state.
+ *
+ * @param swerve_module The pointer to the swerve module to set the output for.
+ * @param desired_state The desired state of the swerve module.
+ */
 void Set_Module_Output(Swerve_Module_t *swerve_module, Module_State_t desired_state)
 {
-    // DJI_Motor_Set_Angle(swerve_module->azimuth_motor,desired_state.angle);
-    // DJI_Motor_Set_Velocity(swerve_module->drive_motor,desired_state.speed* 60 / (PI * Wheel_Diameter));
-
     Module_State_t optimized_module_state = Optimize_Module_Angle(desired_state, DJI_Motor_Get_Absolute_Angle(swerve_module->azimuth_motor));
-    kanzhege = optimized_module_state;
     DJI_Motor_Set_Angle(swerve_module->azimuth_motor, optimized_module_state.angle);
-    DJI_Motor_Set_Velocity(swerve_module->drive_motor, optimized_module_state.speed);
+    DJI_Motor_Set_Velocity(swerve_module->drive_motor, optimized_module_state.speed * 60 / (PI * Wheel_Diameter));
 }
 
-#pragma message "change this comment"
-/* Takes driver input (-1 to 1) and sets respective module outputs */
+/**
+ * Takes inputs from (-1 to 1) and sets the respective module outputs.
+ *
+ * @param x: x speed of the robot
+ * @param y: y speed of the robot
+ * @param omega: angular speed of the robot
+ */
 void Swerve_Drive(float x, float y, float omega)
 {
     x *= SWERVE_MAX_SPEED; // convert to m/s
@@ -224,14 +261,19 @@ void Swerve_Drive(float x, float y, float omega)
     Chassis_Speeds_t desired_chassis_speeds = {.x = x, .y = y, .omega = omega};
     Set_Desired_States(Chassis_Speeds_To_Module_States(desired_chassis_speeds));
 
-    Set_Module_Output(&g_swerve_fr, g_swerve_fr.module_state);
-    Set_Module_Output(&g_swerve_fl, g_swerve_fl.module_state);
-    Set_Module_Output(&g_swerve_rr, g_swerve_rr.module_state);
-    Set_Module_Output(&g_swerve_rl, g_swerve_rl.module_state);
+    for (int i = 0; i < NUMBER_OF_MODULES; i++)
+    {
+        Set_Module_Output(swerve_modules[i], swerve_modules[i]->module_state);
+    }
 }
 
+/**
+ * Disables all the motors used in the swerve.
+ */
 void Swerve_Disable()
 {
+    Chassis_Speeds_t desired_chassis_speeds = {.x = 0.0f, .y = 0.0f, .omega = 0.0f};
+    Set_Desired_States(Chassis_Speeds_To_Module_States(desired_chassis_speeds));
     DJI_Motor_Disable(g_swerve_fr.azimuth_motor);
     DJI_Motor_Disable(g_swerve_fr.drive_motor);
     DJI_Motor_Disable(g_swerve_fl.azimuth_motor);
@@ -240,4 +282,5 @@ void Swerve_Disable()
     DJI_Motor_Disable(g_swerve_rr.drive_motor);
     DJI_Motor_Disable(g_swerve_rl.azimuth_motor);
     DJI_Motor_Disable(g_swerve_rl.drive_motor);
+
 }

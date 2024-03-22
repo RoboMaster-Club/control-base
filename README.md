@@ -1,7 +1,9 @@
-## About The Library
+![Build Project](https://github.com/RoboMaster-Club/control-base/actions/workflows/build.yml/badge.svg)
 
+# About The Library
 This is a shareable hardware library for robomaster embedded system. It contains board support packages, device-drivers, and algorithms for control systems.
-## How To
+
+## Setup Guide
 Clone repo, initialize submodule (STM32-CubeMX project)
 ``` shell
 git clone https://github.com/RoboMaster-Club/control-base.git
@@ -48,3 +50,7 @@ Motor_Config_t yaw_motor_config = {
 ## Modifications
 - Change ```samepleFreq``` in [MahonyAHRS.c](Algo/Src/MahonyAHRS.c?plain=1#L23), this will affect the fusion result
 - Initialize a task for imu in FreeRTOS environment
+
+## Debug SOP
+- Check IMU is attched firmly
+- Check remote functioning (especially the dial wheel)

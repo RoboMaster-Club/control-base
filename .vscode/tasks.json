@@ -4,7 +4,7 @@
         {
             "label": "build (Darwin)",
             "type": "shell",
-            "command": "make",
+            "command": "make -j24 V=1",
             "args": [],
             "group": {
                 "kind": "build",

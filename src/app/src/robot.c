@@ -6,16 +6,20 @@
 #include "launch_task.h"
 #include "remote.h"
 #include "bsp_can.h"
+#include "gimbal_task.h"
+#include <math.h>
 
-Robot_State_t g_robot_state = {0, 0, 0, 0, 0};
+extern DJI_Motor_Handle_t *g_yaw;
+#define SPIN_TOP_OMEGA (1.0f)
+
+Robot_State_t g_robot_state = {0, 0};
 extern Remote_t g_remote;
 
 void Robot_Cmd_Loop(void);
 
-void Robot_Init()
-{
+void Robot_Init() {
     // Initialize all hardware
-    // Chassis_Task_Init();
+    Chassis_Task_Init();
     Gimbal_Task_Init();
     Launch_Task_Init();
     Remote_Init();
@@ -24,94 +28,37 @@ void Robot_Init()
     Robot_Tasks_Start();
 }
 
-void Robot_Ctrl_Loop()
-{
+void Robot_Ctrl_Loop() {
     // Control loop for the robot
     Robot_Cmd_Loop();
     Chassis_Ctrl_Loop();
-    // Gimbal_Ctrl_Loop();
+    Gimbal_Ctrl_Loop();
     Launch_Ctrl_Loop();
 }
 
-void Robot_Cmd_Loop()
-{
-    Controller_Update();
-    Mouse_Update();
-    Keyboard_Update();
-}
-
-void Controller_Update()
-{
-    /* Disable the robot if both switches are down */
-    if (g_remote.controller.right_switch == DOWN && g_remote.controller.left_switch == DOWN) // TODO disable robot if no data from remote
-    {
+void Robot_Cmd_Loop() {
+    if (g_remote.controller.right_switch == DOWN) {
         g_robot_state.enabled = 0;
-    }
-    else
-    {
-        /* When the right switch is mid */
-        if (g_remote.controller.right_switch == MID)
-        {
-            /* When the left switch is up enable launch, and enter spin top */
-            if (g_remote.controller.left_switch == UP)
-            {
-                g_robot_state.chassis_enabled = 0; // TODO enter spin top mode
-                g_robot_state.gimbal_enabled = 1;
-                g_robot_state.launch_enabled = 1;
-            }
-            else
-            {
-                /* The chassis is controlled by the sticks */
-                g_robot_state.chassis_enabled = 1;
-                g_robot_state.chassis_x_speed = g_remote.controller.left_stick.x / REMOTE_STICK_MAX;
-                g_robot_state.chassis_y_speed = g_remote.controller.left_stick.y / REMOTE_STICK_MAX;
-                g_robot_state.chassis_x_speed = -g_remote.controller.right_stick.x / REMOTE_STICK_MAX;
-
-                g_robot_state.gimbal_enabled = 0;
-                g_robot_state.launch_enabled = 0;
-            }
+    } else {
+        g_robot_state.enabled = 1;
+        float vx = g_remote.controller.left_stick.x / REMOTE_STICK_MAX;
+        float vy = g_remote.controller.left_stick.y / REMOTE_STICK_MAX;
+        float theta = DJI_Motor_Get_Absolute_Angle(g_yaw);
+        g_robot_state.chassis_x_speed = -vy * sin(theta) + vx * cos(theta);
+        g_robot_state.chassis_y_speed = vy * cos(theta) + vx * sin(theta);
+        if (g_remote.controller.left_switch == DOWN) {    
+            g_robot_state.chassis_omega = 0;
+        } else if (g_remote.controller.left_switch == MID){
+            g_robot_state.chassis_omega = SPIN_TOP_OMEGA;
+        } else if (g_remote.controller.left_switch == UP) {
+            // RESERVED        }
         }
 
-        /* Enable the robot */
-        g_robot_state.enabled = 1;
+        if (g_remote.controller.right_switch == MID) {
+            g_robot_state.gimbal_yaw_angle -= (g_remote.controller.right_stick.x / 50000.0f + g_remote.mouse.x); // controller and mouse
+            g_robot_state.gimbal_pitch_angle -= (g_remote.controller.right_stick.y / 100000.0f + g_remote.mouse.y); // controller and mouse
+        } else if (g_remote.controller.right_switch == UP) {
+            // TODO: Algorithm Auto Aiming
+        }
     }
-}
-
-void Mouse_Update()
-{
-}
-
-void Keyboard_Update()
-{
-
-    float x_speed = 0, y_speed = 0, omega = 0;
-    if (g_remote.keyboard.W == 1)
-    {
-        x_speed += 1;
-    }
-    if (g_remote.keyboard.S == 1)
-    {
-        y_speed += -1;
-    }
-    if (g_remote.keyboard.A == 1)
-    {
-        y_speed += -1;
-    }
-    if (g_remote.keyboard.D == 1)
-    {
-        y_speed += 1;
-    }
-    if (g_remote.keyboard.Q == 1)
-    {
-        omega += -1;
-    }
-    if (g_remote.keyboard.E == 1)
-    {
-        omega += 1;
-    }
-    g_robot_state.chassis_x_speed = x_speed;
-    g_robot_state.chassis_y_speed = y_speed;
-    g_robot_state.chassis_omega = omega;
-
-    /*This approach could cause physical damage to the motors due to instantatneous polarity changes*/
 }

@@ -5,19 +5,15 @@
 
 typedef struct {
   uint8_t enabled;
-  uint8_t mode;
-  uint8_t chassis_enabled;
+  uint8_t spintop_mode;
   float chassis_x_speed;
   float chassis_y_speed;
   float chassis_omega;
-  uint8_t gimbal_enabled;
-  uint8_t launch_enabled;
+  float gimbal_pitch_angle;
+  float gimbal_yaw_angle;
 } Robot_State_t;
 
 void Robot_Init(void);
 void Robot_Ctrl_Loop(void);
-void Controller_Update();
-void Mouse_Update();
-void Keyboard_Update();
 
 #endif // ROBOT_H

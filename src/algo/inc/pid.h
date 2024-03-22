@@ -8,7 +8,9 @@ typedef struct pid_t
     float kd;
     float kf;
     float integral_limit;
+    float feedforward_limit;
     float i_out;
+    float f_out;
     float output_limit;
     float dead_zone;
     float ref;

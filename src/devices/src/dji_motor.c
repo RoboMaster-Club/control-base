@@ -429,7 +429,7 @@ void DJI_Motor_Decode(CAN_Instance_t *can_instance)
 
     motor->absolute_angle_rad = motor->current_tick - motor->encoder_offset;
     /* absolute angle */
-    __MAP(motor->absolute_angle_rad, 0, 8192, -PI, PI);
+    __MAP(motor->absolute_angle_rad, 0, 8192, 0, 2 * PI);
 
     /* angle wrap */
     if (motor->current_tick - motor->last_tick > DJI_HALF_MAX_TICKS)
