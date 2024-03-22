@@ -1,7 +1,9 @@
-## About The Library
+![Build Project](https://github.com/RoboMaster-Club/control-base/actions/workflows/build.yml/badge.svg)
 
+# About The Library
 This is a shareable hardware library for robomaster embedded system. It contains board support packages, device-drivers, and algorithms for control systems.
-## How To
+
+## Setup Guide
 Clone repo, initialize submodule (STM32-CubeMX project)
 ``` shell
 git clone https://github.com/RoboMaster-Club/control-base.git
