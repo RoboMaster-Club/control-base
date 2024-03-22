@@ -80,15 +80,18 @@ DJI_Motor_Handle_t *DJI_Motor_Init(Motor_Config_t *config, DJI_Motor_Type_t type
     motor_handle->stats = motor_stats;
     motor_handle->output_current = 0;
 
-    if ((motor_handle->control_mode & VELOCITY_CONTROL) == VELOCITY_CONTROL) {
+    if ((motor_handle->control_mode & VELOCITY_CONTROL) == VELOCITY_CONTROL)
+    {
         motor_handle->velocity_pid = malloc(sizeof(PID_t));
         memcpy(motor_handle->velocity_pid, &config->velocity_pid, sizeof(PID_t));
     }
-    if ((motor_handle->control_mode & POSITION_CONTROL) == POSITION_CONTROL) {
+    if ((motor_handle->control_mode & POSITION_CONTROL) == POSITION_CONTROL)
+    {
         motor_handle->angle_pid = malloc(sizeof(PID_t));
         memcpy(motor_handle->angle_pid, &config->angle_pid, sizeof(PID_t));
     }
-    if ((motor_handle->control_mode & TORQUE_CONTROL) == TORQUE_CONTROL) {
+    if ((motor_handle->control_mode & TORQUE_CONTROL) == TORQUE_CONTROL)
+    {
         motor_handle->torque_pid = malloc(sizeof(PID_t));
         memcpy(motor_handle->torque_pid, &config->torque_pid, sizeof(PID_t));
     }
@@ -219,33 +222,47 @@ float DJI_Motor_Get_Velocity(DJI_Motor_Handle_t *motor_handle)
 
 void DJI_Motor_Set_Angle(DJI_Motor_Handle_t *motor_handle, float angle)
 {
-    motor_handle->disabled = 0;
-    switch (motor_handle->motor_reversal)
+    if (angle != angle) // check for NaN
     {
-    case MOTOR_REVERSAL_NORMAL:
-        motor_handle->angle_pid->ref = angle;
-        break;
-    case MOTOR_REVERSAL_REVERSED:
-        motor_handle->angle_pid->ref = -angle;
-        break;
-    default:
-        break;
+        motor_handle->disabled = 1;
+    }
+    else
+    {
+        motor_handle->disabled = 0;
+        switch (motor_handle->motor_reversal)
+        {
+        case MOTOR_REVERSAL_NORMAL:
+            motor_handle->angle_pid->ref = angle;
+            break;
+        case MOTOR_REVERSAL_REVERSED:
+            motor_handle->angle_pid->ref = -angle;
+            break;
+        default:
+            break;
+        }
     }
 }
 
 void DJI_Motor_Set_Velocity(DJI_Motor_Handle_t *motor_handle, float velocity)
 {
-    motor_handle->disabled = 0;
-    switch (motor_handle->motor_reversal)
+    if (velocity != velocity) // check for NaN
     {
-    case MOTOR_REVERSAL_NORMAL:
-        motor_handle->velocity_pid->ref = velocity;
-        break;
-    case MOTOR_REVERSAL_REVERSED:
-        motor_handle->velocity_pid->ref = -velocity;
-        break;
-    default:
-        break;
+        motor_handle->disabled = 1;
+    }
+    else
+    {
+        motor_handle->disabled = 0;
+        switch (motor_handle->motor_reversal)
+        {
+        case MOTOR_REVERSAL_NORMAL:
+            motor_handle->velocity_pid->ref = velocity;
+            break;
+        case MOTOR_REVERSAL_REVERSED:
+            motor_handle->velocity_pid->ref = -velocity;
+            break;
+        default:
+            break;
+        }
     }
 }
 
