@@ -4,6 +4,7 @@
 #include "remote.h"
 #include "imu_task.h"
 #include "user_math.h"
+#include "jetson_orin.h"
 #include <math.h>
 extern Robot_State_t g_robot_state;
 extern Remote_t g_remote;
@@ -42,6 +43,8 @@ void Gimbal_Task_Init()
             },
     };
 
+    #pragma message "CHANGE PITCH MOTOR OFFSET DO NO TRUN BEFORE DOING THIS"
+    int a = 0;
     Motor_Config_t pitch_motor_config = {
         .can_bus = 2,
         .speed_controller_id = 2,
@@ -76,7 +79,6 @@ void Gimbal_Ctrl_Loop()
     if (g_robot_state.enabled)
     {
         __MAX_LIMIT(g_gimbal_target.pitch, -0.45f, 0.5f);
-
         DJI_Motor_Set_Angle(g_pitch, g_robot_state.gimbal_pitch_angle);
         DJI_Motor_Set_Angle(g_yaw, g_robot_state.gimbal_yaw_angle);
     }

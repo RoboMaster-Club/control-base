@@ -7,6 +7,7 @@
 #include "remote.h"
 #include "bsp_can.h"
 #include "gimbal_task.h"
+#include "imu_task.h"
 #include <math.h>
 
 extern DJI_Motor_Handle_t *g_yaw;
@@ -51,14 +52,15 @@ void Robot_Cmd_Loop() {
         } else if (g_remote.controller.left_switch == MID){
             g_robot_state.chassis_omega = SPIN_TOP_OMEGA;
         } else if (g_remote.controller.left_switch == UP) {
-            // RESERVED        }
+            // RESERVED
         }
 
         if (g_remote.controller.right_switch == MID) {
             g_robot_state.gimbal_yaw_angle -= (g_remote.controller.right_stick.x / 50000.0f + g_remote.mouse.x); // controller and mouse
             g_robot_state.gimbal_pitch_angle -= (g_remote.controller.right_stick.y / 100000.0f + g_remote.mouse.y); // controller and mouse
         } else if (g_remote.controller.right_switch == UP) {
-            // TODO: Algorithm Auto Aiming
+            g_robot_state.gimbal_pitch_angle = g_orin_data.receiving.auto_aiming.pitch + g_imu.rad.roll;
+            g_robot_state.gimbal_yaw_angle = g_orin_data.receiving.auto_aiming.yaw + g_imu.rad.yaw;
         }
     }
 }

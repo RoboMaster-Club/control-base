@@ -163,28 +163,6 @@ Module_State_Array_t Chassis_Speeds_To_Module_States(Chassis_Speeds_t chassis_sp
     return calculated_module_states;
 }
 
-/* Set the desired modules state of each module */
-void Set_Desired_States(Module_State_Array_t desired_states)
-{
-    g_swerve_fl.module_state = desired_states.states[0];
-    g_swerve_rl.module_state = desired_states.states[1];
-    g_swerve_rr.module_state = desired_states.states[2];
-    g_swerve_fr.module_state = desired_states.states[3];
-}
-
-/* Commands modules to stop moving and reset angle to 0. Should be called on robot enable */
-void Reset_Modules()
-{
-    Module_State_Array_t desired_states = {
-        .states = {
-            {0.0f, 0.0f},
-            {0.0f, 0.0f},
-            {0.0f, 0.0f},
-            {0.0f, 0.0f}
-        }};
-    Set_Desired_States(desired_states);
-}
-
 /**
  * @brief Optimize Module Angle
  * Optimize the module angle and velocity to minimize the movement of the module
@@ -246,6 +224,15 @@ void Set_Module_Output(Swerve_Module_t *swerve_module, Module_State_t desired_st
     DJI_Motor_Set_Velocity(swerve_module->drive_motor, optimized_module_state.speed * 60 / (PI * Wheel_Diameter));
 }
 
+/* Set the desired modules state of each module */
+void Set_Desired_States(Module_State_Array_t desired_states)
+{
+    g_swerve_fl.module_state = desired_states.states[0];
+    g_swerve_rl.module_state = desired_states.states[1];
+    g_swerve_rr.module_state = desired_states.states[2];
+    g_swerve_fr.module_state = desired_states.states[3];
+}
+
 /**
  * Takes inputs from (-1 to 1) and sets the respective module outputs.
  *
@@ -267,6 +254,18 @@ void Swerve_Drive(float x, float y, float omega)
     }
 }
 
+/* Commands modules to stop moving and reset angle to 0. Should be called on robot enable */
+void Reset_Modules()
+{
+    Module_State_Array_t desired_states = {
+        .states = {
+            {0.0f, 0.0f},
+            {0.0f, 0.0f},
+            {0.0f, 0.0f},
+            {0.0f, 0.0f}}};
+    Set_Desired_States(desired_states);
+}
+
 /**
  * Disables all the motors used in the swerve.
  */
@@ -282,5 +281,4 @@ void Swerve_Disable()
     DJI_Motor_Disable(g_swerve_rr.drive_motor);
     DJI_Motor_Disable(g_swerve_rl.azimuth_motor);
     DJI_Motor_Disable(g_swerve_rl.drive_motor);
-
 }
