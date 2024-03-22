@@ -1,7 +1,13 @@
 name: Build Project
 on:
   push:
+    paths:
+      - 'src/**'
+      - 'lib/**'
   pull_request:
+    paths:
+      - 'src/**'
+      - 'lib/**'
 
 jobs:
   build:
