@@ -18,5 +18,5 @@ extern Launch_Target_t g_launch_target;
 extern uint64_t t;
 void Debug_Task_Loop(void)
 {
-    printf("a=%f,b=%d\r\n", Referee_System.Power_n_Heat.Chassis_Power, Referee_System.Power_n_Heat.Chassis_Power_Buffer);
+    //printf("a=%f,b=%d\r\n", Referee_System.Power_n_Heat.Chassis_Power, Referee_System.Power_n_Heat.Chassis_Power_Buffer);
 }
