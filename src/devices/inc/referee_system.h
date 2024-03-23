@@ -170,7 +170,7 @@ typedef struct
 	float Shooting_Speed;
 }Referee_Robot_State_t;
 
-typedef __packed struct
+typedef struct
 {
 	uint16_t DMA_Counter;
 	uint8_t Buffer[REFEREE_BUFFER_LEN];
@@ -299,11 +299,11 @@ typedef __packed struct
 		
 	uint16_t Info_Update_Frame;
 	uint8_t Offline_Flag;
-}Referee_System_t;
+} Referee_System_t;
 
-void Referee_System_Handler(UART_HandleTypeDef *huart);
-void Referee_Get_Data(uint16_t Data_Length);
+void Referee_Get_Data(void);
 void Referee_Set_Robot_State(void);
+void Referee_System_Init(UART_HandleTypeDef *huart);
 
 extern Referee_Robot_State_t Referee_Robot_State;
 extern Referee_System_t Referee_System;

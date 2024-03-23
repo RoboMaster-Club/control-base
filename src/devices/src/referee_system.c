@@ -16,8 +16,7 @@ Referee_Robot_State_t Referee_Robot_State;
 
 HAL_StatusTypeDef Referee_UART_Receive_DMA_No_Interrupt(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
 HAL_StatusTypeDef Referee_UART_Receive_Interrupt(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
-void Referee_System_Handler(UART_HandleTypeDef *huart);
-void Referee_Get_Data(uint16_t Data_Length);
+void Referee_Get_Data(void);
 void Referee_Set_Robot_State(void);
 
 void Referee_Set_Robot_State(void)
@@ -106,7 +105,7 @@ void Referee_System_Init(UART_HandleTypeDef *huart)
 }
 
 // Get referee system data based on ID
-void Referee_System_Handler()
+void Referee_Get_Data(void)
 {
     for (int n = 0; n < REFEREE_BUFFER_LEN;)
     {
@@ -242,8 +241,8 @@ void Referee_System_Handler()
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-    if (huart->Instance == &huart6)
+    if (huart->Instance == huart1.Instance)
     {
-            Referee_Get_Data(REFEREE_BUFFER_LEN);
+        Referee_Get_Data();
     }
 }

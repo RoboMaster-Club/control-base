@@ -89,6 +89,7 @@ src/bsp/src/bsp_delay.c \
 src/bsp/src/bsp_pwm.c \
 src/bsp/src/bsp_spi.c \
 src/bsp/src/bsp_serial.c \
+src/bsp/src/bsp_crc.c \
 src/devices/src/BMI088driver.c \
 src/devices/src/BMI088Middleware.c \
 src/devices/src/dji_motor.c \
@@ -98,6 +99,7 @@ src/devices/src/ist8310driver_middleware.c \
 src/devices/src/mf_motor.c \
 src/devices/src/remote.c \
 src/devices/src/imu_task.c \
+src/devices/src/referee_system.c \
 src/app/src/motor_task.c \
 src/app/src/chassis_task.c \
 src/app/src/gimbal_task.c \
