@@ -11,6 +11,8 @@ typedef struct {
   float chassis_omega;
   float gimbal_pitch_angle;
   float gimbal_yaw_angle;
+  float vx;
+  float vy;
 } Robot_State_t;
 
 void Robot_Init(void);
