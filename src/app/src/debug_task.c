@@ -7,6 +7,7 @@
 #include "user_math.h"
 #include "imu_task.h"
 #include "robot.h"
+#include "referee_system.h"
 
 extern Robot_State_t g_robot_state;
 extern DJI_Motor_Handle_t *g_yaw;
@@ -17,5 +18,5 @@ extern Launch_Target_t g_launch_target;
 extern uint64_t t;
 void Debug_Task_Loop(void)
 {
-    //printf("a=%f,b=%f\r\n", g_robot_state.vx, g_robot_state.vy);
+    printf("/*%f,%f*/", Referee_System.Power_n_Heat.Chassis_Power, Referee_System.Power_n_Heat.Chassis_Power_Buffer);
 }
