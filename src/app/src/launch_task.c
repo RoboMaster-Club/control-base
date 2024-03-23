@@ -68,16 +68,15 @@ void Launch_Task_Init() {
 
 void Launch_Ctrl_Loop() {
     if (g_robot_state.enabled) {
-        if(g_remote.controller.left_switch == UP) {
-            g_launch_target.flywheel_velocity = FLYWHEEL_VELOCITY_30;
-        }
-        else {
-            g_launch_target.flywheel_velocity = 0;
-        }
-
-        DJI_Motor_Set_Velocity(g_flywheel_left,g_launch_target.flywheel_velocity);
-        DJI_Motor_Set_Velocity(g_flywheel_right,g_launch_target.flywheel_velocity);
-        Feed_Angle_Calc();
+        if (g_launch_target.flywheel_enabled) {
+            DJI_Motor_Set_Velocity(g_flywheel_left,g_launch_target.flywheel_velocity);
+            DJI_Motor_Set_Velocity(g_flywheel_right,g_launch_target.flywheel_velocity);
+            Feed_Angle_Calc();
+        } else {
+            DJI_Motor_Disable(g_flywheel_left);
+            DJI_Motor_Disable(g_flywheel_right);
+            DJI_Motor_Disable(g_motor_feed);
+        }    
     } else {
         DJI_Motor_Disable(g_flywheel_left);
         DJI_Motor_Disable(g_flywheel_right);
@@ -87,18 +86,6 @@ void Launch_Ctrl_Loop() {
 
 void Feed_Angle_Calc()
 {
-    if (g_remote.controller.wheel < -50.0f) { // dial wheel forward single fire
-        g_launch_target.single_launch_flag = 1;
-        g_launch_target.burst_launch_flag = 0;
-    } else if (g_remote.controller.wheel > 50.0f) { // dial wheel backward burst fire
-        g_launch_target.single_launch_flag = 0;
-        g_launch_target.burst_launch_flag = 1;
-    } else { // dial wheel mid stop fire
-        g_launch_target.single_launch_flag = 0;
-        g_launch_target.single_launch_finished_flag = 0;
-        g_launch_target.burst_launch_flag = 0;
-    }
-
     if (g_launch_target.single_launch_flag && !g_launch_target.single_launch_finished_flag) {
         g_launch_target.feed_angle = DJI_Motor_Get_Total_Angle(g_motor_feed) + FEED_1_PROJECTILE_ANGLE;
         g_launch_target.single_launch_finished_flag = 1;

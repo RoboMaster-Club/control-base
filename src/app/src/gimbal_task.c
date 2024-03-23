@@ -75,8 +75,6 @@ void Gimbal_Ctrl_Loop()
 {
     if (g_robot_state.enabled)
     {
-        __MAX_LIMIT(g_gimbal_target.pitch, -0.45f, 0.5f);
-
         DJI_Motor_Set_Angle(g_pitch, g_robot_state.gimbal_pitch_angle);
         DJI_Motor_Set_Angle(g_yaw, g_robot_state.gimbal_yaw_angle);
     }
