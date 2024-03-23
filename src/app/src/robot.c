@@ -10,6 +10,7 @@
 #include <math.h>
 #include "imu_task.h"
 #include "user_math.h"
+#include "referee_system.h"
 
 extern DJI_Motor_Handle_t *g_yaw;
 #define SPIN_TOP_OMEGA (1.0f)
@@ -33,7 +34,8 @@ void Robot_Init()
     Launch_Task_Init();
     Remote_Init();
     CAN_Service_Init();
-    Jetson_Orin_Init();
+    Referee_System_Init(&huart1);
+    Jetson_Orin_Init(&huart6);
     // Initialize all tasks
     Robot_Tasks_Start();
 }

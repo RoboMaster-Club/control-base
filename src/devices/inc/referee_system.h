@@ -172,6 +172,7 @@ typedef struct
 
 typedef struct
 {
+	UART_HandleTypeDef *huart;
 	uint16_t DMA_Counter;
 	uint8_t Buffer[REFEREE_BUFFER_LEN];
 	

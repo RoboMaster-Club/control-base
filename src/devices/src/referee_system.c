@@ -14,8 +14,6 @@
 Referee_System_t Referee_System;
 Referee_Robot_State_t Referee_Robot_State;
 
-HAL_StatusTypeDef Referee_UART_Receive_DMA_No_Interrupt(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
-HAL_StatusTypeDef Referee_UART_Receive_Interrupt(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size);
 void Referee_Get_Data(void);
 void Referee_Set_Robot_State(void);
 
@@ -73,34 +71,9 @@ void Referee_Set_Robot_State(void)
     // }
 }
 
-HAL_StatusTypeDef Referee_UART_Receive_DMA_No_Interrupt(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size)
-{
-    if (huart->RxState == HAL_UART_STATE_READY)
-    {
-        if ((pData == NULL) || (Size == 0))
-        {
-            return HAL_ERROR;
-        }
-
-        huart->pRxBuffPtr = pData;
-        huart->RxXferSize = Size;
-        huart->ErrorCode = HAL_UART_ERROR_NONE;
-
-        /* Enable the DMA Stream */
-        HAL_DMA_Start(huart->hdmarx, (uint32_t)&huart->Instance->DR, (uint32_t)pData, Size);
-        /* Enable the DMA transfer for the receiver request by setting the DMAR bit in the UART CR3 register */
-        SET_BIT(huart->Instance->CR3, USART_CR3_DMAR);
-
-        return HAL_OK;
-    }
-    else
-    {
-        return HAL_BUSY;
-    }
-}
-
 void Referee_System_Init(UART_HandleTypeDef *huart)
 {
+    Referee_System.huart = huart;
     HAL_UART_Receive_DMA(huart, Referee_System.Buffer, REFEREE_BUFFER_LEN);
 }
 
@@ -237,12 +210,5 @@ void Referee_Get_Data(void)
         }
         else
             n++;
-    }
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-    if (huart->Instance == huart1.Instance)
-    {
-        Referee_Get_Data();
     }
 }

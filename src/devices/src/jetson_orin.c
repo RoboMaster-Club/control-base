@@ -42,9 +42,10 @@ void Jetson_Orin_Decode(void)
 	}
 }
 
-void Jetson_Orin_Init(void)
+void Jetson_Orin_Init(UART_HandleTypeDef *huartx)
 {
-	HAL_UART_Receive_DMA(&huart1, g_orin_data.rx_buffer, 20);
+	g_orin_data.huartx = huartx;
+	HAL_UART_Receive_DMA(huartx, g_orin_data.rx_buffer, sizeof(g_orin_data.rx_buffer));
 }
 
 void Jetson_Orin_Send_Data(void)
@@ -70,5 +71,5 @@ void Jetson_Orin_Send_Data(void)
 	g_orin_data.tx_buffer[0] = 0xAA;
 	memcpy(&g_orin_data.tx_buffer[1],&g_orin_data.sending.float_byte.data_bytes[0], 32*sizeof(uint8_t));
 	
-	HAL_UART_Transmit_DMA(&huart1, g_orin_data.tx_buffer, sizeof(g_orin_data.tx_buffer));
+	HAL_UART_Transmit_DMA(g_orin_data.huartx, g_orin_data.tx_buffer, sizeof(g_orin_data.tx_buffer));
 }

@@ -2,9 +2,12 @@
 #define JETSON_ORIN_H
 
 #include <stdint.h>
+#include "usart.h"
 
 typedef struct
 {
+    UART_HandleTypeDef *huartx;
+
     uint8_t rx_buffer[20];
     uint8_t tx_buffer[33];
 
@@ -63,7 +66,7 @@ typedef struct
 } Jetson_Orin_Data_t;
 
 extern Jetson_Orin_Data_t g_orin_data;
-void Jetson_Orin_Init(void);
+void Jetson_Orin_Init(UART_HandleTypeDef *huartx);
 void Jetson_Orin_Decode(void);
 void Jetson_Orin_Send_Data(void);
 
