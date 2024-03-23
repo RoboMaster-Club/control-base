@@ -45,7 +45,7 @@ void Gimbal_Task_Init()
     Motor_Config_t pitch_motor_config = {
         .can_bus = 2,
         .speed_controller_id = 2,
-        .offset = 1500,
+        .offset = 4460,
         .use_external_feedback = 1,
         .external_feedback_dir = -1,
         .external_angle_feedback_ptr = &g_imu.rad.roll, // pitch
