@@ -17,5 +17,5 @@ extern Launch_Target_t g_launch_target;
 extern uint64_t t;
 void Debug_Task_Loop(void)
 {
-    printf("a=%f,b=%f\r\n", g_robot_state.vx, g_robot_state.vy);
+    //printf("a=%f,b=%f\r\n", g_robot_state.vx, g_robot_state.vy);
 }

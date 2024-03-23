@@ -58,8 +58,8 @@ void Robot_Cmd_Loop()
         g_robot_state.enabled = 1;
 
         /* Gimbal starts here */ // (Launch enable in last if statement)
-        g_robot_state.vx_keyboard = ((1.0f - KEYBOARD_RAMP_COEF) * g_robot_state.vx_keyboard + g_remote.keyboard.W * KEYBOARD_RAMP_COEF - g_remote.keyboard.S * KEYBOARD_RAMP_COEF);
-        g_robot_state.vy_keyboard = ((1.0f - KEYBOARD_RAMP_COEF) * g_robot_state.vy_keyboard + g_remote.keyboard.A * KEYBOARD_RAMP_COEF - g_remote.keyboard.D * KEYBOARD_RAMP_COEF);
+        g_robot_state.vy_keyboard = ((1.0f - KEYBOARD_RAMP_COEF) * g_robot_state.vy_keyboard + g_remote.keyboard.W * KEYBOARD_RAMP_COEF - g_remote.keyboard.S * KEYBOARD_RAMP_COEF);
+        g_robot_state.vx_keyboard = ((1.0f - KEYBOARD_RAMP_COEF) * g_robot_state.vx_keyboard + g_remote.keyboard.A * KEYBOARD_RAMP_COEF - g_remote.keyboard.D * KEYBOARD_RAMP_COEF);
         g_robot_state.vx = g_robot_state.vx_keyboard + g_remote.controller.left_stick.x / REMOTE_STICK_MAX;
         g_robot_state.vy = g_robot_state.vy_keyboard + g_remote.controller.left_stick.y / REMOTE_STICK_MAX;
 
