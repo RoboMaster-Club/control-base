@@ -48,7 +48,10 @@ void Robot_Ctrl_Loop()
     Gimbal_Ctrl_Loop();
     Launch_Ctrl_Loop();
 }
-
+/**
+ *  B - Flywheel On Off
+ *  G - Spin Top Mode
+ */
 void Robot_Cmd_Loop()
 {
     if (g_remote.controller.right_switch == DOWN)
