@@ -33,6 +33,7 @@ void Robot_Init()
     Launch_Task_Init();
     Remote_Init();
     CAN_Service_Init();
+    Jetson_Orin_Init();
     // Initialize all tasks
     Robot_Tasks_Start();
 }

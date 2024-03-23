@@ -104,7 +104,7 @@ void Robot_Tasks_Jetson_Orin(void const *argument)
 {
     portTickType xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
-    const TickType_t TimeIncrement = pdMS_TO_TICKS(20);
+    const TickType_t TimeIncrement = pdMS_TO_TICKS(50);
     while (1)
     {
         Jetson_Orin_Send_Data();
