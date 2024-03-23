@@ -39,7 +39,7 @@ void Robot_Init()
     Remote_Init();
     CAN_Service_Init();
     Referee_System_Init(&huart1);
-    Jetson_Orin_Init(&huart6);
+    //Jetson_Orin_Init(&huart6);
     // Initialize all tasks
     Robot_Tasks_Start();
 }
@@ -119,7 +119,7 @@ void Robot_Cmd_Loop()
             if (g_remote.controller.right_switch == MID)
             {
                 g_robot_state.gimbal_yaw_angle -= (g_remote.controller.right_stick.x / 50000.0f + g_remote.mouse.x / 10000.0f);    // controller and mouse
-                g_robot_state.gimbal_pitch_angle -= (g_remote.controller.right_stick.y / 100000.0f + g_remote.mouse.y / 50000.0f); // controller and mouse
+                g_robot_state.gimbal_pitch_angle -= (g_remote.controller.right_stick.y / 100000.0f - g_remote.mouse.y / 50000.0f); // controller and mouse
             }
             else if ((g_remote.controller.right_switch == UP) || (g_remote.mouse.right == 1)) // mouse right button auto aim
             {
@@ -129,6 +129,7 @@ void Robot_Cmd_Loop()
             /* Gimbal ends here */
 
             /* Launch control starts here */
+            //if (Referee_System.Power_n_Heat.Shooter_1_Heat - Referee_System.)
             if (g_remote.controller.wheel < -50.0f)
             { // dial wheel forward single fire
                 g_launch_target.single_launch_flag = 1;
@@ -175,6 +176,14 @@ void Robot_Cmd_Loop()
             __MAX_LIMIT(g_robot_state.gimbal_pitch_angle, -0.2f, 0.2f);
             __MAX_LIMIT(g_robot_state.chassis_x_speed, -MAX_SPEED, MAX_SPEED);
             __MAX_LIMIT(g_robot_state.chassis_y_speed, -MAX_SPEED, MAX_SPEED);
+            
+            /* power buffer*/
+            float power_buffer = Referee_System.Power_n_Heat.Chassis_Power_Buffer / 60.0f;
+            if (power_buffer < 0.8f) {
+                g_robot_state.chassis_x_speed *= power_buffer;
+                g_robot_state.chassis_y_speed *= power_buffer;
+                g_robot_state.chassis_omega *= power_buffer;
+            }
         }
     }
     else
