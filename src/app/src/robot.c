@@ -8,27 +8,38 @@
 #include "bsp_can.h"
 #include "gimbal_task.h"
 #include <math.h>
+#include "imu_task.h"
+#include "user_math.h"
 
 extern DJI_Motor_Handle_t *g_yaw;
 #define SPIN_TOP_OMEGA (1.0f)
 
+#define KEYBOARD_RAMP_COEF (0.01f)
+#define CONTROLLER_RAMP_COEF (0.8f)
+
 Robot_State_t g_robot_state = {0, 0};
+Key_Prev_t g_key_prev = {0};
+extern Launch_Target_t g_launch_target;
 extern Remote_t g_remote;
 
 void Robot_Cmd_Loop(void);
+void _toggle_robot_state(uint8_t *state);
 
-void Robot_Init() {
+void Robot_Init()
+{
     // Initialize all hardware
     Chassis_Task_Init();
     Gimbal_Task_Init();
     Launch_Task_Init();
     Remote_Init();
     CAN_Service_Init();
+    Jetson_Orin_Init();
     // Initialize all tasks
     Robot_Tasks_Start();
 }
 
-void Robot_Ctrl_Loop() {
+void Robot_Ctrl_Loop()
+{
     // Control loop for the robot
     Robot_Cmd_Loop();
     Chassis_Ctrl_Loop();
@@ -36,29 +47,120 @@ void Robot_Ctrl_Loop() {
     Launch_Ctrl_Loop();
 }
 
-void Robot_Cmd_Loop() {
-    if (g_remote.controller.right_switch == DOWN) {
+void Robot_Cmd_Loop()
+{
+    if (g_remote.controller.right_switch == DOWN)
+    {
         g_robot_state.enabled = 0;
-    } else {
+        g_launch_target.flywheel_enabled = 0;
+    }
+    else
+    {
         g_robot_state.enabled = 1;
-        float vx = g_remote.controller.left_stick.x / REMOTE_STICK_MAX;
-        float vy = g_remote.controller.left_stick.y / REMOTE_STICK_MAX;
+
+        /* Gimbal starts here */ // (Launch enable in last if statement)
+        g_robot_state.vy_keyboard = ((1.0f - KEYBOARD_RAMP_COEF) * g_robot_state.vy_keyboard + g_remote.keyboard.W * KEYBOARD_RAMP_COEF - g_remote.keyboard.S * KEYBOARD_RAMP_COEF);
+        g_robot_state.vx_keyboard = ((1.0f - KEYBOARD_RAMP_COEF) * g_robot_state.vx_keyboard + g_remote.keyboard.A * KEYBOARD_RAMP_COEF - g_remote.keyboard.D * KEYBOARD_RAMP_COEF);
+        g_robot_state.vx = g_robot_state.vx_keyboard + g_remote.controller.left_stick.x / REMOTE_STICK_MAX;
+        g_robot_state.vy = g_robot_state.vy_keyboard + g_remote.controller.left_stick.y / REMOTE_STICK_MAX;
+
         float theta = DJI_Motor_Get_Absolute_Angle(g_yaw);
-        g_robot_state.chassis_x_speed = -vy * sin(theta) + vx * cos(theta);
-        g_robot_state.chassis_y_speed = vy * cos(theta) + vx * sin(theta);
-        if (g_remote.controller.left_switch == DOWN) {    
-            g_robot_state.chassis_omega = 0;
-        } else if (g_remote.controller.left_switch == MID){
+        g_robot_state.chassis_x_speed = -g_robot_state.vy * sin(theta) + g_robot_state.vx * cos(theta);
+        g_robot_state.chassis_y_speed = g_robot_state.vy * cos(theta) + g_robot_state.vx * sin(theta);
+
+        if (g_remote.controller.left_switch == DOWN)
+        {
+            if (g_key_prev.prev_left_switch != DOWN) { // if previous state is not mid change, this allows keyboard to toggle spin top mode
+                g_robot_state.spintop_mode = 0;
+            }
+        }
+        else if (g_remote.controller.left_switch == MID)
+        {
+            if (g_key_prev.prev_left_switch != MID) { // if previous state is not mid change, this allows keyboard to toggle spin top mode
+                g_robot_state.spintop_mode = 1;
+            }
+        }
+        else if (g_remote.controller.left_switch == UP) // launch on - off
+        {
+            if (g_key_prev.prev_left_switch != UP) { // if previous state is not mid change, this allows keyboard to toggle spin top mode
+                g_robot_state.spintop_mode = 0;
+            }
+            g_launch_target.flywheel_enabled = 1;
+        }
+        g_key_prev.prev_left_switch = g_remote.controller.left_switch;
+
+        if (g_robot_state.spintop_mode)
+        {
             g_robot_state.chassis_omega = SPIN_TOP_OMEGA;
-        } else if (g_remote.controller.left_switch == UP) {
-            // RESERVED        }
+        }
+        else
+        {
+            g_robot_state.chassis_omega = 0;
+        }
+        /* Chassis ends here */
+
+        /* Gimbal starts here */
+        if (g_remote.controller.right_switch == MID)
+        {
+            g_robot_state.gimbal_yaw_angle -= (g_remote.controller.right_stick.x / 50000.0f + g_remote.mouse.x / 10000.0f);    // controller and mouse
+            g_robot_state.gimbal_pitch_angle -= (g_remote.controller.right_stick.y / 100000.0f + g_remote.mouse.y / 50000.0f); // controller and mouse
+        }
+        else if ((g_remote.controller.right_switch == UP) || (g_remote.mouse.right == 1)) // mouse right button auto aim
+        {
+            g_robot_state.gimbal_yaw_angle = g_imu.rad.yaw;     // + orin
+            g_robot_state.gimbal_pitch_angle = g_imu.rad.pitch; // + orin
+        }
+        /* Gimbal ends here */
+
+        /* Launch control starts here */
+        if (g_remote.controller.wheel < -50.0f)
+        { // dial wheel forward single fire
+            g_launch_target.single_launch_flag = 1;
+            g_launch_target.burst_launch_flag = 0;
+        }
+        else if ((g_remote.controller.wheel > 50.0f) || (g_remote.mouse.left == 1))
+        { // dial wheel backward burst fire
+            g_launch_target.single_launch_flag = 0;
+            g_launch_target.burst_launch_flag = 1;
+        }
+        else
+        { // dial wheel mid stop fire
+            g_launch_target.single_launch_flag = 0;
+            g_launch_target.single_launch_finished_flag = 0;
+            g_launch_target.burst_launch_flag = 0;
+        }
+        /* Launch control ends here */
+
+        /* Keyboard Toggles Start Here */
+        if (g_remote.keyboard.B == 1 && g_key_prev.prev_B == 0)
+        {
+            _toggle_robot_state(&g_launch_target.flywheel_enabled);
+        }
+        if (g_remote.keyboard.G == 1 && g_key_prev.prev_G == 0)
+        {
+            _toggle_robot_state(&g_robot_state.spintop_mode);
+        }
+        g_key_prev.prev_B = g_remote.keyboard.B;
+        g_key_prev.prev_G = g_remote.keyboard.G;
+        /* Keyboard Toggles Start Here */
+
+        /* AutoAiming Flag, not used only for debug */
+        if (g_remote.mouse.right == 1)
+        {
+            g_robot_state.autoaiming_enabled = 1;
+        } else {
+            g_robot_state.autoaiming_enabled = 0;
         }
 
-        if (g_remote.controller.right_switch == MID) {
-            g_robot_state.gimbal_yaw_angle -= (g_remote.controller.right_stick.x / 50000.0f + g_remote.mouse.x); // controller and mouse
-            g_robot_state.gimbal_pitch_angle -= (g_remote.controller.right_stick.y / 100000.0f + g_remote.mouse.y); // controller and mouse
-        } else if (g_remote.controller.right_switch == UP) {
-            // TODO: Algorithm Auto Aiming
-        }
+        /* Hardware Limits */
+        g_robot_state.gimbal_yaw_angle = fmod(g_robot_state.gimbal_yaw_angle, 2 * PI);
+        __MAX_LIMIT(g_robot_state.gimbal_pitch_angle, -0.2f, 0.2f);
+        __MAX_LIMIT(g_robot_state.chassis_x_speed, -0.8f, 0.8f);
+        __MAX_LIMIT(g_robot_state.chassis_y_speed, -0.8f, 0.8f);
     }
+}
+
+void _toggle_robot_state(uint8_t *state)
+{
+    *state ^= 0x01;
 }

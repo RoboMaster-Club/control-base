@@ -21,6 +21,7 @@ typedef struct
     uint8_t single_launch_flag;
     uint8_t single_launch_finished_flag;
     uint8_t burst_launch_flag;
+    uint8_t flywheel_enabled;
 } Launch_Target_t;
 
 void Launch_Task_Init(void);

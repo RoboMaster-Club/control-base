@@ -27,7 +27,7 @@ void Remote_BufferProcess()
 	g_remote.controller.right_switch = ((remote_buffer[5] >> 4) & 0x0003);
 
 	// mouse decode
-	g_remote.mouse.x = remote_buffer[6] | (remote_buffer[7] << 8);
+	g_remote.mouse.x = (remote_buffer[6]) | (remote_buffer[7] << 8);
 	g_remote.mouse.y = remote_buffer[8] | (remote_buffer[9] << 8);
 	g_remote.mouse.z = remote_buffer[10] | (remote_buffer[11] << 8);
 	g_remote.mouse.left = remote_buffer[12];
@@ -35,20 +35,22 @@ void Remote_BufferProcess()
 
 	// key decode
 	uint16_t key_buffer = remote_buffer[14] | (remote_buffer[15] << 8);
-	g_remote.key.W = (key_buffer >> 0) & 0x001;
-	g_remote.key.S = (key_buffer >> 1) & 0x001;
-	g_remote.key.A = (key_buffer >> 2) & 0x001;
-	g_remote.key.D = (key_buffer >> 3) & 0x001;
-	g_remote.key.Q = (key_buffer >> 4) & 0x001;
-	g_remote.key.E = (key_buffer >> 5) & 0x001;
-	g_remote.key.Shift = (key_buffer >> 6) & 0x001;
-	g_remote.key.Ctrl = (key_buffer >> 7) & 0x001;
-
-	// Miss Lock Protection
-	if (g_remote.controller.left_stick.y == -660) 
-	{
-		g_remote.controller.left_stick.y = 0;
-	}
+	g_remote.keyboard.W = (key_buffer >> 0) & 0x001;
+	g_remote.keyboard.S = (key_buffer >> 1) & 0x001;
+	g_remote.keyboard.A = (key_buffer >> 2) & 0x001;
+	g_remote.keyboard.D = (key_buffer >> 3) & 0x001;
+	g_remote.keyboard.Shift = (key_buffer >> 4) & 0x001;
+	g_remote.keyboard.Ctrl = (key_buffer >> 5) & 0x001;
+	g_remote.keyboard.Q = (key_buffer >> 6) & 0x001;
+	g_remote.keyboard.E = (key_buffer >> 7) & 0x001;
+	g_remote.keyboard.R = (key_buffer >> 8) & 0x001;
+	g_remote.keyboard.F = (key_buffer >> 9) & 0x001;
+	g_remote.keyboard.G = (key_buffer >> 10) & 0x001;
+	g_remote.keyboard.Z = (key_buffer >> 11) & 0x001;
+	g_remote.keyboard.X = (key_buffer >> 12) & 0x001;
+	g_remote.keyboard.C = (key_buffer >> 13) & 0x001;
+	g_remote.keyboard.V = (key_buffer >> 14) & 0x001;
+	g_remote.keyboard.B = (key_buffer >> 15) & 0x001;
 }
 
 void Remote_Init(void)

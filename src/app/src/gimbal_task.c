@@ -45,7 +45,7 @@ void Gimbal_Task_Init()
     Motor_Config_t pitch_motor_config = {
         .can_bus = 2,
         .speed_controller_id = 2,
-        .offset = 1500,
+        .offset = 4460,
         .use_external_feedback = 1,
         .external_feedback_dir = -1,
         .external_angle_feedback_ptr = &g_imu.rad.roll, // pitch
@@ -75,8 +75,6 @@ void Gimbal_Ctrl_Loop()
 {
     if (g_robot_state.enabled)
     {
-        __MAX_LIMIT(g_gimbal_target.pitch, -0.45f, 0.5f);
-
         DJI_Motor_Set_Angle(g_pitch, g_robot_state.gimbal_pitch_angle);
         DJI_Motor_Set_Angle(g_yaw, g_robot_state.gimbal_yaw_angle);
     }

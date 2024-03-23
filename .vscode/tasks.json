@@ -4,7 +4,7 @@
         {
             "label": "build (Darwin)",
             "type": "shell",
-            "command": "make",
+            "command": "make -j24 V=1",
             "args": [],
             "group": {
                 "kind": "build",
@@ -56,7 +56,16 @@
         {
             "label": "download dap (Windows)",
             "type": "shell",
-            "command": "mingw32-make download_dap",
+            "command": "mingw32-make -j24 V=1; mingw32-make download_dap",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "download stlink (Windows)",
+            "type": "shell",
+            "command": "mingw32-make -j24 V=1; mingw32-make download_stlink",
             "group": {
                 "kind": "build",
                 "isDefault": false
