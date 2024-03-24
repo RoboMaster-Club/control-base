@@ -99,22 +99,24 @@ void Gimbal_Ctrl_Loop()
 {
     if (g_robot_state.enabled)
     {
-        if (g_robot_state.autoaiming_enabled) {
-            DJI_Motor_Set_Control_Mode(g_yaw, TORQUE_CONTROL);
-            // DJI_Motor_Set_Control_Mode(g_pitch, TORQUE_CONTROL);
-            float target_yaw_vel = PID(&autoaim_yaw_angle_pid, -g_orin_data.receiving.auto_aiming.yaw / 180.0f * PI);
-            g_yaw->output_current = PID(&autoaim_yaw_velocity_pid, target_yaw_vel - g_yaw->external_feedback_dir * (*g_yaw->external_velocity_feedback_ptr));
-            // DJI_Motor_Set_Control_Mode(g_pitch, POSITION_VELOCITY_SERIES);
-            // DJI_Motor_Set_Angle(g_pitch, g_robot_state.gimbal_pitch_angle);
-            float target_pitch_vel = PID(&autoaim_pitch_angle_pid, g_orin_data.receiving.auto_aiming.pitch / 180.0f * PI);
-            g_pitch->output_current = PID(&autoaim_pitch_velocity_pid, target_pitch_vel - g_pitch->external_feedback_dir * (*g_pitch->external_velocity_feedback_ptr));
-        }
-        else{
-            DJI_Motor_Set_Control_Mode(g_yaw, POSITION_VELOCITY_SERIES);
-            DJI_Motor_Set_Control_Mode(g_pitch, POSITION_VELOCITY_SERIES);
-            DJI_Motor_Set_Angle(g_pitch, g_robot_state.gimbal_pitch_angle);
-            DJI_Motor_Set_Angle(g_yaw, g_robot_state.gimbal_yaw_angle);
-        }
+        // if (g_robot_state.autoaiming_enabled) {
+        //     DJI_Motor_Set_Control_Mode(g_yaw, TORQUE_CONTROL);
+        //     // DJI_Motor_Set_Control_Mode(g_pitch, TORQUE_CONTROL);
+        //     float target_yaw_vel = PID(&autoaim_yaw_angle_pid, -g_orin_data.receiving.auto_aiming.yaw / 180.0f * PI);
+        //     g_yaw->output_current = PID(&autoaim_yaw_velocity_pid, target_yaw_vel - g_yaw->external_feedback_dir * (*g_yaw->external_velocity_feedback_ptr));
+        //     // DJI_Motor_Set_Control_Mode(g_pitch, POSITION_VELOCITY_SERIES);
+        //     // DJI_Motor_Set_Angle(g_pitch, g_robot_state.gimbal_pitch_angle);
+        //     float target_pitch_vel = PID(&autoaim_pitch_angle_pid, g_orin_data.receiving.auto_aiming.pitch / 180.0f * PI);
+        //     g_pitch->output_current = PID(&autoaim_pitch_velocity_pid, target_pitch_vel - g_pitch->external_feedback_dir * (*g_pitch->external_velocity_feedback_ptr));
+        // }
+        // else{
+        //     DJI_Motor_Set_Control_Mode(g_yaw, POSITION_VELOCITY_SERIES);
+        //     DJI_Motor_Set_Control_Mode(g_pitch, POSITION_VELOCITY_SERIES);
+        //     DJI_Motor_Set_Angle(g_pitch, g_robot_state.gimbal_pitch_angle);
+        //     DJI_Motor_Set_Angle(g_yaw, g_robot_state.gimbal_yaw_angle);
+        // }
+        DJI_Motor_Set_Angle(g_pitch, g_robot_state.gimbal_pitch_angle);
+        DJI_Motor_Set_Angle(g_yaw, g_robot_state.gimbal_yaw_angle);
     }
     else
     {

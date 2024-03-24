@@ -16,7 +16,7 @@ extern DJI_Motor_Handle_t *g_yaw;
 #define SPIN_TOP_OMEGA (1.0f)
 
 #define KEYBOARD_RAMP_COEF (0.004f)
-#define SPINTOP_COEF (0.01f)
+#define SPINTOP_COEF (0.005f)
 #define CONTROLLER_RAMP_COEF (0.8f)
 #define MAX_SPEED (.8f)
 
@@ -116,15 +116,18 @@ void Robot_Cmd_Loop()
             /* Chassis ends here */
 
             /* Gimbal starts here */
-            if (g_remote.controller.right_switch == MID)
+            if ((g_remote.controller.right_switch == UP) || (g_remote.mouse.right == 1)) // mouse right button auto aim
+            {
+                if (g_orin_data.receiving.auto_aiming.yaw != 0 || g_orin_data.receiving.auto_aiming.pitch != 0)
+                {
+                    g_robot_state.gimbal_yaw_angle = g_imu.rad.yaw - g_orin_data.receiving.auto_aiming.yaw / 180.0f * PI; // + orin
+                    g_robot_state.gimbal_pitch_angle = g_imu.rad.pitch + g_orin_data.receiving.auto_aiming.pitch / 180.0f * PI; // + orin
+                }
+            }
+            else if (g_remote.controller.right_switch == MID)
             {
                 g_robot_state.gimbal_yaw_angle -= (g_remote.controller.right_stick.x / 50000.0f + g_remote.mouse.x / 10000.0f);    // controller and mouse
                 g_robot_state.gimbal_pitch_angle -= (g_remote.controller.right_stick.y / 100000.0f - g_remote.mouse.y / 50000.0f); // controller and mouse
-            }
-            else if ((g_remote.controller.right_switch == UP) || (g_remote.mouse.right == 1)) // mouse right button auto aim
-            {
-                // g_robot_state.gimbal_yaw_angle = g_imu.rad.yaw;     // + orin
-                // g_robot_state.gimbal_pitch_angle = g_imu.rad.pitch; // + orin
             }
             /* Gimbal ends here */
 
