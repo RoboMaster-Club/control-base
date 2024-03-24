@@ -14,14 +14,14 @@ uint64_t t = 0;
 DJI_Motor_Handle_t *g_yaw, *g_pitch;
 Gimbal_Target_t g_gimbal_target;
 PID_t autoaim_yaw_angle_pid = {
-    .kp = 25.0f,
-    .kd = 400.0f,
+    .kp = 20.0f,
+    .kd = 300.0f,
     .output_limit = 25,
 };
 PID_t autoaim_yaw_velocity_pid = {
-    .kp = 5000.0f,
+    .kp = 1000.0f,
     .ki = 0.0f,
-    .kf = 1000.0f,
+    .kf = 2000.0f,
     .feedforward_limit = 5000.0f,
     .integral_limit = 5000.0f,
     .output_limit = GM6020_MAX_CURRENT,
