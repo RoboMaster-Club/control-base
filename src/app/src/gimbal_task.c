@@ -115,6 +115,25 @@ void Gimbal_Ctrl_Loop()
         //     DJI_Motor_Set_Angle(g_pitch, g_robot_state.gimbal_pitch_angle);
         //     DJI_Motor_Set_Angle(g_yaw, g_robot_state.gimbal_yaw_angle);
         // }
+        if (g_robot_state.autoaiming_enabled) {
+            g_yaw->angle_pid->kp = 11.0f;
+            g_yaw->angle_pid->kd = 320.0f;
+            g_yaw->velocity_pid->kf = 2000.0f;
+
+            g_pitch->angle_pid->kp = 10.0f;
+            g_pitch->angle_pid->kd = 400.0f;
+            g_pitch->velocity_pid->kp = 4500.0f;
+            g_pitch->velocity_pid->ki = 0.8f;
+        } else {
+            g_yaw->angle_pid->kp = 20.0f;
+            g_yaw->angle_pid->kd = 150.0f;
+            g_yaw->velocity_pid->kf = 1000.0f;
+
+            g_pitch->angle_pid->kp = 25.0f;
+            g_pitch->angle_pid->kd = 400.0f;
+            g_pitch->velocity_pid->kp = 4500.0f;
+            g_pitch->velocity_pid->ki = 0.8f;
+        }
         DJI_Motor_Set_Angle(g_pitch, g_robot_state.gimbal_pitch_angle);
         DJI_Motor_Set_Angle(g_yaw, g_robot_state.gimbal_yaw_angle);
     }

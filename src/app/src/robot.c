@@ -120,8 +120,8 @@ void Robot_Cmd_Loop()
             {
                 if (g_orin_data.receiving.auto_aiming.yaw != 0 || g_orin_data.receiving.auto_aiming.pitch != 0)
                 {
-                    g_robot_state.gimbal_yaw_angle = g_imu.rad.yaw - g_orin_data.receiving.auto_aiming.yaw / 180.0f * PI; // + orin
-                    g_robot_state.gimbal_pitch_angle = g_imu.rad.pitch + g_orin_data.receiving.auto_aiming.pitch / 180.0f * PI; // + orin
+                    g_robot_state.gimbal_yaw_angle = (1 - 0.2f) * g_robot_state.gimbal_yaw_angle + (0.2f) * (g_imu.rad.yaw - g_orin_data.receiving.auto_aiming.yaw / 180.0f * PI); // + orin
+                    g_robot_state.gimbal_pitch_angle = (1 - 0.2f) * g_robot_state.gimbal_pitch_angle + (0.2f) * (g_imu.rad.pitch - g_orin_data.receiving.auto_aiming.pitch / 180.0f * PI); // + orin
                 }
             }
             else if (g_remote.controller.right_switch == MID)
