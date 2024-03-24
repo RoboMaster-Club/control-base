@@ -18,7 +18,7 @@ extern DJI_Motor_Handle_t *g_yaw;
 #define KEYBOARD_RAMP_COEF (0.004f)
 #define SPINTOP_COEF (0.01f)
 #define CONTROLLER_RAMP_COEF (0.8f)
-#define MAX_SPEED (1.0f)
+#define MAX_SPEED (.8f)
 
 Robot_State_t g_robot_state = {0, 0};
 Key_Prev_t g_key_prev = {0};
@@ -123,13 +123,13 @@ void Robot_Cmd_Loop()
             }
             else if ((g_remote.controller.right_switch == UP) || (g_remote.mouse.right == 1)) // mouse right button auto aim
             {
-                g_robot_state.gimbal_yaw_angle = g_imu.rad.yaw;     // + orin
-                g_robot_state.gimbal_pitch_angle = g_imu.rad.pitch; // + orin
+                // g_robot_state.gimbal_yaw_angle = g_imu.rad.yaw;     // + orin
+                // g_robot_state.gimbal_pitch_angle = g_imu.rad.pitch; // + orin
             }
             /* Gimbal ends here */
 
             /* Launch control starts here */
-            if (Referee_System.Power_n_Heat.Shooter_1_Heat < 250)
+            if (Referee_System.Power_n_Heat.Shooter_1_Heat < 200)
             {
                 if (g_remote.controller.wheel < -50.0f)
                 { // dial wheel forward single fire
@@ -170,7 +170,7 @@ void Robot_Cmd_Loop()
             /* Keyboard Toggles Start Here */
 
             /* AutoAiming Flag, not used only for debug */
-            if (g_remote.mouse.right == 1)
+            if ((g_remote.mouse.right == 1) || (g_remote.controller.right_switch == UP))
             {
                 g_robot_state.autoaiming_enabled = 1;
             }
@@ -189,9 +189,9 @@ void Robot_Cmd_Loop()
             float power_buffer = Referee_System.Power_n_Heat.Chassis_Power_Buffer / 60.0f;
             if (power_buffer < 0.8f)
             {
-                g_robot_state.chassis_x_speed *= power_buffer;
-                g_robot_state.chassis_y_speed *= power_buffer;
-                g_robot_state.chassis_omega *= power_buffer;
+                g_robot_state.chassis_x_speed *= pow(power_buffer,1);
+                g_robot_state.chassis_y_speed *= pow(power_buffer,1);
+                g_robot_state.chassis_omega *= pow(power_buffer,1);
             }
         }
     }
