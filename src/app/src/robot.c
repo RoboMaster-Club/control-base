@@ -16,9 +16,9 @@ extern DJI_Motor_Handle_t *g_yaw;
 #define SPIN_TOP_OMEGA (1.0f)
 
 #define KEYBOARD_RAMP_COEF (0.004f)
-#define SPINTOP_COEF (0.005f)
+#define SPINTOP_COEF (0.003f)
 #define CONTROLLER_RAMP_COEF (0.8f)
-#define MAX_SPEED (.8f)
+#define MAX_SPEED (.6f)
 
 Robot_State_t g_robot_state = {0, 0};
 Key_Prev_t g_key_prev = {0};
@@ -184,7 +184,7 @@ void Robot_Cmd_Loop()
 
             /* Hardware Limits */
             g_robot_state.gimbal_yaw_angle = fmod(g_robot_state.gimbal_yaw_angle, 2 * PI);
-            __MAX_LIMIT(g_robot_state.gimbal_pitch_angle, -0.2f, 0.2f);
+            __MAX_LIMIT(g_robot_state.gimbal_pitch_angle, -0.4f, 0.4f);
             __MAX_LIMIT(g_robot_state.chassis_x_speed, -MAX_SPEED, MAX_SPEED);
             __MAX_LIMIT(g_robot_state.chassis_y_speed, -MAX_SPEED, MAX_SPEED);
 
