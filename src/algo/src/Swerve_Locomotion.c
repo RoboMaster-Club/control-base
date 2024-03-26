@@ -7,6 +7,8 @@ Swerve_Module_t g_swerve_fl, g_swerve_rl, g_swerve_rr, g_swerve_fr;
 Swerve_Module_t *swerve_modules[NUMBER_OF_MODULES] = {&g_swerve_fl, &g_swerve_rl, &g_swerve_rr, &g_swerve_fr};
 float last_swerve_angle[NUMBER_OF_MODULES] = {0.0f, 0.0f, 0.0f, 0.0f};
 
+// #define SWERVE_OPTIMIZE
+
 /**
  * @brief Inverse kinematics matrix for a 4 module swerve, defined counterclockwise from the front left
  *
@@ -219,9 +221,14 @@ Module_State_t Optimize_Module_Angle(Module_State_t input_state, float measured_
  */
 void Set_Module_Output(Swerve_Module_t *swerve_module, Module_State_t desired_state)
 {
+#ifdef SWERVE_OPTIMIZE    
     Module_State_t optimized_module_state = Optimize_Module_Angle(desired_state, DJI_Motor_Get_Absolute_Angle(swerve_module->azimuth_motor));
     DJI_Motor_Set_Angle(swerve_module->azimuth_motor, optimized_module_state.angle);
     DJI_Motor_Set_Velocity(swerve_module->drive_motor, optimized_module_state.speed * 60 / (PI * Wheel_Diameter));
+#else
+    DJI_Motor_Set_Angle(swerve_module->azimuth_motor, desired_state.angle);
+    DJI_Motor_Set_Velocity(swerve_module->drive_motor, desired_state.speed * 60 / (PI * Wheel_Diameter));
+#endif
 }
 
 /* Set the desired modules state of each module */
