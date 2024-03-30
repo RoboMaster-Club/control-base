@@ -87,14 +87,48 @@ typedef struct _DJI_Send_Group_s {
     int16_t *motor_torq[4];
 } DJI_Send_Group_t;
 
+/**
+ * @brief  DJI Motor Initialization Function. Initialize the motor with the given configuration.
+ * Check usage in documentation
+*/
 DJI_Motor_Handle_t *DJI_Motor_Init(Motor_Config_t *config, DJI_Motor_Type_t type);
+
+/**
+ * @brief  DJI Motor Initialization Function. Initialize the motor with the given configuration.
+ * Check usage in documentation
+*/
 void DJI_Motor_Send(void);
+
+
 void DJI_Motor_Set_Torque(DJI_Motor_Handle_t *motor, float torque);
+
+
 void DJI_Motor_Set_Velocity(DJI_Motor_Handle_t *motor, float velocity);
+
+
 void DJI_Motor_Set_Angle(DJI_Motor_Handle_t *motor, float angle);
+
+
 void DJI_Motor_Set_Control_Mode(DJI_Motor_Handle_t *motor, uint8_t control_mode);
+
+/**
+ * @brief  Get currently velocity in the configured task space (right hand rule)
+*/
 float DJI_Motor_Get_Velocity(DJI_Motor_Handle_t *motor);
+
+/**
+ * @brief  Get currently angle in the configured task space (right hand rule)
+*/
 float DJI_Motor_Get_Absolute_Angle(DJI_Motor_Handle_t *motor);
+
+/**
+ * @brief  Get currently angle in the configured task space (right hand rule)
+*/
 float DJI_Motor_Get_Total_Angle(DJI_Motor_Handle_t *motor);
+
+/**
+ * @brief Disable motor, this would set flag to disable the motor
+ * When sending can data, a zero current will be sent
+*/
 void DJI_Motor_Disable(DJI_Motor_Handle_t *motor);
 #endif

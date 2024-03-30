@@ -20,7 +20,9 @@ void DJI_Motor_Disable(DJI_Motor_Handle_t *motor_handle);
 uint8_t DJI_Motor_Assign_To_Group(DJI_Motor_Handle_t *motor_handle, uint16_t tx_id)
 {
     uint8_t can_bus = motor_handle->can_bus;
-    uint8_t real_id; // the increment id of the motor in the group
+    uint8_t real_id; // the order of which the motor will be send in the send group can frame
+    // 1-4 are the first group, 5-8 are the second group
+    // this real id will decide the order of te motor torque in the 8-byte can data frame
     if (motor_handle->speed_controller_id > 4)
     {
         real_id = motor_handle->speed_controller_id - 5;
@@ -29,11 +31,16 @@ uint8_t DJI_Motor_Assign_To_Group(DJI_Motor_Handle_t *motor_handle, uint16_t tx_
     {
         real_id = motor_handle->speed_controller_id - 1;
     }
+    // check if the motor belongs to a group that has been created
     for (int i = 0; i < g_dji_motor_group_count; i++)
     {
+        // if the group is already created, add the motor to the group
         if ((g_dji_send_group[i]->can_instance->can_bus == can_bus) && (g_dji_send_group[i]->can_instance->tx_header->StdId == tx_id))
         {
+            // change register indicator to include the new motor. This will be used in @ref DJI_Motor_Send()
             g_dji_send_group[i]->register_device_indicator |= (1 << real_id);
+            // output current pointer of the motor
+            // send group will check the value pointed by the pointer and send it at a predefined frequency
             g_dji_send_group[i]->motor_torq[real_id] = &motor_handle->output_current;
             return 0;
         }
@@ -42,12 +49,16 @@ uint8_t DJI_Motor_Assign_To_Group(DJI_Motor_Handle_t *motor_handle, uint16_t tx_
     DJI_Send_Group_t *new_group = (DJI_Send_Group_t *)malloc(sizeof(DJI_Send_Group_t));
     new_group->can_instance = calloc(sizeof(CAN_Instance_t), 1);
     new_group->can_instance->can_bus = can_bus;
+    // allocate memory for tx_header
     new_group->can_instance->tx_header = malloc(sizeof(CAN_TxHeaderTypeDef));
-    new_group->can_instance->tx_header->StdId = tx_id;
-    new_group->can_instance->tx_header->IDE = CAN_ID_STD;
-    new_group->can_instance->tx_header->RTR = CAN_RTR_DATA;
-    new_group->can_instance->tx_header->DLC = 8;
+    new_group->can_instance->tx_header->StdId = tx_id; // set id (the actual id that will be send)
+    new_group->can_instance->tx_header->IDE = CAN_ID_STD; // standard id (check CAN documentation for more information)
+    new_group->can_instance->tx_header->RTR = CAN_RTR_DATA; // data frame (check CAN documentation for more information)
+    new_group->can_instance->tx_header->DLC = 8; // 8 bytes of data (check CAN documentation for more information)
+    // change register indicator to include the new motor. This will be used in @ref DJI_Motor_Send()
     new_group->register_device_indicator = (1 << real_id);
+    // output current pointer of the motor
+    // send group will check the value pointed by the pointer and send it at a predefined frequency
     new_group->motor_torq[real_id] = &motor_handle->output_current;
     motor_handle->output_current = 0;
     // assign new send group to the global array
@@ -58,6 +69,7 @@ uint8_t DJI_Motor_Assign_To_Group(DJI_Motor_Handle_t *motor_handle, uint16_t tx_
 DJI_Motor_Handle_t *DJI_Motor_Init(Motor_Config_t *config, DJI_Motor_Type_t type)
 {
     DJI_Motor_Handle_t *motor_handle = malloc(sizeof(DJI_Motor_Handle_t));
+    // Initialize motor handle with the given configuration
     motor_handle->motor_type = type;
     motor_handle->can_bus = config->can_bus;
     motor_handle->speed_controller_id = config->speed_controller_id;
@@ -69,17 +81,18 @@ DJI_Motor_Handle_t *DJI_Motor_Init(Motor_Config_t *config, DJI_Motor_Type_t type
     motor_handle->external_angle_feedback_ptr = config->external_angle_feedback_ptr;
     motor_handle->external_velocity_feedback_ptr = config->external_velocity_feedback_ptr;
 
+    // Initialize motor stats
     DJI_Motor_Stats_t *motor_stats = malloc(sizeof(DJI_Motor_Stats_t));
     motor_stats->encoder_offset = config->offset;
     motor_stats->total_round = 0;
     motor_stats->current_tick = 0;
     motor_stats->current_vel_rpm = 0;
-
     motor_stats->current_torq = 0;
     motor_stats->temp = 0;
     motor_handle->stats = motor_stats;
     motor_handle->output_current = 0;
 
+    // Initialize PID controllers (bitwise AND to check if the control mode is enabled)
     if ((motor_handle->control_mode & VELOCITY_CONTROL) == VELOCITY_CONTROL) {
         motor_handle->velocity_pid = malloc(sizeof(PID_t));
         memcpy(motor_handle->velocity_pid, &config->velocity_pid, sizeof(PID_t));
@@ -94,7 +107,7 @@ DJI_Motor_Handle_t *DJI_Motor_Init(Motor_Config_t *config, DJI_Motor_Type_t type
     }
 
     CAN_Instance_t *receiver_can_instance = NULL;
-    // Send Group assignment
+    // initialize receive instance and send Group assignment based on motor type (Check DJI motor for more information)
     switch (motor_handle->motor_type)
     {
     case GM6020:
@@ -284,12 +297,14 @@ void DJI_Motor_Current_Calc()
             velocity_feedback = motor->stats->current_vel_rpm;
             break;
         }
+        // check disabled flag
         switch (motor->disabled)
         {
         case 1:
             motor->output_current = 0;
             break;
         case 0:
+            // calculate motor current based on control mode, check documentation for more information
             switch (motor->control_mode)
             {
             case VELOCITY_CONTROL:
@@ -348,30 +363,23 @@ void DJI_Motor_Current_Calc()
 }
 
 /**
- * Sends current values for up to four DJI motors over a CAN bus.
- *
- * This function packages the current values of up to four motors into a single CAN bus message
- * and sends it to the appropriate queue for transmission. The message includes a type specifier
- * and is sent to one of two possible CAN buses, based on the provided bus identifier.
- *
- * @param send_type The type of message being sent, specified by the DJI_Send_Type_e enumeration.
- *                  Send can id 1-4 with @ref DJI_Send_Type_e.HEAD, 5-8 with @ref DJI_Send_Type_e.TAIL.
- *                  GM6020 reverse the 8th motor control fram bytes.
- * @param can_bus   Valid values are 1 or 2, representing the two available buses.
- * @param motor1    The current value for the 1st motor, can id 1 or 5
- * @param motor2    The current value for the 2nd motor, can id 2 or 6
- * @param motor3    The current value for the 3rd motor, can id 3 or 7
- * @param motor4    The current value for the 4th motor, can id 4 or 8 (GM6020 does not have 8)
- *
- */
+ * Iteration through the registered send groups and send the motor torques.
+ * Send groups are initialized in @ref DJI_Motor_Assign_To_Group(), which is called 
+ * during initialization in @ref DJI_Motor_Init()
+*/
 void DJI_Motor_Send()
 {
+    // Calculate motor current based on control mode for all motors
     DJI_Motor_Current_Calc();
+    // Send motor torques (iterate through send groups)
     for (int i = 0; i < g_dji_motor_group_count; i++)
     {
         DJI_Send_Group_t *group = g_dji_send_group[i];
         uint8_t register_indicator = group->register_device_indicator;
         uint8_t *data = group->can_instance->tx_buffer;
+        // register_indicator is a 4-bit number, each bit represents a motor
+        // e.g. 0b1011 means motor 1, 2, 4 are registered, and motor 3 is not
+        // & is bitwise AND, if the bit is 1, the corresponding motor torque is sent
         if (register_indicator & 0b0001)
         {
             static int16_t motor1 = 0;
@@ -402,7 +410,7 @@ void DJI_Motor_Send()
         }
         if (CAN_Transmit(group->can_instance) != HAL_OK)
         {
-            // Log Error
+            // Log Error (Transmission is not successful)
         }
     }
 }
