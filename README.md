@@ -54,3 +54,5 @@ Motor_Config_t yaw_motor_config = {
 ## Debug SOP
 - Check IMU is attched firmly
 - Check remote functioning (especially the dial wheel)
+- Check UART baudrate
+- Check word length, parity, stop bit
