@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include "usart.h"
 
+#define JETSON_ORIN_RX_BUFFER_SIZE (20)
+#define JETSON_ORIN_TX_BUFFER_SIZE (33)
+
 typedef struct
 {
     UART_HandleTypeDef *huartx;
