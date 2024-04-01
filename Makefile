@@ -50,6 +50,8 @@ $(BOARD_BASE)/Core/Src/usart.c \
 $(BOARD_BASE)/Core/Src/stm32f4xx_it.c \
 $(BOARD_BASE)/Core/Src/stm32f4xx_hal_msp.c \
 $(BOARD_BASE)/Core/Src/stm32f4xx_hal_timebase_tim.c \
+$(BOARD_BASE)/Core/Src/crc.c \
+$(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c \
 $(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c \
 $(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \
 $(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c \
