@@ -12,7 +12,7 @@
             "configFiles": [
                 "${workspaceRoot}/config/openocd_cmsis_dap.cfg" // config
             ],
-            //"runToEntryPoint": "main", // stop at main
+            "runToEntryPoint": "main", // stop at main
             "rtos": "FreeRTOS",
             "liveWatch": { 
                 "enabled": true,
