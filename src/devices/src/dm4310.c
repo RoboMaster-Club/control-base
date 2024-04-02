@@ -129,6 +129,15 @@ DM_Motor_t* DM_Motor_Init(DM_Motor_Config_t *config)
     
     motor->can_instance = CAN_Device_Register(motor->can_bus, motor->tx_id, motor->rx_id, DM_Motor_Decode);
     motor->can_instance->binding_motor_stats =(void*) motor->stats;
+
+    for (int i = 0; i < DM_MAX_DEVICE; i++)
+    {
+        if (g_dm_motors[i] == NULL)
+        {
+            g_dm_motors[i] = motor;
+            break;
+        }
+    }
     return motor;
 }
 
