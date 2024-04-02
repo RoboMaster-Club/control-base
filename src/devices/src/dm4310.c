@@ -1,15 +1,9 @@
 #include "dm4310.h"
+#include <stdlib.h>
 
+#define DM_MAX_DEVICE (10)
+DM_Motor_t *g_dm_motors[DM_MAX_DEVICE] = {NULL};
 
-void DM4310_DecodeCAN(uint8_t data[8], DM4310_Info_t *data_frame);
-void DM4310_EnableMotor(uint8_t can_bus, uint32_t id);
-void DM4310_DisableMotor(uint8_t can_bus, uint32_t id);
-void DM4310_CtrlMIT(uint8_t can_bus, uint32_t id,
-                    float target_pos, float target_vel,
-                    float kp, float kd,
-                    float torq);
-void DM4310_CtrlPosVel(void);
-void DM4310_CtrlVel(void);
 /**
  * int float_to_uint(float x, float x_min, float x_max, int bits)
  *
@@ -40,10 +34,11 @@ float uint_to_float(int x_int, float x_min, float x_max, int bits)
     return ((float)x_int) * span / ((float)((1 << bits) - 1)) + offset;
 }
 
-
-
-void DM4310_DecodeCAN(uint8_t data[8], DM4310_Info_t *data_frame)
+void DM_Motor_Decode(CAN_Instance_t *motor_can_instance)
 {
+    uint8_t *data = motor_can_instance->rx_buffer;
+    DM_Motor_Stats_t *data_frame = (DM_Motor_Stats_t *)motor_can_instance->binding_motor_stats;
+
     data_frame->id = (data[0]) & 0x0F;
     data_frame->state = (data[0]) >> 4;
     data_frame->pos_int = (data[1] << 8) | data[2];
@@ -56,9 +51,10 @@ void DM4310_DecodeCAN(uint8_t data[8], DM4310_Info_t *data_frame)
     data_frame->t_rotor = (float)(data[7]);
 }
 
-void DM4310_EnableMotor(uint8_t can_bus, uint32_t id)
+void DM_Motor_Enable_Motor(DM_Motor_t *motor)
 {
-    uint8_t data[8];
+    CAN_Instance_t *motor_can_instance = motor->can_instance;
+    uint8_t *data = motor_can_instance->tx_buffer;
     data[0] = 0xFF;
     data[1] = 0xFF;
     data[2] = 0xFF;
@@ -67,12 +63,13 @@ void DM4310_EnableMotor(uint8_t can_bus, uint32_t id)
     data[5] = 0xFF;
     data[6] = 0xFF;
     data[7] = 0xFC;
-    CAN_SendTOQueue(can_bus, id, data);
+    CAN_Transmit(motor_can_instance);
 }
 
-void DM4310_DisableMotor(uint8_t can_bus, uint32_t id)
+void DM_Motor_Disable_Motor(DM_Motor_t *motor)
 {
-    uint8_t data[8];
+    CAN_Instance_t *motor_can_instance = motor->can_instance;
+    uint8_t *data = motor_can_instance->tx_buffer;
     data[0] = 0xFF;
     data[1] = 0xFF;
     data[2] = 0xFF;
@@ -81,21 +78,22 @@ void DM4310_DisableMotor(uint8_t can_bus, uint32_t id)
     data[5] = 0xFF;
     data[6] = 0xFF;
     data[7] = 0xFD;
-    CAN_SendTOQueue(can_bus, id, data);
+    CAN_Transmit(motor_can_instance);
 }
 
-void DM4310_CtrlMIT(uint8_t can_bus, uint32_t id,
-                    float target_pos, float target_vel,
-                    float kp, float kd,
-                    float torq)
+void DM_Motor_Ctrl_MIT(DM_Motor_t *motor, float target_pos, float target_vel, float torq)
 {
     uint16_t pos_temp, vel_temp, kp_temp, kd_temp, torq_temp;
-    uint8_t data[8];
-    pos_temp = float_to_uint(target_pos, P_MIN, P_MAX, 16);
-    vel_temp = float_to_uint(target_vel, V_MIN, V_MAX, 12);
-    kp_temp = float_to_uint(kp, KP_MIN, KP_MAX, 12);
-    kd_temp = float_to_uint(kd, KD_MIN, KD_MAX, 12);
-    torq_temp = float_to_uint(torq, T_MIN, T_MAX, 12);
+    CAN_Instance_t *motor_can_instance = motor->can_instance;
+    uint8_t *data = motor_can_instance->tx_buffer;
+    motor->target_pos = target_pos;
+    motor->target_vel = target_vel;
+    motor->torq = torq;
+    pos_temp = float_to_uint(motor->target_pos, P_MIN, P_MAX, 16);
+    vel_temp = float_to_uint(motor->target_vel, V_MIN, V_MAX, 12);
+    kp_temp = float_to_uint(motor->kp, KP_MIN, KP_MAX, 12);
+    kd_temp = float_to_uint(motor->kd, KD_MIN, KD_MAX, 12);
+    torq_temp = float_to_uint(motor->torq, T_MIN, T_MAX, 12);
 
     data[0] = (pos_temp >> 8);
     data[1] = pos_temp;
@@ -106,14 +104,42 @@ void DM4310_CtrlMIT(uint8_t can_bus, uint32_t id,
     data[6] = ((kd_temp & 0xF) << 4) | (torq_temp >> 8);
     data[7] = torq_temp;
 
-    CAN_SendTOQueue(can_bus, id, data);
+    CAN_Transmit(motor_can_instance);
 }
-void DM4310_CtrlPosVel()
+
+void DM_Motor_Set_MIT_PD(DM_Motor_t *motor, float kp, float kd)
+{
+    motor->kp = kp;
+    motor->kd = kd;
+}
+
+DM_Motor_t* DM_Motor_Init(DM_Motor_Config_t *config)
+{
+    DM_Motor_t *motor = malloc(sizeof(DM_Motor_t));
+    motor->can_bus = config->can_bus;
+    motor->control_mode = config->control_mode;
+    motor->tx_id = config->tx_id;
+    motor->rx_id = config->rx_id;
+    motor->target_pos = 0.0f;
+    motor->target_vel = 0.0f;
+    motor->kp = config->kp;
+    motor->kd = config->kd;
+    motor->torq = 0.0f;
+    motor->stats = calloc(sizeof(DM_Motor_Stats_t), 1);
+    
+    motor->can_instance = CAN_Device_Register(motor->can_bus, motor->tx_id, motor->rx_id, DM_Motor_Decode);
+    motor->can_instance->binding_motor_stats =(void*) motor->stats;
+    return motor;
+}
+
+
+
+void DM_Motor_CtrlPosVel()
 {
     //TODO:
 }
 
-void DM4310_CtrlVel()
+void DM_Motor_CtrlVel()
 {
     // TODO:
 }

@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include "bsp_can.h"
 
-
 #define P_MIN -12.5f
 #define P_MAX 12.5f
 #define V_MIN -30.0f
@@ -16,42 +15,12 @@
 #define T_MIN -10.0f
 #define T_MAX 10.0f
 
-enum CONTROL_MODE
-{
-    MIT = 0,
-    POS_VEL,
-    VEL,
-    ENABLE_MOTOR,
-    DISABLE_MOTOR
-};
+#define DM_MOTOR_MIT (0)
+#define DM_MOTOR_POS_VEL (1)
+#define DM_MOTOR_VEL (2)
 
 typedef struct
 {
-
-
-    /* MIT Control Frame */
-    struct MIT_ControlFrame
-    {
-        float target_pos;
-        float target_vel;
-        float kp;
-        float ki;
-        float kd;
-        float torq;
-    } mit_control_frame;
-
-    /* Position & Velocity Control Frame */
-    struct POS_VEL_ControlFrame
-    {
-        float target_pos;
-        float target_vel;
-    } pos_vel_control_frame;
-
-    struct VEL_ControlFrame
-    {
-        float target_vel;
-    } vel_control_frame;
-
     uint8_t id;
     uint16_t pos_int;
     uint16_t vel_int;
@@ -64,15 +33,40 @@ typedef struct
     uint16_t t_mos;
     uint16_t t_rotor;
 
-} DM4310_Info_t;
+} DM_Motor_Stats_t;
 
-void DM4310_DecodeCAN(uint8_t data[8], DM4310_Info_t *data_frame);
-void DM4310_EnableMotor(uint8_t can_bus, uint32_t id);
-void DM4310_DisableMotor(uint8_t can_bus, uint32_t id);
-void DM4310_CtrlMIT(uint8_t can_bus, uint32_t id,
-              float target_pos, float target_vel,
-              float kp, float kd,
-              float torq);
-void DM4310_CtrlPosVel(void);
-void DM4310_CtrlVel(void);
+typedef struct _DM_Motor_Config {
+    uint8_t can_bus;
+    uint32_t rx_id;
+    uint32_t tx_id;
+    uint8_t control_mode;
+
+    float kp;
+    float kd;
+} DM_Motor_Config_t;
+
+typedef struct _DM_Motor {
+    /* CAN Information */
+    uint8_t can_bus;
+    uint8_t control_mode;
+    uint16_t tx_id;
+    uint16_t rx_id;
+    CAN_Instance_t *can_instance;
+    /* Motor Target */
+    float target_pos;
+    float target_vel;
+    float kp;
+    float kd;
+    float torq;
+
+    /* Motor Sensor Feedback */
+    DM_Motor_Stats_t *stats;
+} DM_Motor_t;
+
+void DM_Motor_Disable_Motor(DM_Motor_t *motor);
+void DM_Motor_Enable_Motor(DM_Motor_t *motor);
+DM_Motor_t* DM_Motor_Init(DM_Motor_Config_t *config);
+void DM_Motor_Ctrl_MIT(DM_Motor_t *motor, float target_pos, float target_vel, float torq);
+void DM_Motor_Set_MIT_PD(DM_Motor_t *motor, float kp, float kd);
+
 #endif
