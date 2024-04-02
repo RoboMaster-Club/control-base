@@ -44,11 +44,13 @@ void DM_Motor_Decode(CAN_Instance_t *motor_can_instance)
     data_frame->pos_int = (data[1] << 8) | data[2];
     data_frame->vel_int = (data[3] << 4) | (data[4] >> 4);
     data_frame->torq_int = ((data[4] & 0xF) << 8) | data[5];
-    data_frame->pos = uint_to_float(data_frame->pos_int, P_MIN, P_MAX, 16);   // (-12.5,12.5)
+    data_frame->pos_raw = uint_to_float(data_frame->pos_int, P_MIN, P_MAX, 16);   // (-12.5,12.5)
     data_frame->vel = uint_to_float(data_frame->vel_int, V_MIN, V_MAX, 12);   // (-45.0,45.0)
     data_frame->torq = uint_to_float(data_frame->torq_int, T_MIN, T_MAX, 12); // (-18.0,18.0)
     data_frame->t_mos = (float)(data[6]);
     data_frame->t_rotor = (float)(data[7]);
+
+    data_frame->pos = data_frame->pos_raw - data_frame->pos_offset;
 }
 
 void DM_Motor_Enable_Motor(DM_Motor_t *motor)
@@ -86,7 +88,7 @@ void DM_Motor_Ctrl_MIT(DM_Motor_t *motor, float target_pos, float target_vel, fl
     uint16_t pos_temp, vel_temp, kp_temp, kd_temp, torq_temp;
     CAN_Instance_t *motor_can_instance = motor->can_instance;
     uint8_t *data = motor_can_instance->tx_buffer;
-    motor->target_pos = target_pos;
+    motor->target_pos = target_pos + motor->stats->pos_offset;
     motor->target_vel = target_vel;
     motor->torq = torq;
     pos_temp = float_to_uint(motor->target_pos, P_MIN, P_MAX, 16);
@@ -126,6 +128,7 @@ DM_Motor_t* DM_Motor_Init(DM_Motor_Config_t *config)
     motor->kd = config->kd;
     motor->torq = 0.0f;
     motor->stats = calloc(sizeof(DM_Motor_Stats_t), 1);
+    motor->stats->pos_offset = config->pos_offset;
     
     motor->can_instance = CAN_Device_Register(motor->can_bus, motor->tx_id, motor->rx_id, DM_Motor_Decode);
     motor->can_instance->binding_motor_stats =(void*) motor->stats;

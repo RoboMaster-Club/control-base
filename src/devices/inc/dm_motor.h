@@ -22,12 +22,14 @@
 typedef struct
 {
     uint8_t id;
+    uint8_t state;
     uint16_t pos_int;
     uint16_t vel_int;
     uint16_t torq_int;
 
-    uint8_t state;
     float pos;
+    float pos_raw;
+    float pos_offset;
     float vel;
     float torq;
     uint16_t t_mos;
@@ -37,10 +39,11 @@ typedef struct
 
 typedef struct _DM_Motor_Config {
     uint8_t can_bus;
+    uint8_t control_mode;
     uint32_t rx_id;
     uint32_t tx_id;
-    uint8_t control_mode;
-
+    
+    float pos_offset;
     float kp;
     float kd;
 } DM_Motor_Config_t;
@@ -52,6 +55,7 @@ typedef struct _DM_Motor {
     uint16_t tx_id;
     uint16_t rx_id;
     CAN_Instance_t *can_instance;
+    
     /* Motor Target */
     float target_pos;
     float target_vel;
