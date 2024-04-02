@@ -1,5 +1,5 @@
-#ifndef DM4310_H
-#define DM4310_H
+#ifndef DM_MOTOR_H
+#define DM_MOTOR_H
 
 #include <stdint.h>
 #include "bsp_can.h"

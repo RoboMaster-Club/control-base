@@ -1,4 +1,4 @@
-#include "dm4310.h"
+#include "dm_motor.h"
 #include <stdlib.h>
 
 #define DM_MAX_DEVICE (10)

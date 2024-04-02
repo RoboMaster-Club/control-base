@@ -122,7 +122,7 @@ src/bsp/src/bsp_uart.c \
 src/devices/src/BMI088driver.c \
 src/devices/src/BMI088Middleware.c \
 src/devices/src/dji_motor.c \
-src/devices/src/dm4310.c \
+src/devices/src/dm_motor.c \
 src/devices/src/ist8310driver.c \
 src/devices/src/ist8310driver_middleware.c \
 src/devices/src/mf_motor.c \
