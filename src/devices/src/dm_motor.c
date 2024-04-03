@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #define DM_MAX_DEVICE (10)
-DM_Motor_t *g_dm_motors[DM_MAX_DEVICE] = {NULL};
+DM_Motor_Handle_t *g_dm_motors[DM_MAX_DEVICE] = {NULL};
 
 /**
  * int float_to_uint(float x, float x_min, float x_max, int bits)
@@ -53,7 +53,7 @@ void DM_Motor_Decode(CAN_Instance_t *motor_can_instance)
     data_frame->pos = data_frame->pos_raw - data_frame->pos_offset;
 }
 
-void DM_Motor_Enable_Motor(DM_Motor_t *motor)
+void DM_Motor_Enable_Motor(DM_Motor_Handle_t *motor)
 {
     CAN_Instance_t *motor_can_instance = motor->can_instance;
     uint8_t *data = motor_can_instance->tx_buffer;
@@ -68,7 +68,7 @@ void DM_Motor_Enable_Motor(DM_Motor_t *motor)
     CAN_Transmit(motor_can_instance);
 }
 
-void DM_Motor_Disable_Motor(DM_Motor_t *motor)
+void DM_Motor_Disable_Motor(DM_Motor_Handle_t *motor)
 {
     CAN_Instance_t *motor_can_instance = motor->can_instance;
     uint8_t *data = motor_can_instance->tx_buffer;
@@ -83,7 +83,7 @@ void DM_Motor_Disable_Motor(DM_Motor_t *motor)
     CAN_Transmit(motor_can_instance);
 }
 
-void DM_Motor_Ctrl_MIT(DM_Motor_t *motor, float target_pos, float target_vel, float torq)
+void DM_Motor_Ctrl_MIT(DM_Motor_Handle_t *motor, float target_pos, float target_vel, float torq)
 {
     uint16_t pos_temp, vel_temp, kp_temp, kd_temp, torq_temp;
     CAN_Instance_t *motor_can_instance = motor->can_instance;
@@ -109,15 +109,15 @@ void DM_Motor_Ctrl_MIT(DM_Motor_t *motor, float target_pos, float target_vel, fl
     CAN_Transmit(motor_can_instance);
 }
 
-void DM_Motor_Set_MIT_PD(DM_Motor_t *motor, float kp, float kd)
+void DM_Motor_Set_MIT_PD(DM_Motor_Handle_t *motor, float kp, float kd)
 {
     motor->kp = kp;
     motor->kd = kd;
 }
 
-DM_Motor_t* DM_Motor_Init(DM_Motor_Config_t *config)
+DM_Motor_Handle_t* DM_Motor_Init(DM_Motor_Config_t *config)
 {
-    DM_Motor_t *motor = malloc(sizeof(DM_Motor_t));
+    DM_Motor_Handle_t *motor = malloc(sizeof(DM_Motor_Handle_t));
     motor->can_bus = config->can_bus;
     motor->control_mode = config->control_mode;
     motor->tx_id = config->tx_id;

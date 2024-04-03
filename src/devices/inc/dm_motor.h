@@ -65,12 +65,12 @@ typedef struct _DM_Motor {
 
     /* Motor Sensor Feedback */
     DM_Motor_Stats_t *stats;
-} DM_Motor_t;
+} DM_Motor_Handle_t;
 
-void DM_Motor_Disable_Motor(DM_Motor_t *motor);
-void DM_Motor_Enable_Motor(DM_Motor_t *motor);
-DM_Motor_t* DM_Motor_Init(DM_Motor_Config_t *config);
-void DM_Motor_Ctrl_MIT(DM_Motor_t *motor, float target_pos, float target_vel, float torq);
-void DM_Motor_Set_MIT_PD(DM_Motor_t *motor, float kp, float kd);
+void DM_Motor_Disable_Motor(DM_Motor_Handle_t *motor);
+void DM_Motor_Enable_Motor(DM_Motor_Handle_t *motor);
+DM_Motor_Handle_t* DM_Motor_Init(DM_Motor_Config_t *config);
+void DM_Motor_Ctrl_MIT(DM_Motor_Handle_t *motor, float target_pos, float target_vel, float torq);
+void DM_Motor_Set_MIT_PD(DM_Motor_Handle_t *motor, float kp, float kd);
 
 #endif
