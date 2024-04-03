@@ -10,8 +10,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "mf_motor.h"
-
 #define CAN_MAX_DEVICE (8)
 
 typedef struct _
