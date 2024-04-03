@@ -8,6 +8,7 @@
 #define __REMOTE_H
 
 #include <stdint.h>
+#include "bsp_uart.h"
 
 #define REMOTE_STICK_MAX (660.0f)
 
@@ -83,7 +84,6 @@ typedef struct
 
 
 extern Remote_t g_remote;
-extern void Remote_Init(void);
-extern void Remote_BufferProcess(void);
+Remote_t* Remote_Init(UART_HandleTypeDef *huart);
 
 #endif /* __REMOTE_H */
