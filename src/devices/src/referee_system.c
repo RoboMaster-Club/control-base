@@ -1,21 +1,24 @@
 /**
  * @file Referee_System.c
- * @author Leo Liu
+ * @author Leo Liu, Jia Xie
  * @brief reading data from the referee system
- * @version 1.0
- * @date 2022-07-19
+ * @version 1.1
+ * @date 2024-04-04
  *
- * @copyright Copyright (c) 2022
- *
+ * @copyright Copyright (c) 2024
  */
 #include "referee_system.h"
 #include "usart.h"
+#include "bsp_uart.h"
+#include "bsp_daemon.h"
+
+#define REFEREE_SYSTEM_TIMEOUT_MS (3000)
 
 Referee_System_t Referee_System;
 Referee_Robot_State_t Referee_Robot_State;
 
-void Referee_Get_Data(void);
-void Referee_Set_Robot_State(void);
+UART_Instance_t *g_referee_system_uart_ptr;
+Daemon_Instance_t *g_referee_system_daemon_ptr;
 
 void Referee_Set_Robot_State(void)
 {
@@ -71,14 +74,8 @@ void Referee_Set_Robot_State(void)
     // }
 }
 
-void Referee_System_Init(UART_HandleTypeDef *huart)
-{
-    Referee_System.huart = huart;
-    HAL_UART_Receive_DMA(huart, Referee_System.Buffer, REFEREE_BUFFER_LEN);
-}
-
 // Get referee system data based on ID
-void Referee_Get_Data(void)
+void Referee_System_Decode(void)
 {
     for (int n = 0; n < REFEREE_BUFFER_LEN;)
     {
@@ -211,4 +208,23 @@ void Referee_Get_Data(void)
         else
             n++;
     }
+}
+
+void Referee_System_Rx_Callback(UART_Instance_t *uart_instance)
+{
+    Referee_System_Decode();
+    Referee_Set_Robot_State();
+}
+
+void Referee_System_Timeout_Callback()
+{
+    UART_Service_Init(g_referee_system_uart_ptr);
+}
+
+void Referee_System_Init(UART_HandleTypeDef *huart)
+{
+    g_referee_system_uart_ptr = UART_Register(huart, Referee_System.Buffer, REFEREE_BUFFER_LEN, Referee_System_Rx_Callback);
+    uint16_t reload_value = REFEREE_SYSTEM_TIMEOUT_MS / DAEMON_PERIOD;
+    uint16_t initial_counter = reload_value;
+    g_referee_system_daemon_ptr = Daemon_Register(reload_value, initial_counter, Referee_System_Timeout_Callback);
 }
