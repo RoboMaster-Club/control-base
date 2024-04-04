@@ -62,9 +62,6 @@ void Jetson_Orin_Timeout_Callback()
 {
 	// Attemp to reinitialize UART service
 	UART_Service_Init(g_orin_uart_instance_ptr);
-	
-	// Reload Daemon to prevent continuous reinitialization
-	Daemon_Reload(g_orin_daemon_instance_ptr);
 }
 
 void Jetson_Orin_Init(UART_HandleTypeDef *huartx)
