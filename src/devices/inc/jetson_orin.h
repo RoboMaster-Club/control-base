@@ -2,14 +2,19 @@
 #define JETSON_ORIN_H
 
 #include <stdint.h>
-#include "usart.h"
+#include "bsp_uart.h"
+
+#define ORIN_DATA_RX_BUFER_SIZE (20)
+#define ORIN_DATA_TX_BUFER_SIZE (33)
+
+#define ORIN_TIMEOUT_MS (3000)
+#define JETSON_ORIN_PERIOD (100)
 
 typedef struct
 {
-    UART_HandleTypeDef *huartx;
 
-    uint8_t rx_buffer[20];
-    uint8_t tx_buffer[33];
+    uint8_t rx_buffer[ORIN_DATA_RX_BUFER_SIZE];
+    uint8_t tx_buffer[ORIN_DATA_TX_BUFER_SIZE];
 
     struct
     {
@@ -67,7 +72,6 @@ typedef struct
 
 extern Jetson_Orin_Data_t g_orin_data;
 void Jetson_Orin_Init(UART_HandleTypeDef *huartx);
-void Jetson_Orin_Decode(void);
 void Jetson_Orin_Send_Data(void);
 
 #endif
