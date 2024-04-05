@@ -60,7 +60,7 @@ void Robot_Cmd_Loop()
 {
     if (g_start_safely)
     {
-        if (g_remote.controller.right_switch == DOWN)
+        if ((g_remote.online_flag == REMOTE_OFFLINE) || (g_remote.controller.right_switch == DOWN))
         {
             g_robot_state.enabled = 0;
             g_launch_target.flywheel_enabled = 0;
