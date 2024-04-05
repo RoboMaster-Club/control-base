@@ -57,6 +57,8 @@ void Remote_Buffer_Process()
 	g_remote.keyboard.C = (key_buffer >> 13) & 0x001;
 	g_remote.keyboard.V = (key_buffer >> 14) & 0x001;
 	g_remote.keyboard.B = (key_buffer >> 15) & 0x001;
+
+	g_remote.online_flag = 1;
 }
 
 void Remote_Rx_Callback(UART_Instance_t *uart_instance)
@@ -69,6 +71,7 @@ void Remote_Timeout_Callback()
 {
 	// reinitalize the remote uart transmission
 	UART_Service_Init(g_remote_uart);
+	g_remote.online_flag = 0;
 }
 
 Remote_t* Remote_Init(UART_HandleTypeDef *huart)
