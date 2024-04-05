@@ -5,6 +5,7 @@
 
 typedef struct {
   uint8_t enabled;
+  uint8_t safely_started;
   uint8_t spintop_mode;
   uint8_t autoaiming_enabled;
   float chassis_x_speed;
