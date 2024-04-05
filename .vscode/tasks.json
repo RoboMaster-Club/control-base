@@ -24,6 +24,15 @@
             }
         },
         {
+            "label": "flash (Darwin)",
+            "type": "shell",
+            "command": "mingw32-make -j24 V=1; mingw32-make download",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
             "label": "build (Windows)",
             "type": "shell",
             "command": "mingw32-make -j24 V=1",
@@ -54,18 +63,9 @@
             "problemMatcher": []
         },
         {
-            "label": "download dap (Windows)",
+            "label": "flash (Windows)",
             "type": "shell",
-            "command": "mingw32-make -j24 V=1; mingw32-make download_dap",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            }
-        },
-        {
-            "label": "download stlink (Windows)",
-            "type": "shell",
-            "command": "mingw32-make -j24 V=1; mingw32-make download_stlink",
+            "command": "mingw32-make -j24 V=1; mingw32-make download_powershell",
             "group": {
                 "kind": "build",
                 "isDefault": false

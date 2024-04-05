@@ -23,8 +23,8 @@ extern Daemon_Instance_t *g_daemon_instances[3];
 void Debug_Task_Loop(void)
 {
     static uint32_t counter = 0;
-    // DEBUG_PRINTF(&huart6, "time=%.1f,a=%d,b=%d,c=%f,d=%d\r\n", (float) counter / 1000.0f * DEBUG_PERIOD, 
-    //             g_daemon_instances[1]->counter, g_daemon_instances[0]->counter, g_imu.deg.roll, counter);
+    DEBUG_PRINTF(&huart6, "time=%.1f,a=%d,b=%d,c=%f,d=%d\r\n", (float) counter / 1000.0f * DEBUG_PERIOD, 
+                2, 12, g_imu.deg.roll, counter);
     counter++;
     if (counter > 0xFFFFFFFF) {
         counter = 0;

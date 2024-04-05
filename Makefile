@@ -279,9 +279,35 @@ clean:
 #######################################
 -include $(wildcard $(BUILD_DIR)/*.d)
 
-download_dap:
-	openocd -f config/openocd_cmsis_dap.cfg -c init -c halt -c "flash write_image erase $(BUILD_DIR)/$(TARGET).bin 0x08000000" -c reset -c shutdown
+#######################################
+# download task
+#######################################
 
-download_stlink:
-	openocd -f config/openocd_stlink.cfg -c init -c halt -c "flash write_image erase $(BUILD_DIR)/$(TARGET).bin 0x08000000" -c reset -c shutdown
+# Windows (Powershell)
+ECHO_WARNING_POWERSHELL=powershell Write-Host -ForegroundColor Yellow [Message from Jason]:
+ECHO_SUCCESS_POWERSHELL=powershell Write-Host -ForegroundColor Green [Success]
+
+download_powershell:
+	@echo "Attempting to use CMSIS-DAP..."
+	@openocd -f config/openocd_cmsis_dap.cfg -c init -c halt -c "program $(BUILD_DIR)/$(TARGET).bin 0x08000000 verify reset" -c "reset run" -c shutdown && \
+	($(ECHO_SUCCESS_POWERSHELL) "Successfully programmed the device using CMSIS-DAP.") || \
+	($(ECHO_WARNING_POWERSHELL) "Failed to connect using CMSIS-DAP. Attempting to use STLink..." && \
+	openocd -f config/openocd_stlink.cfg -c init -c halt -c "program $(BUILD_DIR)/$(TARGET).bin 0x08000000 verify reset" -c "reset run" -c shutdown && \
+	($(ECHO_SUCCESS_POWERSHELL) "Successfully programmed the device using STLink.") || \
+	($(ECHO_WARNING_POWERSHELL) "Failed to connect using both CMSIS-DAP and STLink. Please check your connections and try again."))
+
+
+# Unix-Like (Linux, MacOS)
+ECHO_WARNING=@echo -e "\033[33m[Warning]\033[0m"
+ECHO_SUCCESS=@echo -e "\033[32m[Success]\033[0m"
+
+download:
+	@echo "Attempting to use CMSIS-DAP..."
+	@openocd -d2 -f config/openocd_cmsis_dap.cfg -c init -c halt -c "program $(BUILD_DIR)/$(TARGET).bin 0x08000000 verify reset" -c "reset run" -c shutdown && \
+	($(ECHO_SUCCESS) "Successfully programmed the device using CMSIS-DAP.") || \
+	($(ECHO_WARNING) "Failed to connect using CMSIS-DAP. Attempting to use STLink..." && \
+	openocd -d2 -f config/openocd_stlink.cfg -c init -c halt -c "program $(BUILD_DIR)/$(TARGET).bin 0x08000000 verify reset" -c "reset run" -c shutdown && \
+	($(ECHO_SUCCESS) "Successfully programmed the device using STLink.") || \
+	($(ECHO_WARNING) "Failed to connect using both CMSIS-DAP and STLink. Please check your connections and try again."))
+
 # *** EOF ***
