@@ -124,6 +124,7 @@ src/bsp/src/bsp_crc.c \
 src/bsp/src/bsp_uart.c \
 src/devices/src/BMI088driver.c \
 src/devices/src/BMI088Middleware.c \
+src/devices/src/buzzer.c \
 src/devices/src/dji_motor.c \
 src/devices/src/dm_motor.c \
 src/devices/src/ist8310driver.c \

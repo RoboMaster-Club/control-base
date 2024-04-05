@@ -11,6 +11,7 @@
 #include "imu_task.h"
 #include "user_math.h"
 #include "referee_system.h"
+#include "buzzer.h"
 
 extern DJI_Motor_Handle_t *g_yaw;
 #define SPIN_TOP_OMEGA (1.0f)
@@ -32,6 +33,14 @@ void _toggle_robot_state(uint8_t *state);
 
 void Robot_Init()
 {
+    Buzzer_Init();
+    Melody_t system_init_melody = {
+        .notes = SYSTEM_INITIALIZING,
+        .loudness = 0.5f,
+        .note_num = SYSTEM_INITIALIZING_NOTE_NUM,
+    };
+    Buzzer_Play_Melody(system_init_melody); // TODO: Change to non-blocking
+
     // Initialize all hardware
     Chassis_Task_Init();
     Gimbal_Task_Init();
