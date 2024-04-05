@@ -45,12 +45,12 @@
         {
             "label": "rebuild (Windows)",
             "type": "shell",
-            "command": "mingw32-make clean; mingw32-make -j24 V=1",
+            "command": "git submodule update; mingw32-make clean; mingw32-make -j24 V=1",
             "group": {
                 "kind": "build",
                 "isDefault": false
             },
-            "problemMatcher": []
+            "problemMatcher": [],
         },
         {
             "label": "clean (Windows)",
