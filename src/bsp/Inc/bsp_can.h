@@ -10,9 +10,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "dm4310.h"
-#include "mf_motor.h"
-
 #define CAN_MAX_DEVICE (8)
 
 typedef struct _
@@ -23,7 +20,10 @@ typedef struct _
     uint8_t tx_buffer[8];
     uint8_t rx_buffer[8];
     void (*can_module_callback)(struct _ *);
-    void *binding_motor_stats;
+    void *binding_motor_stats;      /* void pointer to the motor stats
+                                    * this is used to bind the motor stats to the can instance
+                                    * so that the callback function can decode the can message
+                                    */
 } CAN_Instance_t;
 
 /*

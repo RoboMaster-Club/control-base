@@ -5,18 +5,24 @@
   ******************************************************************************
   */
 #include "remote.h"
-#include "usart.h"
+#include "bsp_uart.h"
+#include "bsp_daemon.h"
+#include <memory.h>
 
 Remote_t g_remote;
-uint8_t remote_buffer[18];
+UART_Instance_t *g_remote_uart;
+Daemon_Instance_t *g_remote_daemon;
 
+uint8_t remote_buffer[18];
+volatile uint8_t debug_buffer[18];
 /*
  * Remote_BufferProcess()
  * 
  * Decode the buffer received from DR16 receiver to g_remote. @ref Remote_t
  */
-void Remote_BufferProcess()
+void Remote_Buffer_Process()
 {
+	memcpy((void*) debug_buffer, remote_buffer, 18);
 	// controller decode
 	g_remote.controller.right_stick.x = ((remote_buffer[0] | (remote_buffer[1] << 8)) & 0x07ff) - 1024;
 	g_remote.controller.right_stick.y = (((remote_buffer[1] >> 3) | (remote_buffer[2] << 5)) & 0x07ff) - 1024;
@@ -51,9 +57,26 @@ void Remote_BufferProcess()
 	g_remote.keyboard.C = (key_buffer >> 13) & 0x001;
 	g_remote.keyboard.V = (key_buffer >> 14) & 0x001;
 	g_remote.keyboard.B = (key_buffer >> 15) & 0x001;
+
+	g_remote.online_flag = 1;
 }
 
-void Remote_Init(void)
+void Remote_Rx_Callback(UART_Instance_t *uart_instance)
 {
-	HAL_UART_Receive_DMA(&huart3, remote_buffer, 18);
+	Remote_Buffer_Process();
+	Daemon_Reload(g_remote_daemon);
+}
+
+void Remote_Timeout_Callback()
+{
+	// reinitalize the remote uart transmission
+	UART_Service_Init(g_remote_uart);
+	g_remote.online_flag = 0;
+}
+
+Remote_t* Remote_Init(UART_HandleTypeDef *huart)
+{
+	g_remote_uart = UART_Register(huart, remote_buffer, 18, Remote_Rx_Callback);
+	g_remote_daemon = Daemon_Register(20, 20, Remote_Timeout_Callback);
+	return &g_remote;
 }

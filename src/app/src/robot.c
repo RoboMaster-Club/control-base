@@ -11,6 +11,7 @@
 #include "imu_task.h"
 #include "user_math.h"
 #include "referee_system.h"
+#include "buzzer.h"
 
 extern DJI_Motor_Handle_t *g_yaw;
 #define SPIN_TOP_OMEGA (1.0f)
@@ -32,11 +33,19 @@ void _toggle_robot_state(uint8_t *state);
 
 void Robot_Init()
 {
+    Buzzer_Init();
+    Melody_t system_init_melody = {
+        .notes = SYSTEM_INITIALIZING,
+        .loudness = 0.5f,
+        .note_num = SYSTEM_INITIALIZING_NOTE_NUM,
+    };
+    Buzzer_Play_Melody(system_init_melody); // TODO: Change to non-blocking
+
     // Initialize all hardware
     Chassis_Task_Init();
     Gimbal_Task_Init();
     Launch_Task_Init();
-    Remote_Init();
+    Remote_Init(&huart3);
     CAN_Service_Init();
     Referee_System_Init(&huart1);
     Jetson_Orin_Init(&huart6);
@@ -58,9 +67,11 @@ void Robot_Ctrl_Loop()
  */
 void Robot_Cmd_Loop()
 {
-    if (g_start_safely)
+    // safely startly will be 1 after first time right switch is down
+    // this is to make sure the robot is disabled when it starts
+    if (g_robot_state.safely_started == 1)
     {
-        if (g_remote.controller.right_switch == DOWN)
+        if ((g_remote.online_flag == REMOTE_OFFLINE) || (g_remote.controller.right_switch == DOWN))
         {
             g_robot_state.enabled = 0;
             g_launch_target.flywheel_enabled = 0;
@@ -202,7 +213,7 @@ void Robot_Cmd_Loop()
     {
         if (g_remote.controller.right_switch == DOWN)
         {
-            g_start_safely = 1;
+            g_robot_state.safely_started = 1;
         }
     }
 }

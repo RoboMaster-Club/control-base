@@ -1,0 +1,100 @@
+#include "leg.h"
+#include "robot_param.h"
+
+void Leg_ForwardKinematics(Leg_t *leg, float phi1, float phi4, float phi1_dot, float phi4_dot)
+{
+    leg->current_tick = SysTick->VAL;
+    leg->phi1 = phi1;
+    leg->phi1_dot = phi1_dot;
+    leg->phi4 = phi4;
+    leg->phi4_dot = phi4_dot;
+
+    float x_B = -HALF_THIGH_DISTANCE + THIGH_LENGTH * cos(leg->phi1);
+    float y_B = THIGH_LENGTH * sin(leg->phi1);
+    float x_D = HALF_THIGH_DISTANCE + THIGH_LENGTH * cos(leg->phi4);
+    float y_D = THIGH_LENGTH * sin(leg->phi4);
+
+    float xD_minus_xB = x_D - x_B;
+    float yD_minus_yB = y_D - y_B;
+
+    float A = 2 * CALF_LENGTH * xD_minus_xB;
+    float B = 2 * CALF_LENGTH * yD_minus_yB;
+    float C = pow(xD_minus_xB, 2) + pow(yD_minus_yB, 2);
+
+    leg->phi2 = 2 * atan2(B + sqrt(pow(A, 2) + pow(B, 2) - pow(C, 2)), A + C);
+
+    float x_C = x_B + CALF_LENGTH * cos(leg->phi2);
+    float y_C = y_B + CALF_LENGTH * sin(leg->phi2);
+
+    leg->phi3 = atan2(y_C - y_D, x_C - x_D);
+
+    leg->xe1 = xD_minus_xB;
+    leg->ye1 = yD_minus_yB;
+    leg->xe2 = x_D;
+    leg->ye2 = y_D;
+    leg->length = sqrt(pow(x_C, 2) + pow(y_C, 2));
+    leg->phi0 = atan2(y_C, x_C);
+
+    leg->phi0_dot = (leg->phi0 - leg->last_phi0) / (0.004f);
+
+    leg->last_phi0 = leg->phi0;
+    leg->last_tick = leg->current_tick;
+}
+
+void Leg_InverseKinematics(float height, float leg_angle, float *leg_1, float *leg_2)
+{
+    float x_toe = height / (tan(leg_angle) == 0 ? 0.000001f : tan(leg_angle));
+    float y_toe = height;
+
+    float a_1 = 2 * (-HALF_THIGH_DISTANCE - x_toe) * THIGH_LENGTH;
+    float b = -2 * y_toe * THIGH_LENGTH;
+    float c_1 = pow(-HALF_THIGH_DISTANCE - x_toe, 2) + pow(y_toe, 2) + pow(THIGH_LENGTH, 2) - pow(CALF_LENGTH, 2);
+
+    x_toe = -x_toe;
+    float a_2 = 2 * (-HALF_THIGH_DISTANCE - x_toe) * THIGH_LENGTH;
+    float c_2 = pow(-HALF_THIGH_DISTANCE - x_toe, 2) + pow(y_toe, 2) + pow(THIGH_LENGTH, 2) - pow(CALF_LENGTH, 2);
+
+    *leg_1 = 2 * atan2(-b + sqrt(pow(a_1, 2) + pow(b, 2) - pow(c_1, 2)), c_1 - a_1);
+    *leg_2 = -(2 * atan2(-b + sqrt(pow(a_2, 2) + pow(b, 2) - pow(c_2, 2)), c_2 - a_2) - PI);
+}
+
+void Leg_VMC(Leg_t *leg, float force, float torq)
+{
+    float leg_length = leg->length;
+    float theta = leg->phi0 - PI / 2;
+    float phi1 = leg->phi1;
+    float phi4 = leg->phi4;
+
+    float sin_phi1 = sin(phi1);
+    float cos_phi1 = cos(phi1);
+    float sin_phi4 = sin(phi4);
+    float cos_phi4 = cos(phi4);
+    float sin_theta = sin(theta);
+    float cos_theta = cos(theta);
+
+    float xC_minus_xB = (-leg_length * sin_theta) - (-HALF_THIGH_DISTANCE + THIGH_LENGTH * cos_phi1);
+    float yC_minus_yB = (leg_length * cos_theta) - THIGH_LENGTH * sin_phi1;
+    float xC_minus_xD = (-leg_length * sin_theta) - (HALF_THIGH_DISTANCE + THIGH_LENGTH * cos_phi4);
+
+    float yC_minus_yD = (leg_length * cos_theta) - THIGH_LENGTH * sin_phi4;
+
+    float M11 = ((-sin_theta * xC_minus_xB + cos_theta * yC_minus_yB) /
+                 (-sin_phi1 * xC_minus_xB + cos_phi1 * yC_minus_yB)) /
+                THIGH_LENGTH;
+    float M12 = (leg_length / THIGH_LENGTH) * ((-cos_theta * xC_minus_xB - sin_theta * yC_minus_yB) /
+                                               (-sin_phi1 * xC_minus_xB + cos_phi1 * yC_minus_yB));
+    float M21 = ((-sin_theta * xC_minus_xD + cos_theta * yC_minus_yD) /
+                 (-sin_phi4 * xC_minus_xD + cos_phi4 * yC_minus_yD)) /
+                THIGH_LENGTH;
+    float M22 = (leg_length / THIGH_LENGTH) * ((-cos_theta * xC_minus_xD - sin_theta * yC_minus_yD) /
+                                               (-sin_phi4 * xC_minus_xD + cos_phi4 * yC_minus_yD));
+
+    float one_over_deter = 1 / (M11 * M22 - M12 * M21);
+    float J11 = one_over_deter * M22;
+    float J12 = -one_over_deter * M12;
+    float J21 = -one_over_deter * M21;
+    float J22 = one_over_deter * M11;
+
+    leg->torq1 = J11 * force + J21 * torq;
+    leg->torq4 = J12 * force + J22 * torq;
+}

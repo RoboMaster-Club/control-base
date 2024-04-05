@@ -8,8 +8,11 @@
 #define __REMOTE_H
 
 #include <stdint.h>
+#include "bsp_uart.h"
 
 #define REMOTE_STICK_MAX (660.0f)
+#define REMOTE_ONLINE (1)
+#define REMOTE_OFFLINE (0)
 
 #define KEY_W ((uint16_t)0x01<<0)
 #define KEY_S ((uint16_t)0x01<<1)
@@ -79,11 +82,12 @@ typedef struct
     struct Controller controller;
     struct Keyboard keyboard;
     struct Mouse mouse;
+
+    uint8_t online_flag;
 } Remote_t;
 
 
 extern Remote_t g_remote;
-extern void Remote_Init(void);
-extern void Remote_BufferProcess(void);
+Remote_t* Remote_Init(UART_HandleTypeDef *huart);
 
 #endif /* __REMOTE_H */

@@ -1,6 +1,8 @@
 #ifndef ROBOT_PARAM_H
 #define ROBOT_PARAM_H
 
+#define DEBUG
+
 /* Motor ID */
 #define LEFT_FRONT_ID 0x00
 #define RIGHT_FRONT_ID 0x01
@@ -14,7 +16,6 @@
 #define LEFT_REAR_OFFSET -2.11f
 #define RIGHT_FRONT_OFFSET -3.70f
 #define RIGHT_REAR_OFFSET 0.45f
-#define PI 3.14159f
 
 #define MAX_FORWARD_VEL 5.0f
 #define MAX_YAW_VEL PI

@@ -1,4 +1,3 @@
-
 #include "chassis_task.h"
 
 #include "dji_motor.h"
@@ -11,14 +10,20 @@ extern Robot_State_t g_robot_state;
 extern Remote_t g_remote;
 extern IMU_t g_imu;
 
-void Chassis_Task_Init() {
+void Chassis_Task_Init()
+{
     Swerve_Init();
 }
 
-void Chassis_Ctrl_Loop() {
-    if (g_robot_state.enabled) {
+void Chassis_Ctrl_Loop()
+{
+
+    if (g_robot_state.enabled)
+    {
         Swerve_Drive(g_robot_state.chassis_x_speed, g_robot_state.chassis_y_speed, g_robot_state.chassis_omega);
-    } else {
+    }
+    else
+    {
         Swerve_Disable();
     }
 }
