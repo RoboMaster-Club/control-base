@@ -52,6 +52,7 @@ typedef struct _DM_Motor {
     /* CAN Information */
     uint8_t can_bus;
     uint8_t control_mode;
+    uint8_t send_pending_flag;
     uint16_t tx_id;
     uint16_t rx_id;
     CAN_Instance_t *can_instance;

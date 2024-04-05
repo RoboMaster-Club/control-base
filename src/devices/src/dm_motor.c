@@ -3,6 +3,7 @@
 
 #define DM_MAX_DEVICE (10)
 DM_Motor_Handle_t *g_dm_motors[DM_MAX_DEVICE] = {NULL};
+uint8_t g_dm_motor_num = 0;
 
 /**
  * int float_to_uint(float x, float x_min, float x_max, int bits)
@@ -44,9 +45,9 @@ void DM_Motor_Decode(CAN_Instance_t *motor_can_instance)
     data_frame->pos_int = (data[1] << 8) | data[2];
     data_frame->vel_int = (data[3] << 4) | (data[4] >> 4);
     data_frame->torq_int = ((data[4] & 0xF) << 8) | data[5];
-    data_frame->pos_raw = uint_to_float(data_frame->pos_int, P_MIN, P_MAX, 16);   // (-12.5,12.5)
-    data_frame->vel = uint_to_float(data_frame->vel_int, V_MIN, V_MAX, 12);   // (-45.0,45.0)
-    data_frame->torq = uint_to_float(data_frame->torq_int, T_MIN, T_MAX, 12); // (-18.0,18.0)
+    data_frame->pos_raw = uint_to_float(data_frame->pos_int, P_MIN, P_MAX, 16); // (-12.5,12.5)
+    data_frame->vel = uint_to_float(data_frame->vel_int, V_MIN, V_MAX, 12);     // (-45.0,45.0)
+    data_frame->torq = uint_to_float(data_frame->torq_int, T_MIN, T_MAX, 12);   // (-18.0,18.0)
     data_frame->t_mos = (float)(data[6]);
     data_frame->t_rotor = (float)(data[7]);
 
@@ -65,7 +66,9 @@ void DM_Motor_Enable_Motor(DM_Motor_Handle_t *motor)
     data[5] = 0xFF;
     data[6] = 0xFF;
     data[7] = 0xFC;
-    CAN_Transmit(motor_can_instance);
+
+    // set the flag to send the data
+    motor->send_pending_flag = 1;
 }
 
 void DM_Motor_Disable_Motor(DM_Motor_Handle_t *motor)
@@ -80,7 +83,9 @@ void DM_Motor_Disable_Motor(DM_Motor_Handle_t *motor)
     data[5] = 0xFF;
     data[6] = 0xFF;
     data[7] = 0xFD;
-    CAN_Transmit(motor_can_instance);
+    
+    // set the flag to send the data
+    motor->send_pending_flag = 1;
 }
 
 void DM_Motor_Ctrl_MIT(DM_Motor_Handle_t *motor, float target_pos, float target_vel, float torq)
@@ -106,7 +111,8 @@ void DM_Motor_Ctrl_MIT(DM_Motor_Handle_t *motor, float target_pos, float target_
     data[6] = ((kd_temp & 0xF) << 4) | (torq_temp >> 8);
     data[7] = torq_temp;
 
-    CAN_Transmit(motor_can_instance);
+    // set the flag to send the data
+    motor->send_pending_flag = 1;
 }
 
 void DM_Motor_Set_MIT_PD(DM_Motor_Handle_t *motor, float kp, float kd)
@@ -115,7 +121,7 @@ void DM_Motor_Set_MIT_PD(DM_Motor_Handle_t *motor, float kp, float kd)
     motor->kd = kd;
 }
 
-DM_Motor_Handle_t* DM_Motor_Init(DM_Motor_Config_t *config)
+DM_Motor_Handle_t *DM_Motor_Init(DM_Motor_Config_t *config)
 {
     DM_Motor_Handle_t *motor = malloc(sizeof(DM_Motor_Handle_t));
     motor->can_bus = config->can_bus;
@@ -129,29 +135,32 @@ DM_Motor_Handle_t* DM_Motor_Init(DM_Motor_Config_t *config)
     motor->torq = 0.0f;
     motor->stats = calloc(sizeof(DM_Motor_Stats_t), 1);
     motor->stats->pos_offset = config->pos_offset;
-    
-    motor->can_instance = CAN_Device_Register(motor->can_bus, motor->tx_id, motor->rx_id, DM_Motor_Decode);
-    motor->can_instance->binding_motor_stats =(void*) motor->stats;
 
-    for (int i = 0; i < DM_MAX_DEVICE; i++)
-    {
-        if (g_dm_motors[i] == NULL)
-        {
-            g_dm_motors[i] = motor;
-            break;
-        }
-    }
+    motor->can_instance = CAN_Device_Register(motor->can_bus, motor->tx_id, motor->rx_id, DM_Motor_Decode);
+    motor->can_instance->binding_motor_stats = (void *)motor->stats;
+
+    g_dm_motors[g_dm_motor_num++] = motor;
     return motor;
 }
 
-
-
 void DM_Motor_CtrlPosVel()
 {
-    //TODO:
+    // TODO:
 }
 
 void DM_Motor_CtrlVel()
 {
     // TODO:
+}
+
+void DM_Motor_Send()
+{
+    for (int i = 0; i < g_dm_motor_num; i++) // loop through all the motors
+    {
+        if (g_dm_motors[i]->send_pending_flag)
+        {                                               // check if the flag is set
+            CAN_Transmit(g_dm_motors[i]->can_instance); // send the data
+            g_dm_motors[i]->send_pending_flag = 0;      // clear the flag
+        }
+    }
 }
