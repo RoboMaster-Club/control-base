@@ -58,7 +58,9 @@ void Robot_Ctrl_Loop()
  */
 void Robot_Cmd_Loop()
 {
-    if (g_start_safely)
+    // safely startly will be 1 after first time right switch is down
+    // this is to make sure the robot is disabled when it starts
+    if (g_robot_state.safely_started == 1)
     {
         if ((g_remote.online_flag == REMOTE_OFFLINE) || (g_remote.controller.right_switch == DOWN))
         {
@@ -202,7 +204,7 @@ void Robot_Cmd_Loop()
     {
         if (g_remote.controller.right_switch == DOWN)
         {
-            g_start_safely = 1;
+            g_robot_state.safely_started = 1;
         }
     }
 }
