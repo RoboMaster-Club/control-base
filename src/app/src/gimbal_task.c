@@ -6,11 +6,8 @@
 #include "user_math.h"
 #include "jetson_orin.h"
 #include <math.h>
-extern Robot_State_t g_robot_state;
-extern Remote_t g_remote;
-extern IMU_t g_imu;
-float gimbal_test = 0;
-uint64_t t = 0;
+
+
 DJI_Motor_Handle_t *g_yaw, *g_pitch;
 Gimbal_Target_t g_gimbal_target;
 PID_t autoaim_yaw_angle_pid = {

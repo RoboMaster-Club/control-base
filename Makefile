@@ -13,6 +13,7 @@ ifeq ($(BOARD), typec)
 	BOARD_C_DEF = STM32F407xx
 endif
 
+# TODO: Type A board is not tested yet
 ifeq ($(BOARD), typea)
 	STARTUP_POSTFIX = stm32f407xx
 	LINK_SCRIPT_PREFIX = STM32F407IGHx

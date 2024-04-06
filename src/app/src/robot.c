@@ -24,7 +24,6 @@ extern DJI_Motor_Handle_t *g_yaw;
 Robot_State_t g_robot_state = {0, 0};
 Key_Prev_t g_key_prev = {0};
 extern Launch_Target_t g_launch_target;
-extern Remote_t g_remote;
 
 uint8_t g_start_safely = 0;
 

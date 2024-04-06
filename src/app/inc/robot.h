@@ -25,6 +25,8 @@ typedef struct {
   uint8_t prev_left_switch;
 } Key_Prev_t;
 
+extern Robot_State_t g_robot_state;
+
 void Robot_Init(void);
 void Robot_Ctrl_Loop(void);
 
