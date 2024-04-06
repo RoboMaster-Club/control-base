@@ -273,7 +273,7 @@ $(BUILD_DIR):
 # clean up
 #######################################
 clean:
-	rd $(BUILD_DIR) /s/q
+	rm -rf $(BUILD_DIR) /s/q
 
 clean_unix:
 	rm -rf $(BUILD_DIR)
