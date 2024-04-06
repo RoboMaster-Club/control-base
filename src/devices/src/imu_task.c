@@ -140,9 +140,11 @@ void IMU_Task_Temp() {
     switch (start_complete)
     {
     case 1:
+    {
         uint16_t temp_pwm = (uint16_t) PID(&g_imu_temp_pid, 40 - g_imu.bmi088_raw.temp);
         __HAL_TIM_SetCompare(&htim10, TIM_CHANNEL_1, temp_pwm);
         break;
+    }
     case 0:
         __HAL_TIM_SetCompare(&htim10, TIM_CHANNEL_1, 4999);
         break;

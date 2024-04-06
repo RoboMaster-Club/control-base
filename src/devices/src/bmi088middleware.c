@@ -1,4 +1,4 @@
-#include "BMI088Middleware.h"
+#include "bmi088middleware.h"
 #include "main.h"
 #include "cmsis_os.h"
 #include "bsp_delay.h"

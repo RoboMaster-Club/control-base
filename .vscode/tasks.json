@@ -1,8 +1,9 @@
 {
     "version": "2.0.0",
     "tasks": [
+        /* For Unix-Like (Linux and MacOS) */
         {
-            "label": "build (Darwin)",
+            "label": "build",
             "type": "shell",
             "command": "make -j24 V=1",
             "args": [],
@@ -24,14 +25,25 @@
             }
         },
         {
-            "label": "flash (Darwin)",
+            "label": "flash",
             "type": "shell",
-            "command": "mingw32-make -j24 V=1; mingw32-make download",
+            "command": "make -j24 V=1; make download",
             "group": {
                 "kind": "build",
                 "isDefault": false
             }
         },
+        {
+            "label": "rebuild",
+            "type": "shell",
+            "command": "git submodule update; make clean_unix; make -j24 V=1",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+        },
+        /* For Windows */
         {
             "label": "build (Windows)",
             "type": "shell",

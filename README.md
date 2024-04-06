@@ -12,6 +12,27 @@ git submodule update --init
 ### Install tools
 Download VSCode from [here](https://code.visualstudio.com/download)
 
+**Linux**
+- Install tools
+```bash
+sudo apt update
+sudo apt upgrade
+sudo apt install openocd
+sudo apt install gcc-arm-none-eabi gdb-arm-none-eabi
+```
+- Check tool path with `which`
+```
+which arm-none-eabi-gcc
+which arm-none-eabi-gdb //will be used when debug, so remember this path
+which openocd
+```
+- Install extensions
+   - Install Cortex Debug vscode extension
+   - Edit the extension setting .json file
+```json
+"cortex-debug.gdbPath": "/usr/bin/gdb-multiarch" // this is the output from last step
+```
+
 **Windows**
 - Download MSYS2 from [here](https://www.msys2.org/)
 - The default installation path is `C:\msys64`, run `C:\msys64\msys2.exe`.
