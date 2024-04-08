@@ -123,4 +123,8 @@ void MF_Motor_VelocityCtrl(MF_Motor_Handle_t *motor, int32_t vel);
  */
 void MF_Motor_PositionCtrl(MF_Motor_Handle_t *motor, int32_t pos);
 
+/**
+ * @brief Global function to send the motor control data.
+*/
+void MF_Motor_Send(void);
 #endif

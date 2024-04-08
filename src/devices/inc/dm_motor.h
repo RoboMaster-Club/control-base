@@ -19,6 +19,9 @@
 #define DM_MOTOR_POS_VEL (1)
 #define DM_MOTOR_VEL (2)
 
+#define DM_MOTOR_ZERO_CURRENT (0)
+#define DM_MOTOR_HARDWARE_DISABLE (1)
+
 typedef struct
 {
     uint8_t id;
@@ -42,7 +45,11 @@ typedef struct _DM_Motor_Config {
     uint8_t control_mode;
     uint32_t rx_id;
     uint32_t tx_id;
+    uint8_t disable_behavior; /* DM_MOTOR_ZERO_CURRENT or DM_MOTOR_HARDWARE_DISABLE
+    DM_MOTOR_ZERO_CURRENT: set a zero current to the motor
+    DM_MOTOR_HARDWARE_DISABLE: disable the motor by sending disable signal to motor driver
     
+    */
     float pos_offset;
     float kp;
     float kd;
@@ -55,6 +62,7 @@ typedef struct _DM_Motor {
     uint8_t send_pending_flag;
     uint16_t tx_id;
     uint16_t rx_id;
+    uint8_t disable_behavior;
     CAN_Instance_t *can_instance;
     
     /* Motor Target */
@@ -74,4 +82,8 @@ DM_Motor_Handle_t* DM_Motor_Init(DM_Motor_Config_t *config);
 void DM_Motor_Ctrl_MIT(DM_Motor_Handle_t *motor, float target_pos, float target_vel, float torq);
 void DM_Motor_Set_MIT_PD(DM_Motor_Handle_t *motor, float kp, float kd);
 
+/**
+ * Global function to send the motor control data
+*/
+void DM_Motor_Send(void);
 #endif
