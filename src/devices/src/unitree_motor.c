@@ -36,22 +36,22 @@ int _Unitree_Motor_Transform_Cmd(Unitree_Motor_Cmd_Package_t *cmd);
  *
  * @return Unitree_Motor_t* Motor instance
  */
-Unitree_Motor_t *Unitree_Motor_Init(UART_HandleTypeDef *huartx, uint8_t motor_id, float k_pos, float k_vel)
+Unitree_Motor_t *Unitree_Motor_Init(Unitree_Motor_Config_t *config)
 {
     if (g_unitree_motor_service_initialzed == 0)
     {
-        g_unitree_motor_uart_instance_ptr = UART_Register(huartx, g_unitree_motor_statsx_buffer,
+        g_unitree_motor_uart_instance_ptr = UART_Register(config->huartx, g_unitree_motor_statsx_buffer,
                                                           sizeof(g_unitree_motor_statsx_buffer), Unitree_Motor_Callback);
         uint16_t reload_value = UNITREE_TIMEOUT_MS / DAEMON_PERIOD;
         uint16_t initial_counter = reload_value;
         g_unitree_motor_daemon_ptr = Daemon_Register(reload_value, initial_counter, Unitree_Motor_Timeout_Callback);
     }
     Unitree_Motor_t *motor = (Unitree_Motor_t *)malloc(sizeof(Unitree_Motor_t));
-    motor->motor_id = motor_id;
-    motor->cmd.id = motor_id;
+    motor->motor_id = config->motor_id;
+    motor->cmd.id = config->motor_id;
     motor->cmd.mode = UNITREE_IDLE_MODE;
-    motor->cmd.k_pos = k_pos;
-    motor->cmd.k_vel = k_vel;
+    motor->cmd.k_pos = config->k_pos;
+    motor->cmd.k_vel = config->k_vel;
     motor->uart_instance = g_unitree_motor_uart_instance_ptr;
     
     g_unitree_motors_ptr[g_unitree_motor_num++] = motor;

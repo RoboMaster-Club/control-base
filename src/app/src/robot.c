@@ -47,8 +47,8 @@ void Robot_Init()
     Launch_Task_Init();
     Remote_Init(&huart3);
     CAN_Service_Init();
-    Referee_System_Init(&huart1);
-    Jetson_Orin_Init(&huart6);
+    // Referee_System_Init(&huart1);
+    // Jetson_Orin_Init(&huart6);
     //  Initialize all tasks
     Robot_Tasks_Start();
 }

@@ -178,6 +178,16 @@ typedef struct _Unitree_Motor
     uint8_t motor_id;
 } Unitree_Motor_t;
 
+
+typedef struct _Unitree_Motor_Config
+{
+    uint8_t motor_id;
+    float k_pos;
+    float k_vel;
+    UART_HandleTypeDef *huartx;
+} Unitree_Motor_Config_t;
+
+void Unitree_Motor_Init(Unitree_Motor_Config_t *config);
 #pragma pack()
 
 #endif // UNITREE_MOTOR_H
