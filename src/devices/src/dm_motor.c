@@ -73,17 +73,41 @@ void DM_Motor_Enable_Motor(DM_Motor_Handle_t *motor)
 
 void DM_Motor_Disable_Motor(DM_Motor_Handle_t *motor)
 {
-    CAN_Instance_t *motor_can_instance = motor->can_instance;
-    uint8_t *data = motor_can_instance->tx_buffer;
-    data[0] = 0xFF;
-    data[1] = 0xFF;
-    data[2] = 0xFF;
-    data[3] = 0xFF;
-    data[4] = 0xFF;
-    data[5] = 0xFF;
-    data[6] = 0xFF;
-    data[7] = 0xFD;
-    
+    uint8_t *data = motor->can_instance->tx_buffer;
+    switch (motor->disable_behavior)
+    {
+    case DM_MOTOR_ZERO_CURRENT:
+        uint16_t pos_temp, vel_temp, kp_temp, kd_temp, torq_temp;
+
+        pos_temp = float_to_uint(0, P_MIN, P_MAX, 16);
+        vel_temp = float_to_uint(0, V_MIN, V_MAX, 12);
+        kp_temp = float_to_uint(0, KP_MIN, KP_MAX, 12);
+        kd_temp = float_to_uint(0, KD_MIN, KD_MAX, 12);
+        torq_temp = float_to_uint(0, T_MIN, T_MAX, 12);
+
+        data[0] = (pos_temp >> 8);
+        data[1] = pos_temp;
+        data[2] = (vel_temp >> 4);
+        data[3] = ((vel_temp & 0xF) << 4) | (kp_temp >> 8);
+        data[4] = kp_temp;
+        data[5] = (kd_temp >> 4);
+        data[6] = ((kd_temp & 0xF) << 4) | (torq_temp >> 8);
+        data[7] = torq_temp;
+        break;
+    case DM_MOTOR_HARDWARE_DISABLE:
+        data[0] = 0xFF;
+        data[1] = 0xFF;
+        data[2] = 0xFF;
+        data[3] = 0xFF;
+        data[4] = 0xFF;
+        data[5] = 0xFF;
+        data[6] = 0xFF;
+        data[7] = 0xFE;
+        break;
+    default:
+        break;
+    }
+
     // set the flag to send the data
     motor->send_pending_flag = 1;
 }
@@ -128,11 +152,10 @@ DM_Motor_Handle_t *DM_Motor_Init(DM_Motor_Config_t *config)
     motor->control_mode = config->control_mode;
     motor->tx_id = config->tx_id;
     motor->rx_id = config->rx_id;
-    motor->target_pos = 0.0f;
-    motor->target_vel = 0.0f;
+    motor->disable_behavior = config->disable_behavior; // by defualt set to zero current
+
     motor->kp = config->kp;
     motor->kd = config->kd;
-    motor->torq = 0.0f;
     motor->stats = calloc(sizeof(DM_Motor_Stats_t), 1);
     motor->stats->pos_offset = config->pos_offset;
 
