@@ -3,7 +3,6 @@
 
 #include "FreeRTOS.h"
 #include "can.h"
-#include "freertos.h"
 #include "queue.h"
 #include "cmsis_os.h"
 #include <stdint.h>

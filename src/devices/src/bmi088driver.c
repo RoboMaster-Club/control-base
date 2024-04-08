@@ -1,6 +1,6 @@
-#include "BMI088driver.h"
-#include "BMI088reg.h"
-#include "BMI088Middleware.h"
+#include "bmi088driver.h"
+#include "bmi088reg.h"
+#include "bmi088middleware.h"
 
 
 float BMI088_ACCEL_SEN = BMI088_ACCEL_3G_SEN;

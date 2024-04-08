@@ -122,8 +122,8 @@ src/bsp/src/bsp_spi.c \
 src/bsp/src/bsp_serial.c \
 src/bsp/src/bsp_crc.c \
 src/bsp/src/bsp_uart.c \
-src/devices/src/BMI088driver.c \
-src/devices/src/BMI088Middleware.c \
+src/devices/src/bmi088driver.c \
+src/devices/src/bmi088middleware.c \
 src/devices/src/buzzer.c \
 src/devices/src/dji_motor.c \
 src/devices/src/dm_motor.c \
@@ -209,8 +209,8 @@ C_INCLUDES =  \
 -Ilib/CMSIS-DSP/PrivateInclude \
 -Isrc/algo/inc \
 -Isrc/devices/inc \
--Isrc/bsp/Inc \
--Isrc/app/Inc
+-Isrc/bsp/inc \
+-Isrc/app/inc
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -fdata-sections -ffunction-sections
@@ -235,7 +235,7 @@ LDSCRIPT = $(BOARD_BASE)/$(LINK_SCRIPT_PREFIX)_FLASH.ld
 # libraries
 LIBS = -lc -lm -lnosys 
 LIBDIR = 
-LDFLAGS = $(MCU) -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -flto -Wl,--no-warn-rwx-segments -Wl,--print-memory-usage -u _printf_float
+LDFLAGS = $(MCU) -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -flto -Wl,--print-memory-usage -u _printf_float
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
@@ -274,8 +274,10 @@ $(BUILD_DIR):
 # clean up
 #######################################
 clean:
-	rd $(BUILD_DIR) /s/q
-  
+	rm -rf $(BUILD_DIR) /s/q
+
+clean_unix:
+	rm -rf $(BUILD_DIR)
 #######################################
 # dependencies
 #######################################
@@ -300,8 +302,8 @@ download_powershell:
 
 
 # Unix-Like (Linux, MacOS)
-ECHO_WARNING=@echo -e "\033[33m[Warning]\033[0m"
-ECHO_SUCCESS=@echo -e "\033[32m[Success]\033[0m"
+ECHO_WARNING=echo "\033[33m[Warning]\033[0m"
+ECHO_SUCCESS=echo "\033[32m[Success]\033[0m"
 
 download:
 	@echo "Attempting to use CMSIS-DAP..."
@@ -311,5 +313,8 @@ download:
 	openocd -d2 -f config/openocd_stlink.cfg -c init -c halt -c "program $(BUILD_DIR)/$(TARGET).bin 0x08000000 verify reset" -c "reset run" -c shutdown && \
 	($(ECHO_SUCCESS) "Successfully programmed the device using STLink.") || \
 	($(ECHO_WARNING) "Failed to connect using both CMSIS-DAP and STLink. Please check your connections and try again."))
+
+test_download:
+	openocd -d4 -f config/openocd_cmsis_dap.cfg -c init -c halt -c "program $(BUILD_DIR)/$(TARGET).bin 0x08000000 verify reset" -c "reset run" -c shutdown
 
 # *** EOF ***
