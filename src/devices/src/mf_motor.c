@@ -34,6 +34,8 @@ MF_Motor_Handle_t *MF_Motor_Init(MF_Motor_Config_t config)
     motor->stats->ki_vel = 0;
     motor->stats->kp_torq = 0;
     motor->stats->ki_torq = 0;
+
+    g_mf_motors[g_mf_motor_num++] = motor;
     return motor;
 }
 
