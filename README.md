@@ -69,20 +69,20 @@ brew install openocd
 ## How to use
 ### Building the Project
 Open the Command Palatte in VSCode: [Ctrl+Shift+P].
-Then, select **Tasks: Run Build Tasks** and pick the appropriate build task.
-- **Windows:** build (Windows). 
-- **MacOS:** build (Darwin).
+Then, select **Tasks: Run Build Tasks** and pick the appropriate build/flash task.
+- **Windows:** build/flash (Windows). 
+- **Unix-Like (Linux and MacOS):** build/flash.
 
-You can use the shortcut [Ctrl+Shift+B] if you set it as the default build task.
+> You can use the shortcut [Ctrl+Shift+B] or [Cmd+Shift+B].
 
 
 ### Debugging the Project
 Navigate to [Run and Debug] in VSCode or press [Ctrl+Shift+D].
-Select the appropriate launch configuration 
-- **Windows:** cmsis-dap-debug (Windows)
-- **MacOS:** cmsis-dap-debug (Darwin)
+Select the appropriate launch configuration, depending on if you are using stlink or cmsis-dap debugger.
+- **Windows:** dap/stlink (Windows)
+- **Unix-Like (Linux and MacOS):** dap/stlink (Darwin)
 
-Click on the green play button or press [F5] to start debugging.
+> Click on the green play button or press [F5] to start debugging.
 
 ## Common Issues
 ### 1. Windows fails to initializing cmsis-dap debugger. 
