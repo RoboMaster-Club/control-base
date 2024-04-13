@@ -28,7 +28,7 @@ char g_debug_buffer[1024*2] = {0};
 const char* top_border = "\r\n\r\n\r\n/***** System Info *****/\r\n";
 const char* bottom_border = "/***** End of Info *****/\r\n";
 
-#define DEBUG_ENABLED
+// #define DEBUG_ENABLED
 
 void Debug_Task_Loop(void)
 {

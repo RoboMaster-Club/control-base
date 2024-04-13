@@ -12,9 +12,10 @@
 Remote_t g_remote;
 UART_Instance_t *g_remote_uart;
 Daemon_Instance_t *g_remote_daemon;
-
 uint8_t remote_buffer[18];
 volatile uint8_t debug_buffer[18];
+uint8_t g_remote_shared_buffer[18]; //protected by mutex
+
 /*
  * Remote_BufferProcess()
  * 
@@ -23,6 +24,8 @@ volatile uint8_t debug_buffer[18];
 void Remote_Buffer_Process()
 {
 	memcpy((void*) debug_buffer, remote_buffer, 18);
+	memcpy((void*) g_remote_shared_buffer, remote_buffer, 18);
+
 	// controller decode
 	g_remote.controller.right_stick.x = ((remote_buffer[0] | (remote_buffer[1] << 8)) & 0x07ff) - 1024;
 	g_remote.controller.right_stick.y = (((remote_buffer[1] >> 3) | (remote_buffer[2] << 5)) & 0x07ff) - 1024;

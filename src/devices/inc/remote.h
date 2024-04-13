@@ -88,6 +88,7 @@ typedef struct
 
 
 extern Remote_t g_remote;
+extern uint8_t g_remote_shared_buffer[18];
 Remote_t* Remote_Init(UART_HandleTypeDef *huart);
 
 #endif /* __REMOTE_H */

@@ -4,9 +4,9 @@
 
 #include "imu_task.h"
 #include "bsp_daemon.h"
+#include "remote.h"
 
 Jetson_Orin_Data_t g_orin_data;
-
 UART_Instance_t *g_orin_uart_instance_ptr;
 Daemon_Instance_t *g_orin_daemon_instance_ptr;
 
@@ -98,8 +98,15 @@ void Jetson_Orin_Send_Data(void)
 	g_orin_data.sending.float_byte.data[6] = g_orin_data.sending.velocity_x;
 	g_orin_data.sending.float_byte.data[7] = g_orin_data.sending.velocity_y;
 	
-	g_orin_data.tx_buffer[0] = 0xAA;
-	memcpy(&g_orin_data.tx_buffer[1],&g_orin_data.sending.float_byte.data_bytes[0], 32*sizeof(uint8_t));
+	if (g_remote.online_flag == 1)
+	{
+		memcpy(&g_orin_data.sending.float_byte.data_bytes[32], &g_remote_shared_buffer, 18*sizeof(uint8_t));
+	} else {
+		memset(&g_orin_data.sending.float_byte.data_bytes[32], 0, 18*sizeof(uint8_t));
+	}
+
 	
-	//UART_Transmit(g_orin_uart_instance_ptr, g_orin_data.tx_buffer, sizeof(g_orin_data.tx_buffer), UART_DMA);
+	g_orin_data.tx_buffer[0] = 0xAA;
+	memcpy(&g_orin_data.tx_buffer[1],&g_orin_data.sending.float_byte.data_bytes[0], ORIN_DATA_TX_BUFER_SIZE*sizeof(uint8_t));
+	UART_Transmit(g_orin_uart_instance_ptr, g_orin_data.tx_buffer, sizeof(g_orin_data.tx_buffer), UART_DMA);
 }

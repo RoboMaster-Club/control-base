@@ -5,10 +5,10 @@
 #include "bsp_uart.h"
 
 #define ORIN_DATA_RX_BUFER_SIZE (20)
-#define ORIN_DATA_TX_BUFER_SIZE (33)
+#define ORIN_DATA_TX_BUFER_SIZE (33+18) // 33 Normal data + 18 Remote data + 1 Remote Offline
 
 #define ORIN_TIMEOUT_MS (3000)
-#define JETSON_ORIN_PERIOD (100)
+#define JETSON_ORIN_PERIOD (10)
 
 typedef struct
 {
@@ -30,7 +30,7 @@ typedef struct
         union
         {
             float data[8];
-            uint8_t data_bytes[32];
+            uint8_t data_bytes[32+18];
         } float_byte;
     } sending;
 
