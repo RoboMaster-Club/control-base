@@ -12,6 +12,7 @@
 #include "user_math.h"
 #include "referee_system.h"
 #include "buzzer.h"
+#include "debugger.h"
 
 extern DJI_Motor_Handle_t *g_yaw;
 #define SPIN_TOP_OMEGA (1.0f)
@@ -20,6 +21,8 @@ extern DJI_Motor_Handle_t *g_yaw;
 #define SPINTOP_COEF (0.003f)
 #define CONTROLLER_RAMP_COEF (0.8f)
 #define MAX_SPEED (.6f)
+
+#define USE_REFEREE_SYSTEM 0
 
 Robot_State_t g_robot_state = {0, 0};
 Key_Prev_t g_key_prev = {0};
@@ -47,8 +50,15 @@ void Robot_Init()
     Launch_Task_Init();
     Remote_Init(&huart3);
     CAN_Service_Init();
-    Referee_System_Init(&huart1);
     Jetson_Orin_Init(&huart6);
+
+    #if defined(USE_REFEREE_SYSTEM) && USE_REFEREE_SYSTEM
+        Referee_System_Init(&huart1);
+    #elif defined(USE_REFEREE_SYSTEM) && !USE_REFEREE_SYSTEM
+        Debugger_Init(&huart1);
+    #else
+    #error "REFEREE SYSTEM AND DEBUGGER ARE NOT DEFINED!"
+    #endif
     //  Initialize all tasks
     Robot_Tasks_Start();
 }
@@ -131,7 +141,7 @@ void Robot_Cmd_Loop()
             {
                 if (g_orin_data.receiving.auto_aiming.yaw != 0 || g_orin_data.receiving.auto_aiming.pitch != 0)
                 {
-                    g_robot_state.gimbal_yaw_angle = (1 - 0.2f) * g_robot_state.gimbal_yaw_angle + (0.2f) * (g_imu.rad.yaw - g_orin_data.receiving.auto_aiming.yaw / 180.0f * PI); // + orin
+                    g_robot_state.gimbal_yaw_angle = (1 - 0.2f) * g_robot_state.gimbal_yaw_angle + (0.2f) * (g_imu.rad.yaw - g_orin_data.receiving.auto_aiming.yaw / 180.0f * PI);         // + orin
                     g_robot_state.gimbal_pitch_angle = (1 - 0.2f) * g_robot_state.gimbal_pitch_angle + (0.2f) * (g_imu.rad.pitch - g_orin_data.receiving.auto_aiming.pitch / 180.0f * PI); // + orin
                 }
             }
@@ -203,9 +213,9 @@ void Robot_Cmd_Loop()
             float power_buffer = Referee_System.Power_n_Heat.Chassis_Power_Buffer / 60.0f;
             if (power_buffer < 0.8f)
             {
-                g_robot_state.chassis_x_speed *= pow(power_buffer,1);
-                g_robot_state.chassis_y_speed *= pow(power_buffer,1);
-                g_robot_state.chassis_omega *= pow(power_buffer,1);
+                g_robot_state.chassis_x_speed *= pow(power_buffer, 1);
+                g_robot_state.chassis_y_speed *= pow(power_buffer, 1);
+                g_robot_state.chassis_omega *= pow(power_buffer, 1);
             }
         }
     }
