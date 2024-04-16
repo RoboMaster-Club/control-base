@@ -30,6 +30,8 @@ uint8_t g_start_safely = 0;
 
 void Robot_Cmd_Loop(void);
 void _toggle_robot_state(uint8_t *state);
+int time = 0;
+extern void DARE_Eigen_Decomp(); 
 
 void Robot_Init()
 {
@@ -40,7 +42,10 @@ void Robot_Init()
         .note_num = SYSTEM_INITIALIZING_NOTE_NUM,
     };
     Buzzer_Play_Melody(system_init_melody); // TODO: Change to non-blocking
-
+    volatile int i = HAL_GetTick();
+    DARE_Eigen_Decomp();
+    volatile int j = HAL_GetTick();
+    time = j - i;
     // Initialize all hardware
     Chassis_Task_Init();
     Gimbal_Task_Init();

@@ -50,6 +50,7 @@ $(BOARD_BASE)/Core/Src/usart.c \
 $(BOARD_BASE)/Core/Src/stm32f4xx_it.c \
 $(BOARD_BASE)/Core/Src/stm32f4xx_hal_msp.c \
 $(BOARD_BASE)/Core/Src/stm32f4xx_hal_timebase_tim.c \
+$(BOARD_BASE)/Core/Src/syscalls.c \
 $(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c \
 $(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \
 $(BOARD_BASE)/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c \
@@ -141,6 +142,13 @@ src/app/src/launch_task.c \
 src/app/src/debug_task.c \
 src/app/src/robot.c
 
+# List of C++ source files
+CPP_SOURCES = \
+src/app/src/eigen_test.cpp
+
+CPP_Includes = \
+-Ilib
+
 # ASM sources
 ASM_SOURCES =  \
 $(BOARD_BASE)/startup_stm32f407xx.s
@@ -153,11 +161,13 @@ PREFIX = arm-none-eabi-
 # The gcc compiler bin path can be either defined in make command via GCC_PATH variable (> make GCC_PATH=xxx)
 # either it can be added to the PATH environment variable.
 ifdef GCC_PATH
+CXX = $(GCC_PATH)/$(PREFIX)g++
 CC = $(GCC_PATH)/$(PREFIX)gcc
 AS = $(GCC_PATH)/$(PREFIX)gcc -x assembler-with-cpp
 CP = $(GCC_PATH)/$(PREFIX)objcopy
 SZ = $(GCC_PATH)/$(PREFIX)size
 else
+CXX = $(PREFIX)g++
 CC = $(PREFIX)gcc
 AS = $(PREFIX)gcc -x assembler-with-cpp
 CP = $(PREFIX)objcopy
@@ -223,7 +233,7 @@ endif
 
 # Generate dependency information
 CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
-
+CPPFLAGS = $(CFLAGS) $(CPP_Includes)
 
 #######################################
 # LDFLAGS
@@ -250,14 +260,20 @@ vpath %.c $(sort $(dir $(C_SOURCES)))
 OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
+CPP_OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(CPP_SOURCES:.cpp=.o)))
+vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
+
+$(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR)
+	$(CXX) -c $(CPPFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.cpp=.lst)) $< -o $@
+
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR) 
 	@$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	@$(AS) -c $(CFLAGS) $< -o $@
 
-$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
-	@$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) $(CPP_OBJECTS) Makefile
+	$(CXX) $(OBJECTS) $(CPP_OBJECTS) $(LDFLAGS) -o $@
 	$(SZ) $@
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
