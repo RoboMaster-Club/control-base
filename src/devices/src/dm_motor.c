@@ -76,7 +76,8 @@ void DM_Motor_Disable_Motor(DM_Motor_Handle_t *motor)
     uint8_t *data = motor->can_instance->tx_buffer;
     switch (motor->disable_behavior)
     {
-    case DM_MOTOR_ZERO_CURRENT:
+    case DM_MOTOR_ZERO_CURRENT: 
+    {
         uint16_t pos_temp, vel_temp, kp_temp, kd_temp, torq_temp;
 
         pos_temp = float_to_uint(0, P_MIN, P_MAX, 16);
@@ -94,6 +95,7 @@ void DM_Motor_Disable_Motor(DM_Motor_Handle_t *motor)
         data[6] = ((kd_temp & 0xF) << 4) | (torq_temp >> 8);
         data[7] = torq_temp;
         break;
+    }
     case DM_MOTOR_HARDWARE_DISABLE:
         data[0] = 0xFF;
         data[1] = 0xFF;
