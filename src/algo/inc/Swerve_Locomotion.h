@@ -15,6 +15,8 @@
 #define Azimuth_Gear_Ratio 1.0f
 #define NUMBER_OF_MODULES 4
 
+#define SWERVE_OPTIMIZE
+
 typedef struct
 {
     float speed; // m/s

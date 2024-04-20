@@ -183,6 +183,11 @@ Module_State_t Optimize_Module_Angle(Module_State_t input_state, float measured_
     }
 
     float curr_angle_normalized = fmodf(measured_angle, 2 * PI); // get normalized current angle
+    if (curr_angle_normalized < 0)
+    {
+        curr_angle_normalized += 2.0f * PI;
+    }
+
     float delta = target_angle - curr_angle_normalized;          // calculate the angle delta
 
     // these conditions essentially create the step function for angles to "snap" too offset from the measured angle to avoid flipping
