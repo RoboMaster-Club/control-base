@@ -80,6 +80,8 @@ void Jetson_Orin_Init(UART_HandleTypeDef *huartx)
 void Jetson_Orin_Send_Data(void)
 {
 	// update data to be sent
+	g_orin_data.sending.game_start_flag = (Referee_System.Game_Status.Progress == 4) ? 1 : 0;
+	g_orin_data.sending.enemy_color_flag = (Referee_System.Robot_State.ID > 11) ? 1 : 0;
 	g_orin_data.sending.pitch_angle = g_imu.rad.pitch;
 	g_orin_data.sending.pitch_angular_rate = g_imu.bmi088_raw.gyro[1];
 	g_orin_data.sending.yaw_angular_rate = g_imu.bmi088_raw.gyro[2];
@@ -88,8 +90,6 @@ void Jetson_Orin_Send_Data(void)
 	g_orin_data.sending.orientation = g_imu.rad.yaw;
 	g_orin_data.sending.velocity_x = 0;
 	g_orin_data.sending.velocity_y = 0;
-	g_orin_data.sending.game_start_flag = (Referee_System.Game_Status.Progress == 4) ? 1 : 0;
-	g_orin_data.sending.enemy_color_flag = (Referee_System.Robot_State.ID > 11) ? 1 : 0;
 
 	// float to byte conversion
 	g_orin_data.sending.float_byte.data[0] = g_orin_data.sending.pitch_angle;

@@ -18,6 +18,8 @@ typedef struct
 
     struct
     {
+        uint8_t game_start_flag; //both flags are sent together as one byte
+        uint8_t enemy_color_flag;
         float pitch_angle;        // rad
         float pitch_angular_rate; // rad/s
         float yaw_angular_rate;   // rad/s
@@ -26,9 +28,6 @@ typedef struct
         float orientation;        // rad
         float velocity_x;         // m/s
         float velocity_y;         // m/s
-        uint8_t game_start_flag;
-        uint8_t enemy_color_flag;
-
         union
         {
             float data[8];
