@@ -5,7 +5,7 @@
 #include "bsp_uart.h"
 
 #define ORIN_DATA_RX_BUFER_SIZE (20)
-#define ORIN_DATA_TX_BUFER_SIZE (33)
+#define ORIN_DATA_TX_BUFER_SIZE (34)
 
 #define ORIN_TIMEOUT_MS (3000)
 #define JETSON_ORIN_PERIOD (100)
@@ -26,6 +26,8 @@ typedef struct
         float orientation;        // rad
         float velocity_x;         // m/s
         float velocity_y;         // m/s
+        uint8_t game_start_flag;
+        uint8_t enemy_color_flag;
 
         union
         {

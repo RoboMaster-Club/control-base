@@ -200,7 +200,8 @@ void Robot_Cmd_Loop()
             __MAX_LIMIT(g_robot_state.chassis_y_speed, -MAX_SPEED, MAX_SPEED);
 
             /* power buffer*/
-            float power_buffer = Referee_System.Power_n_Heat.Chassis_Power_Buffer / 60.0f;
+            //float power_buffer = Referee_System.Power_n_Heat.Chassis_Power_Buffer / 60.0f;
+            float power_buffer = 1; //Temporary fix for power buffer
             if (power_buffer < 0.8f)
             {
                 g_robot_state.chassis_x_speed *= pow(power_buffer,1);
