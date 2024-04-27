@@ -87,6 +87,8 @@ void Jetson_Orin_Send_Data(void)
 	g_orin_data.sending.orientation = g_imu.rad.yaw;
 	g_orin_data.sending.velocity_x = 0;
 	g_orin_data.sending.velocity_y = 0;
+	g_orin_data.sending.game_start_flag = (Referee_System.Game_Status.Progress == 4) ? 1 : 0; //4 for match begin
+	g_orin_data.sending.enemy_color_flag = (Referee_Robot_State.ID > 11) ? 1 : 0; //ID > 11 means myself is blue, which means enemy is red
 	
 	// float to byte conversion
 	g_orin_data.sending.float_byte.data[0] = g_orin_data.sending.pitch_angle;
@@ -99,7 +101,8 @@ void Jetson_Orin_Send_Data(void)
 	g_orin_data.sending.float_byte.data[7] = g_orin_data.sending.velocity_y;
 	
 	g_orin_data.tx_buffer[0] = 0xAA;
-	memcpy(&g_orin_data.tx_buffer[1],&g_orin_data.sending.float_byte.data_bytes[0], 32*sizeof(uint8_t));
+	g_orin_data.tx_buffer[1] = g_orin_data.sending.enemy_color_flag << 1 | g_orin_data.sending.game_start_flag;
+	memcpy(&g_orin_data.tx_buffer[2],&g_orin_data.sending.float_byte.data_bytes[0], 32*sizeof(uint8_t));
 	
-	//UART_Transmit(g_orin_uart_instance_ptr, g_orin_data.tx_buffer, sizeof(g_orin_data.tx_buffer), UART_DMA);
+	UART_Transmit(g_orin_uart_instance_ptr, g_orin_data.tx_buffer, sizeof(g_orin_data.tx_buffer), UART_DMA);
 }
