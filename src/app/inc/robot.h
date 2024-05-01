@@ -11,6 +11,7 @@ typedef struct {
   float chassis_x_speed;
   float chassis_y_speed;
   float chassis_omega;
+  float chassis_max_speed;
   float gimbal_pitch_angle;
   float gimbal_yaw_angle;
   float vx;

@@ -14,12 +14,11 @@
 #include "buzzer.h"
 
 extern DJI_Motor_Handle_t *g_yaw;
-#define SPIN_TOP_OMEGA (1.0f)
 
 #define KEYBOARD_RAMP_COEF (0.004f)
-#define SPINTOP_COEF (0.003f)
 #define CONTROLLER_RAMP_COEF (0.8f)
-#define MAX_SPEED (.6f)
+#define MAX_SPEED (0.6f)
+#define GIMBAL_MAX_PITCH (0.4f)
 
 Robot_State_t g_robot_state = {0, 0};
 Key_Prev_t g_key_prev = {0};
@@ -116,22 +115,12 @@ void Robot_Cmd_Loop()
             }
             g_key_prev.prev_left_switch = g_remote.controller.left_switch;
 
-            if (g_robot_state.spintop_mode)
-            {
-                g_robot_state.chassis_omega = (1 - SPINTOP_COEF) * g_robot_state.chassis_omega + SPINTOP_COEF * SPIN_TOP_OMEGA;
-            }
-            else
-            {
-                g_robot_state.chassis_omega = (1 - SPINTOP_COEF) * g_robot_state.chassis_omega + 0.0f;
-            }
-            /* Chassis ends here */
-
             /* Gimbal starts here */
             if ((g_remote.controller.right_switch == UP) || (g_remote.mouse.right == 1)) // mouse right button auto aim
             {
                 if (g_orin_data.receiving.auto_aiming.yaw != 0 || g_orin_data.receiving.auto_aiming.pitch != 0)
                 {
-                    g_robot_state.gimbal_yaw_angle = (1 - 0.2f) * g_robot_state.gimbal_yaw_angle + (0.2f) * (g_imu.rad.yaw - g_orin_data.receiving.auto_aiming.yaw / 180.0f * PI); // + orin
+                    g_robot_state.gimbal_yaw_angle = (1 - 0.2f) * g_robot_state.gimbal_yaw_angle + (0.2f) * (g_imu.rad.yaw - g_orin_data.receiving.auto_aiming.yaw / 180.0f * PI);         // + orin
                     g_robot_state.gimbal_pitch_angle = (1 - 0.2f) * g_robot_state.gimbal_pitch_angle + (0.2f) * (g_imu.rad.pitch - g_orin_data.receiving.auto_aiming.pitch / 180.0f * PI); // + orin
                 }
             }
@@ -195,18 +184,7 @@ void Robot_Cmd_Loop()
 
             /* Hardware Limits */
             g_robot_state.gimbal_yaw_angle = fmod(g_robot_state.gimbal_yaw_angle, 2 * PI);
-            __MAX_LIMIT(g_robot_state.gimbal_pitch_angle, -0.4f, 0.4f);
-            __MAX_LIMIT(g_robot_state.chassis_x_speed, -MAX_SPEED, MAX_SPEED);
-            __MAX_LIMIT(g_robot_state.chassis_y_speed, -MAX_SPEED, MAX_SPEED);
-
-            /* power buffer*/
-            // float power_buffer = Referee_System.Power_n_Heat.Chassis_Power_Buffer / 60.0f;
-            // if (power_buffer < 0.8f)
-            // {
-            //     g_robot_state.chassis_x_speed *= pow(power_buffer,1);
-            //     g_robot_state.chassis_y_speed *= pow(power_buffer,1);
-            //     g_robot_state.chassis_omega *= pow(power_buffer,1);
-            // }
+            __MAX_LIMIT(g_robot_state.gimbal_pitch_angle, -GIMBAL_MAX_PITCH, GIMBAL_MAX_PITCH);
         }
     }
     else

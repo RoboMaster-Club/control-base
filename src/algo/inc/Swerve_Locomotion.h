@@ -41,6 +41,6 @@ typedef struct
 } Module_State_Array_t;
 
 void Swerve_Init(void);
-void Swerve_Drive(float x, float y, float omega);
+void Swerve_Drive(float x, float y, float omega, float max_speed);
 void Swerve_Disable(void);
 #endif

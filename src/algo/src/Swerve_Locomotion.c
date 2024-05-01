@@ -87,8 +87,8 @@ void Swerve_Init()
 }
 
 /* Scale wheel speeds to max possible speed while preserving ratio between modules.*/
-Module_State_Array_t Desaturate_Wheel_Speeds(Module_State_Array_t module_state_array)
-{
+Module_State_Array_t Desaturate_Wheel_Speeds(Module_State_Array_t module_state_array, float max_speed)
+{    
     float highest_speed = fabsf(module_state_array.states[0].speed);
     for (int i = 1; i < NUMBER_OF_MODULES; i++) // start from 1 to find the highest speed
     {
@@ -96,7 +96,7 @@ Module_State_Array_t Desaturate_Wheel_Speeds(Module_State_Array_t module_state_a
     }
     if (highest_speed > 0.01f) // avoid division by zero
     {
-        float desaturation_coefficient = fabsf(SWERVE_MAX_SPEED / highest_speed);
+        float desaturation_coefficient = fabsf(max_speed / highest_speed);
         Module_State_Array_t desaturated_module_states = {0}; // initialize the struct to zero
 
         for (int i = 0; i < NUMBER_OF_MODULES; i++)
@@ -246,36 +246,23 @@ void Set_Desired_States(Module_State_Array_t desired_states)
 }
 
 /**
- * Takes inputs from (-1 to 1) and sets the respective module outputs.
+ * Drives the robot using the given x, y, and omega speeds.
  *
- * @param x: x speed of the robot
- * @param y: y speed of the robot
- * @param omega: angular speed of the robot
+ * @param x: x speed of the robot in meters per second
+ * @param y: y speed of the robot in meters per second
+ * @param omega: angular speed of the robot in radians per second
+ * @param max_speed: max achievable speed the robot should be limited to based on current draw
  */
-void Swerve_Drive(float x, float y, float omega)
+void Swerve_Drive(float x, float y, float omega, float max_speed)
 {
-    x *= SWERVE_MAX_SPEED; // convert to m/s
-    y *= SWERVE_MAX_SPEED;
-    omega *= SWERVE_MAX_ANGLUAR_SPEED; // convert to rad/s
     Chassis_Speeds_t desired_chassis_speeds = {.x = x, .y = y, .omega = omega};
-    Set_Desired_States(Chassis_Speeds_To_Module_States(desired_chassis_speeds));
+    Set_Desired_States(
+        Desaturate_Wheel_Speeds(Chassis_Speeds_To_Module_States(desired_chassis_speeds), max_speed));
 
     for (int i = 0; i < NUMBER_OF_MODULES; i++)
     {
         Set_Module_Output(swerve_modules[i], swerve_modules[i]->module_state);
     }
-}
-
-/* Commands modules to stop moving and reset angle to 0. Should be called on robot enable */
-void Reset_Modules()
-{
-    Module_State_Array_t desired_states = {
-        .states = {
-            {0.0f, 0.0f},
-            {0.0f, 0.0f},
-            {0.0f, 0.0f},
-            {0.0f, 0.0f}}};
-    Set_Desired_States(desired_states);
 }
 
 /**
