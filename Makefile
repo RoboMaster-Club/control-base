@@ -139,7 +139,20 @@ src/app/src/chassis_task.c \
 src/app/src/gimbal_task.c \
 src/app/src/launch_task.c \
 src/app/src/debug_task.c \
-src/app/src/robot.c
+src/app/src/robot.c \
+src/ui/src/ui_interface.c \
+src/ui/src/ui_indicator_0_0.c \
+src/ui/src/ui_indicator_0_1.c \
+src/ui/src/ui_indicator_0_2.c \
+src/ui/src/ui_indicator_0_3.c \
+src/ui/src/ui_indicator_0_4.c \
+src/ui/src/ui_indicator_0_5.c \
+src/ui/src/ui_indicator_0_6.c \
+src/ui/src/ui_indicator_0_7.c \
+src/ui/src/ui_indicator_0_8.c \
+src/ui/src/ui_indicator_0_9.c \
+src/ui/src/ui_indicator_0_10.c \
+src/ui/src/ui_indicator_1_0.c 
 
 # ASM sources
 ASM_SOURCES =  \
@@ -209,7 +222,8 @@ C_INCLUDES =  \
 -Isrc/algo/inc \
 -Isrc/devices/inc \
 -Isrc/bsp/inc \
--Isrc/app/inc
+-Isrc/app/inc \
+-Isrc/ui/inc 
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -fdata-sections -ffunction-sections
