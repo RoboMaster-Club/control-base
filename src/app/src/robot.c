@@ -60,6 +60,8 @@ void Robot_Ctrl_Loop()
 {
     // Control loop for the robot
     Robot_Cmd_Loop();
+    Referee_Get_Data();
+    Referee_Set_Robot_State();
     Chassis_Ctrl_Loop();
     Gimbal_Ctrl_Loop();
     Launch_Ctrl_Loop();

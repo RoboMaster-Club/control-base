@@ -95,6 +95,7 @@ uint16_t calc_crc16(uint8_t *pchMessage, uint32_t dwLength)
     return wCRC;
 }
 
+
 #define DEFINE_FRAME_PROC(num, id)                          \
 void ui_proc_ ## num##_frame(ui_ ## num##_frame_t *msg) {   \
     msg->header.SOF = 0xA5;                                 \
