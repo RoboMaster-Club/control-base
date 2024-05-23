@@ -146,7 +146,7 @@ void Robot_Cmd_Loop()
             /* Gimbal ends here */
 
             /* Launch control starts here */
-            if (Referee_System.Power_n_Heat.Shooter_1_Heat < 200)
+            if (Referee_System.Power_Heat.Shooter_1_17mm_Heat < 200)
             {
                 if (g_remote.controller.wheel < -50.0f)
                 { // dial wheel forward single fire

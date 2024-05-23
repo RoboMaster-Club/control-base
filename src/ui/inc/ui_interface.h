@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include "ui_types.h"
+#include "bsp_crc.h"
 
 extern int ui_self_id;
 
