@@ -15,6 +15,7 @@ void print_message(const uint8_t *message, const int length) {
     printf("\n\n");
 }
 
+
 const unsigned char CRC8_TAB1[256] = {
     0x00, 0x5e, 0xbc, 0xe2, 0x61, 0x3f, 0xdd, 0x83, 0xc2, 0x9c, 0x7e, 0x20, 0xa3, 0xfd, 0x1f, 0x41,
     0x9d, 0xc3, 0x21, 0x7f, 0xfc, 0xa2, 0x40, 0x1e, 0x5f, 0x01, 0xe3, 0xbd, 0x3e, 0x60, 0x82, 0xdc, 0x23,
@@ -95,18 +96,17 @@ uint16_t calc_crc16(uint8_t *pchMessage, uint32_t dwLength)
     return wCRC;
 }
 
-
 #define DEFINE_FRAME_PROC(num, id)                          \
 void ui_proc_ ## num##_frame(ui_ ## num##_frame_t *msg) {   \
     msg->header.SOF = 0xA5;                                 \
     msg->header.length = 6 + 15 * num;                      \
     msg->header.seq = seq++;                                \
-    msg->header.crc8 = calc_crc8((uint8_t*)msg, 4);        \
+    msg->header.crc8 = Verify_CRC8_Check_Sum((uint8_t*)msg, 4);        \
     msg->header.cmd_id = 0x0301;                            \
     msg->header.sub_id = id;                                \
     msg->header.send_id = ui_self_id;                       \
     msg->header.recv_id = ui_self_id + 256;                 \
-    msg->crc16 = calc_crc16((uint8_t*)msg, 13 + 15 * num); \
+    msg->crc16 = Verify_CRC16_Check_Sum((uint8_t*)msg, 13 + 15 * num); \
 }
 
 DEFINE_FRAME_PROC(1, 0x0101)
@@ -118,11 +118,11 @@ void ui_proc_string_frame(ui_string_frame_t *msg) {
     msg->header.SOF = 0xA5;
     msg->header.length = 51;
     msg->header.seq = seq++;
-    msg->header.crc8 = calc_crc8((uint8_t *) msg, 4);
+    msg->header.crc8 = Verify_CRC8_Check_Sum((uint8_t *) msg, 4);
     msg->header.cmd_id = 0x0301;
     msg->header.sub_id = 0x0110;
     msg->header.send_id = ui_self_id;
     msg->header.recv_id = ui_self_id + 256;
     msg->option.str_length = strlen(msg->option.string);
-    msg->crc16 = calc_crc16((uint8_t *) msg, 58);
+    msg->crc16 = Verify_CRC16_Check_Sum((uint8_t *) msg, 58);
 }

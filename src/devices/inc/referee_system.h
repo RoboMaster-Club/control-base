@@ -88,20 +88,24 @@
 #define V3_HERO_COOLING_INCREMENT 8
 #define V3_HERO_LV10_COOLING_MAX 120
 
+
 #define REFEREE_BUFFER_LEN 							273u				//Buffer length to receive all data
 #define REFEREE_FRAME_HEADER_START 					0xA5 				//Frame header
 #define REFEREE_FRAME_HEADER_LEN 					5 					//Frame header length
 #define REFEREE_ID_LEN 								2					//ID length
 #define REFEREE_FRAME_TAIL_LEN 						2 					//Frame tail length
 
+
 #define REFEREE_OFFSET_SOF         					0  					//SOF offset
 #define REFEREE_OFFSET_DATA_LENGTH 					1  					//Data length offset
 #define REFEREE_OFFSET_SEQ         					3  					//SEQ offset
 #define REFEREE_OFFSET_CRC8        					4  					//CRC offset
 
+
 #define       REFEREE_GAME_STATUS	               0x0001       		//Competition status data, transmitted at a fixed frequency of 1 Hz.
 #define       REFEREE_GAME_RESULT              	   0x0002 				//Competition result data, transmitted upon completion of the competition.
 #define       REFEREE_ROBOT_HP                     0x0003 				//Robot health data, transmitted at a fixed frequency of 3 Hz.
+
 #define       REFEREE_EVENT_DATA                   0x0101				//Site event data, transmitted at a fixed frequency of 1 Hz
 #define       REFEREE_SUPPLY_STATION               0x0102				//Action identifier data of the Official Projectile Supplier, transmitted when the Official Projectile Supplier releases projectiles.
 #define       REFEREE_REFEREE_WARNING              0x0104				//Referee warning data, transmitted when one's team is issued a penalty/forfeiture and at a fixed frequency of 1 Hz in other cases.
