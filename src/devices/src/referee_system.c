@@ -199,6 +199,7 @@ void Referee_Get_Data(void)
                 n++;
                 break;
             }
+            
         }
         else
             n++;
