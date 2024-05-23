@@ -24,6 +24,7 @@ extern Daemon_Instance_t *g_remote_daemon;
 #ifdef PRINT_RUNTIME_STATS
 char g_debug_buffer[1024*2] = {0};
 #endif
+//#define DEBUG_ENABLED
 
 const char* top_border = "\r\n\r\n\r\n/***** System Info *****/\r\n";
 const char* bottom_border = "/***** End of Info *****/\r\n";
