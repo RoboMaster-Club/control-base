@@ -88,7 +88,7 @@
 #define V3_HERO_COOLING_INCREMENT 8
 #define V3_HERO_LV10_COOLING_MAX 120
 
-#define REFEREE_BUFFER_LEN 							787u					//Buffer length to receive all data
+#define REFEREE_BUFFER_LEN 							273u					//Buffer length to receive all data
 #define REFEREE_FRAME_HEADER_START 					0xA5 				//Frame header
 #define REFEREE_FRAME_HEADER_LEN 					5 						//Frame header length
 #define REFEREE_ID_LEN 								2						//ID length
@@ -115,19 +115,6 @@
 #define       REFEREE_SHOOTER_STATE                0x0207				//Real-time launching data, transmitted after a projectile is launched.
 #define       REFEREE_REMAINING_AMMO               0x0208				//Projectile allowance, transmitted at a fixed frequency of 10 Hz.
 #define       REFEREE_ROBOT_RFID                   0x0209				//Robot RFID module status, transmitted at a fixed frequency of 3 Hz.
-#define       REFEREE_DART_CLIENT                  0x020A				//Dart player's client command data, transmitted at a fixed frequency of 3 Hz.
-#define       REFEREE_GROUND_POS                   0x020B				//Ground Robot position data, transmitted at a fixed frequency of 1 Hz.
-#define       REFEREE_RADAR_PROGRESS               0x020C				//Radar-marked progress data, transmitted at a fixed frequency of 1 Hz.
-#define       REFEREE_SENTRY_DECISION              0x020D				//Decision-making data of Sentry Robot, transmitted at a fixed frequency of 1 Hz.
-#define       REFEREE_RADAR_DECISION               0x020E				//Decision-making data of Radar, transmitted at a fixed frequency of 1 Hz.
-#define       REFEREE_ROBOT_COMMUNICATE            0x0301				//Robot interaction data, transmitted at a maximum frequency of 10 Hz when triggered by the sender.
-#define       REFEREE_USER_DEFINED                 0x0302				//Data about the interaction between the Custom Controller and robots, transmitted at a maximum frequency of 30 Hz when triggered by the sender.
-#define       REFEREE_SMALL_MAP_INTERACT           0x0303				//Player client's small map interaction data, transmitted when triggered by the player client.
-#define       REFEREE_KEYBOARD_REMOTE              0x0304				//Keyboard, mouse, and remote control data, transmitted at a fixed frequency of 30 Hz.
-#define       REFEREE_SMALL_MAP_RADAR              0x0305				//Radar data received by player clients' Small Maps, transmitted at a maximum frequency of 10 Hz.
-#define       REFEREE_CUSTOM_CONTROLLER            0x0306				//Data about the interaction between the Custom Controller and player clients, transmitted at a maximum frequency of 30 Hz when triggered by the sender.
-#define       REFEREE_SENTRY_DATA                  0x0307				//Sentry data received by player clients' Small Maps, transmitted at a maximum frequency of 1 Hz.
-#define       REFEREE_CUSTOM_DATA         		   0x0308				//Robot data received by player clients' Small Map, transmitted at a maximum frequency of 3 Hz.
 
 /*Calculation: REFEREE_FRAME_HEADER_LEN(5-byte) + REFEREE_ID_LEN(2-byte) + DATA(n-byte) + REFEREE_FRAME_TAIL_LEN(2-byte,CRC16)*/
 #define       REFEREE_GAME_STATUS_LEN	           20
@@ -146,19 +133,6 @@
 #define       REFEREE_SHOOTER_STATE_LEN            16
 #define       REFEREE_REMAINING_AMMO_LEN           15
 #define       REFEREE_ROBOT_RFID_LEN               13
-#define       REFEREE_DART_CLIENT_LEN              15
-#define       REFEREE_GROUND_POS_LEN               49  	 
-#define       REFEREE_RADAR_PROGRESS_LEN           15    
-#define       REFEREE_SENTRY_DECISION_LEN          13   
-#define       REFEREE_RADAR_DECISION_LEN  		   10
-//#define       REFEREE_ROBOT_COMMUNICATE_LEN        137     			
-#define       REFEREE_USER_DEFINED_LEN             39
-//#define       REFEREE_SMALL_MAP_INTERACT_LEN       24
-//#define       REFEREE_KEYBOARD_REMOTE_LEN          21
-//#define       REFEREE_SMALL_MAP_RADAR_LEN          19
-//#define       REFEREE_CUSTOM_CONTROLLER_LEN        17
-//#define       REFEREE_SENTRY_DATA_LEN              112
-//#define       REFEREE_CUSTOM_DATA_LEN        		 43
 
 typedef struct
 {
@@ -205,7 +179,6 @@ typedef struct
 		uint16_t Red_3_HP;  
 		uint16_t Red_4_HP;  
 		uint16_t Red_5_HP;  
-		uint16_t Red_6_HP;  
 		uint16_t Red_7_HP;  
 		uint16_t Red_Outpost_HP; 
 		uint16_t Red_Base_HP; 
@@ -215,7 +188,6 @@ typedef struct
 		uint16_t Blue_3_HP;   
 		uint16_t Blue_4_HP;   
 		uint16_t Blue_5_HP;   
-		uint16_t Blue_6_HP;   
 		uint16_t Blue_7_HP; 
 		uint16_t Blue_Outpost_HP; 
 		uint16_t Blue_Base_HP;   
@@ -319,48 +291,6 @@ typedef struct
 	{
 		uint32_t State;
 	}RFID;
-	
-	struct __attribute__ ((__packed__))
-	{
-		uint8_t Dart_Launch_Opening_Status;
-		uint8_t Reserved;
-		uint16_t Target_Change_Time;
-	  uint16_t Latest_Launch_Cmd_Time;
-	}Dart_Client;
-	
-	struct __attribute__ ((__packed__))
-	{
-		float hero_x;
-	  float hero_y;
-	  float engineer_x;
-	  float engineer_y;
-	  float standard_3_x;
-	  float standard_3_y;
-	  float standard_4_x;
-	  float standard_4_y;
-	  float standard_5_x;
-	  float standard_5_y;
-	}Ground_Pos;
-	
-	struct __attribute__ ((__packed__))
-	{
-		uint8_t Mark_Hero_Progress;
-	  uint8_t Mark_Engineer_Progress;
-	  uint8_t Mark_Standard_3_Progress;
-	  uint8_t Mark_Standard_4_Progress;
-	  uint8_t Mark_Standard_5_Progress;
-	  uint8_t Mark_Sentry_Progress;
-	}Radar_Progress;
-	
-	struct __attribute__ ((__packed__))
-	{
-		uint32_t Sentry_Info;
-	}Sentry_Decision;
-	
-	struct __attribute__ ((__packed__))
-	{
-		uint8_t Radar_Info;
-	}Radar_Decision;
 	
 	uint16_t Info_Update_Frame;
 	uint8_t Offline_Flag;

@@ -23,10 +23,10 @@ void Referee_Set_Robot_State(void)
     Referee_Robot_State.ID = Referee_System.Robot_State.ID;
     Referee_Robot_State.Level = Referee_System.Robot_State.Level;
 
-    Referee_Robot_State.Cooling_Rate = SENTRY_COOLING_RATE;
-    Referee_Robot_State.Heat_Max = SENTRY_HEAT_MAX;
-    Referee_Robot_State.Launch_Speed_Max = SENTRY_LAUNCH_SPEED_MAX;
-    Referee_Robot_State.Chassis_Power_Max = SENTRY_POWER_MAX;
+    Referee_Robot_State.Cooling_Rate = Referee_System.Robot_State.Shooter_Cooling_Value;
+    Referee_Robot_State.Heat_Max = Referee_System.Robot_State.Shooter_Heat_Max;
+    Referee_Robot_State.Launch_Speed_Max = V1_STANDARD_LAUNCH_SPEED_MAX;
+    Referee_Robot_State.Chassis_Power_Max = Referee_System.Robot_State.Chassis_Power_Max;
 
     Referee_Robot_State.Chassis_Power = Referee_System.Power_Heat.Chassis_Power;
     Referee_Robot_State.Power_Buffer = Referee_System.Power_Heat.Chassis_Power_Buffer;
@@ -191,51 +191,6 @@ void Referee_Get_Data(void)
                 {
                     memcpy(&Referee_System.RFID, &Referee_System.Buffer[n + 7], sizeof(uint8_t[REFEREE_ROBOT_RFID_LEN-9]));
                     n += REFEREE_ROBOT_RFID_LEN;
-                }
-                else
-                    n++;
-                break;
-			case REFEREE_DART_CLIENT:
-                if (Verify_CRC16_Check_Sum(Referee_System.Buffer + n, REFEREE_DART_CLIENT_LEN))
-                {
-                    memcpy(&Referee_System.Dart_Client, &Referee_System.Buffer[n + 7], sizeof(uint8_t[REFEREE_DART_CLIENT_LEN-9]));
-                    n += REFEREE_DART_CLIENT_LEN;
-                }
-                else
-                    n++;
-                break;
-			case REFEREE_GROUND_POS:
-                if (Verify_CRC16_Check_Sum(Referee_System.Buffer + n, REFEREE_GROUND_POS_LEN))
-                {
-                    memcpy(&Referee_System.Ground_Pos, &Referee_System.Buffer[n + 7], sizeof(uint8_t[REFEREE_GROUND_POS_LEN-9]));
-                    n += REFEREE_GROUND_POS_LEN;
-                }
-                else
-                    n++;
-                break;
-			case REFEREE_RADAR_PROGRESS:
-                if (Verify_CRC16_Check_Sum(Referee_System.Buffer + n, REFEREE_RADAR_PROGRESS_LEN))
-                {
-                    memcpy(&Referee_System.Radar_Progress, &Referee_System.Buffer[n + 7], sizeof(uint8_t[REFEREE_RADAR_PROGRESS_LEN-9]));
-                    n += REFEREE_RADAR_PROGRESS_LEN;
-                }
-                else
-                    n++;
-                break;
-			case REFEREE_SENTRY_DECISION:
-                if (Verify_CRC16_Check_Sum(Referee_System.Buffer + n, REFEREE_SENTRY_DECISION_LEN))
-                {
-                    memcpy(&Referee_System.Sentry_Decision, &Referee_System.Buffer[n + 7], sizeof(uint8_t[REFEREE_SENTRY_DECISION_LEN-9]));
-                    n += REFEREE_SENTRY_DECISION_LEN;
-                }
-                else
-                    n++;
-                break;
-			case REFEREE_RADAR_DECISION:
-                if (Verify_CRC16_Check_Sum(Referee_System.Buffer + n, REFEREE_RADAR_DECISION_LEN))
-                {
-                    memcpy(&Referee_System.Radar_Decision, &Referee_System.Buffer[n + 7], sizeof(uint8_t[REFEREE_RADAR_DECISION_LEN-9]));
-                    n += REFEREE_RADAR_DECISION_LEN;
                 }
                 else
                     n++;
