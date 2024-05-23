@@ -8,12 +8,14 @@
 #include <stdio.h>
 #include "ui_types.h"
 #include "bsp_crc.h"
+#include "usart.h"
+#include "bsp_serial.h"
 
 extern int ui_self_id;
 
 void print_message(const uint8_t* message, int length);
 
-#define SEND_MESSAGE(message, length) print_message(message, length)
+#define SEND_MESSAGE(message, length) HAL_UART_Transmit(&huart1,message,length,500) //print_message(message, length)
 
 void ui_proc_1_frame(ui_1_frame_t *msg);
 void ui_proc_2_frame(ui_2_frame_t *msg);
