@@ -179,7 +179,6 @@ typedef struct
 		uint16_t Red_3_HP;  
 		uint16_t Red_4_HP;  
 		uint16_t Red_5_HP;  
-		uint16_t Red_6_HP;  
 		uint16_t Red_7_HP;  
 		uint16_t Red_Outpost_HP; 
 		uint16_t Red_Base_HP; 
@@ -189,7 +188,6 @@ typedef struct
 		uint16_t Blue_3_HP;   
 		uint16_t Blue_4_HP;   
 		uint16_t Blue_5_HP;   
-		uint16_t Blue_6_HP;   
 		uint16_t Blue_7_HP; 
 		uint16_t Blue_Outpost_HP; 
 		uint16_t Blue_Base_HP;   
