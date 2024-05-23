@@ -2,10 +2,10 @@
  * @file Referee_System.h
  * @author Leo Liu
  * @brief header file for referee system
- * @version 1.0
- * @date 2022-07-19
+ * @version 2.0
+ * @date 2024-05-22
  * 
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2024
  * 
  */
 
@@ -18,139 +18,147 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define Referee_System_Func_GroundInit	\
-{																				\
-		&Referee_UART_Receive_Interrupt,		\
-				&Referee_System_Handler,				\
-				&Referee_Get_Data,							\
-				&Referee_Set_Robot_State,				\
-}
-
 //Standard Confrontation
 #define V1_STANDARD_POWER_MAX 120
 #define V1_STANDARD_HP_MAX 200
-#define V1_STANDARD_BULLET_SPEED_MAX 18
+#define V1_STANDARD_LAUNCH_SPEED_MAX 30
 #define V1_STANDARD_HEAT_MAX 280
 #define V1_STANDARD_COOLING_RATE 25
 
 #define V1_SBR_POWER_MAX 150
 #define V1_SBR_HP_MAX 200
-#define V1_SBR_BULLET_SPEED_MAX 18
+#define V1_SBR_LAUNCH_SPEED_MAX 30
 #define V1_SBR_HEAT_MAX 280
 #define V1_SBR_COOLING_RATE 50
 
+//Sentry Configuration
+#define SENTRY_POWER_MAX 100
+#define SENTRY_HP_MAX 600
+#define SENTRY_LAUNCH_SPEED_MAX 30
+#define SENTRY_HEAT_MAX 400
+#define SENTRY_COOLING_RATE 80
+
 //3V3 Confrontation
-#define V3_POWER_FOCUSED_LV1_HP_MAX 150
-#define V3_POWER_FOCUSED_LV1_POWER_MAX 60
-#define V3_POWER_FOCUSED_LV2_HP_MAX 200
-#define V3_POWER_FOCUSED_LV2_POWER_MAX 80
-#define V3_POWER_FOCUSED_LV3_HP_MAX 250
-#define V3_POWER_FOCUSED_LV3_POWER_MAX 100
+#define V3_STANDARD_LAUNCH_SPEED_MAX 30
+#define V3_STANDARD_LV10_HP_MAX 400
+#define V3_STANDARD_LV10_POWER_MAX 100
 
-#define V3_HP_FOCUSED_LV1_HP_MAX 200
-#define V3_HP_FOCUSED_LV1_POWER_MAX 45
-#define V3_HP_FOCUSED_LV2_HP_MAX 300
-#define V3_HP_FOCUSED_LV2_POWER_MAX 50
-#define V3_HP_FOCUSED_LV3_HP_MAX 400
-#define V3_HP_FOCUSED_LV3_POWER_MAX 55
+#define V3_HERO_LAUNCH_SPEED_MAX 16
+#define V3_HERO_LV10_HP_MAX 500
+#define V3_HERO_LV10_POWER_MAX 120
 
-#define V3_SBR_LV1_HP_MAX 300
-#define V3_SBR_LV1_POWER_MAX 60
-#define V3_SBR_LV2_HP_MAX 400
-#define V3_SBR_LV2_POWER_MAX 80
-#define V3_SBR_LV3_HP_MAX 500
-#define V3_SBR_LV3_POWER_MAX 100
+#define V3_HERO_POWER_FOCUSED_LV1_HP_MAX 200
+#define V3_HERO_POWER_FOCUSED_HP_INCREMENT 25
+#define V3_HERO_POWER_FOCUSED_LV1_POWER_MAX 70
+#define V3_HERO_POWER_FOCUSED_POWER_INCREMENT 5
 
-#define V3_BURST_FOCUSED_V1_HEAT_MAX 150
-#define V3_BURST_FOCUSED_V1_COOLING_RATE 15
-#define V3_BURST_FOCUSED_V1_BULLET_SPEED_MAX 15
-#define V3_BURST_FOCUSED_V2_HEAT_MAX 280
-#define V3_BURST_FOCUSED_V2_COOLING_RATE 25
-#define V3_BURST_FOCUSED_V2_BULLET_SPEED_MAX 15
-#define V3_BURST_FOCUSED_V3_HEAT_MAX 400
-#define V3_BURST_FOCUSED_V3_COOLING_RATE 35
-#define V3_BURST_FOCUSED_V3_BULLET_SPEED_MAX 15
+#define V3_HERO_HP_FOCUSED_LV1_HP_MAX 250
+#define V3_HERO_HP_FOCUSED_HP_INCREMENT 25
+#define V3_HERO_HP_FOCUSED_LV1_POWER_MAX 55
+#define V3_HERO_HP_FOCUSED_POWER_INCREMENT 5
+#define V3_HERO_HP_FOCUSED_LV9_POWER_MAX 100
 
-#define V3_COOLING_FOCUSED_V1_HEAT_MAX 50
-#define V3_COOLING_FOCUSED_V1_COOLING_RATE 40
-#define V3_COOLING_FOCUSED_V1_BULLET_SPEED_MAX 15
-#define V3_COOLING_FOCUSED_V2_HEAT_MAX 100
-#define V3_COOLING_FOCUSED_V2_COOLING_RATE 60
-#define V3_COOLING_FOCUSED_V2_BULLET_SPEED_MAX 18
-#define V3_COOLING_FOCUSED_V3_HEAT_MAX 150
-#define V3_COOLING_FOCUSED_V3_COOLING_RATE 80
-#define V3_COOLING_FOCUSED_V3_BULLET_SPEED_MAX 18
+#define V3_STANDARD_POWER_FOCUSED_LV1_HP_MAX 150
+#define V3_STANDARD_POWER_FOCUSED_HP_INCREMENT 25
+#define V3_STANDARD_POWER_FOCUSED_LV1_POWER_MAX 60
+#define V3_STANDARD_POWER_FOCUSED_POWER_INCREMENT 5
 
-#define V3_BULLET_SPEED_FOCUSED_V1_HEAT_MAX 75
-#define V3_BULLET_SPEED_FOCUSED_V1_COOLING_RATE 15
-#define V3_BULLET_SPEED_FOCUSED_V1_BULLET_SPEED_MAX 30
-#define V3_BULLET_SPEED_FOCUSED_V2_HEAT_MAX 150
-#define V3_BULLET_SPEED_FOCUSED_V2_COOLING_RATE 25
-#define V3_BULLET_SPEED_FOCUSED_V2_BULLET_SPEED_MAX 30
-#define V3_BULLET_SPEED_FOCUSED_V3_HEAT_MAX 200
-#define V3_BULLET_SPEED_FOCUSED_V3_COOLING_RATE 35
-#define V3_BULLET_SPEED_FOCUSED_V3_BULLET_SPEED_MAX 30
+#define V3_STANDARD_HP_FOCUSED_LV1_HP_MAX 200
+#define V3_STANDARD_HP_FOCUSED_HP_INCREMENT 25
+#define V3_STANDARD_HP_FOCUSED_LV1_POWER_MAX 45
+#define V3_STANDARD_HP_FOCUSED_POWER_INCREMENT 5
+#define V3_STANDARD_HP_FOCUSED_LV9_POWER_MAX 90
 
+#define V3_STANDARD_BURST_FOCUSED_LV1_HEAT_MAX 200
+#define V3_STANDARD_BURST_FOCUSED_HEAT_INCREMENT 50
+#define V3_STANDARD_BURST_FOCUSED_LV1_COOLING_MAX 10
+#define V3_STANDARD_BURST_FOCUSED_COOLING_INCREMENT 5
 
-//Referee System Communication Definition
-#define REFEREE_BUFFER_LEN 												 389u					//Buffer length to receive all data
-#define REFEREE_FRAME_HEADER_START 								 0xA5 				//Frame header
-#define REFEREE_FRAME_HEADER_LEN 									 5 						//Frame header length
-#define REFEREE_ID_LEN 														 2						//ID length
-#define REFEREE_FRAME_TAIL_LEN 										 2 						//Frame tail length
+#define V3_STANDARD_COOLING_FOCUSED_LV1_HEAT_MAX 50
+#define V3_STANDARD_COOLING_FOCUSED_HEAT_INCREMENT 35
+#define V3_STANDARD_COOLING_FOCUSED_LV10_HEAT_MAX 400
+#define V3_STANDARD_COOLING_FOCUSED_LV1_COOLING_MAX 40
+#define V3_STANDARD_COOLING_FOCUSED_COOLING_INCREMENT 5
+#define V3_STANDARD_COOLING_FOCUSED_LV10_COOLING_MAX 80
 
-#define REFEREE_OFFSET_SOF         								 0  					//SOF offset
-#define REFEREE_OFFSET_DATA_LENGTH 								 1  					//Data length offset
-#define REFEREE_OFFSET_SEQ         								 3  					//SEQ offset
-#define REFEREE_OFFSET_CRC8        								 4  					//CRC offset
+#define V3_HERO_LV1_HEAT_MAX 200
+#define V3_HERO_LV10_HEAT_MAX 200
+#define V3_HERO_HEAT_INCREMENT 30
+#define V3_HERO_LV1_COOLING_MAX 40
+#define V3_HERO_COOLING_INCREMENT 8
+#define V3_HERO_LV10_COOLING_MAX 120
 
-#define       REFEREE_GAME_STATUS	              	 0x0001 
-#define       REFEREE_GAME_RESULT              		 0x0002 
-#define       REFEREE_ROBOT_HP                     0x0003 
-#define       REFEREE_DART_LAUNCH                  0x0004
-#define       REFEREE_AI_CHALLENGEBUFF             0x0005
-#define       REFEREE_EVENT_DATA                   0x0101
-#define       REFEREE_SUPPLY_STATION               0x0102
-//#define       REFEREE_REQUEST_RECHARGE             0x0103
-#define       REFEREE_REFEREE_WARNING              0x0104
-#define       REFEREE_DART_COUNTDOWN               0x0105
-#define       REFEREE_ROBOT_STATE                  0x0201
-#define       REFEREE_POWER_HEAT                   0x0202
-#define       REFEREE_ROBOT_POSITION               0x0203
-#define       REFEREE_ROBOT_BUFF                   0x0204
-#define       REFEREE_AERIAL_ENERGY                0x0205
-#define       REFEREE_INJURY_STATE                 0x0206
-#define       REFEREE_SHOOTER_STATE                0x0207
-#define       REFEREE_REMAINING_AMMO             	 0x0208
-#define       REFEREE_ROBOT_RFID                   0x0209
-#define       REFEREE_DART_CLIENT                  0x020A
-#define       REFEREE_ROBOT_COMMUNICATE            0x0301
-#define       REFEREE_USER_DEFINED                 0x0302
+#define REFEREE_BUFFER_LEN 							787u					//Buffer length to receive all data
+#define REFEREE_FRAME_HEADER_START 					0xA5 				//Frame header
+#define REFEREE_FRAME_HEADER_LEN 					5 						//Frame header length
+#define REFEREE_ID_LEN 								2						//ID length
+#define REFEREE_FRAME_TAIL_LEN 						2 						//Frame tail length
 
+#define REFEREE_OFFSET_SOF         					0  					//SOF offset
+#define REFEREE_OFFSET_DATA_LENGTH 					1  					//Data length offset
+#define REFEREE_OFFSET_SEQ         					3  					//SEQ offset
+#define REFEREE_OFFSET_CRC8        					4  					//CRC offset
+
+#define       REFEREE_GAME_STATUS	               0x0001       //Competition status data, transmitted at a fixed frequency of 1 Hz.
+#define       REFEREE_GAME_RESULT              	   0x0002 			//Competition result data, transmitted upon completion of the competition.
+#define       REFEREE_ROBOT_HP                     0x0003 			//Robot health data, transmitted at a fixed frequency of 3 Hz.
+#define       REFEREE_EVENT_DATA                   0x0101				//Site event data, transmitted at a fixed frequency of 1 Hz
+#define       REFEREE_SUPPLY_STATION               0x0102				//Action identifier data of the Official Projectile Supplier, transmitted when the Official Projectile Supplier releases projectiles.
+#define       REFEREE_REFEREE_WARNING              0x0104				//Referee warning data, transmitted when one's team is issued a penalty/forfeiture and at a fixed frequency of 1 Hz in other cases.
+#define       REFEREE_DART_DATA               	   0x0105				//Dart launching data, transmitted at a fixed frequency of 1 Hz.
+#define       REFEREE_ROBOT_STATE                  0x0201				//Robot performance system data, transmitted at a fixed frequency of 10 Hz.
+#define       REFEREE_POWER_HEAT                   0x0202				//Real-time chassis power and barrel heat data, transmitted at a fixed frequency of 50 Hz
+#define       REFEREE_ROBOT_POSITION               0x0203				//Robot position data, transmitted at a fixed frequency of 1 Hz.
+#define       REFEREE_ROBOT_BUFF                   0x0204				//Robot buff data, transmitted at a fixed frequency of 3 Hz.
+#define       REFEREE_AERIAL_DATA                  0x0205				//Air support time data, transmitted at a fixed frequency of 1 Hz.
+#define       REFEREE_INJURY_STATE                 0x0206				//Damage status data, transmitted after the damage occurs.
+#define       REFEREE_SHOOTER_STATE                0x0207				//Real-time launching data, transmitted after a projectile is launched.
+#define       REFEREE_REMAINING_AMMO               0x0208				//Projectile allowance, transmitted at a fixed frequency of 10 Hz.
+#define       REFEREE_ROBOT_RFID                   0x0209				//Robot RFID module status, transmitted at a fixed frequency of 3 Hz.
+#define       REFEREE_DART_CLIENT                  0x020A				//Dart player's client command data, transmitted at a fixed frequency of 3 Hz.
+#define       REFEREE_GROUND_POS                   0x020B				//Ground Robot position data, transmitted at a fixed frequency of 1 Hz.
+#define       REFEREE_RADAR_PROGRESS               0x020C				//Radar-marked progress data, transmitted at a fixed frequency of 1 Hz.
+#define       REFEREE_SENTRY_DECISION              0x020D				//Decision-making data of Sentry Robot, transmitted at a fixed frequency of 1 Hz.
+#define       REFEREE_RADAR_DECISION               0x020E				//Decision-making data of Radar, transmitted at a fixed frequency of 1 Hz.
+#define       REFEREE_ROBOT_COMMUNICATE            0x0301				//Robot interaction data, transmitted at a maximum frequency of 10 Hz when triggered by the sender.
+#define       REFEREE_USER_DEFINED                 0x0302				//Data about the interaction between the Custom Controller and robots, transmitted at a maximum frequency of 30 Hz when triggered by the sender.
+#define       REFEREE_SMALL_MAP_INTERACT           0x0303				//Player client's small map interaction data, transmitted when triggered by the player client.
+#define       REFEREE_KEYBOARD_REMOTE              0x0304				//Keyboard, mouse, and remote control data, transmitted at a fixed frequency of 30 Hz.
+#define       REFEREE_SMALL_MAP_RADAR              0x0305				//Radar data received by player clients' Small Maps, transmitted at a maximum frequency of 10 Hz.
+#define       REFEREE_CUSTOM_CONTROLLER            0x0306				//Data about the interaction between the Custom Controller and player clients, transmitted at a maximum frequency of 30 Hz when triggered by the sender.
+#define       REFEREE_SENTRY_DATA                  0x0307				//Sentry data received by player clients' Small Maps, transmitted at a maximum frequency of 1 Hz.
+#define       REFEREE_CUSTOM_DATA         		   0x0308				//Robot data received by player clients' Small Map, transmitted at a maximum frequency of 3 Hz.
 
 /*Calculation: REFEREE_FRAME_HEADER_LEN(5-byte) + REFEREE_ID_LEN(2-byte) + DATA(n-byte) + REFEREE_FRAME_TAIL_LEN(2-byte,CRC16)*/
-#define       REFEREE_GAME_STATUS_LEN	             20
+#define       REFEREE_GAME_STATUS_LEN	           20
 #define       REFEREE_GAME_RESULT_LEN              10 
 #define       REFEREE_ROBOT_HP_LEN                 41 
-#define       REFEREE_DART_LAUNCH_LEN              12
-#define       REFEREE_AI_CHALLENGEBUFF_LEN         20
 #define       REFEREE_EVENT_DATA_LEN               13
 #define       REFEREE_SUPPLY_STATION_LEN           13
-//#define       REFEREE_REQUEST_RECHARGE_LEN         11
-#define       REFEREE_REFEREE_WARNING_LEN          11
-#define       REFEREE_DART_COUNTDOWN_LEN           10	
-#define       REFEREE_ROBOT_STATE_LEN              36
+#define       REFEREE_REFEREE_WARNING_LEN          12
+#define       REFEREE_DART_DATA_LEN           	   12	
+#define       REFEREE_ROBOT_STATE_LEN              22
 #define       REFEREE_POWER_HEAT_LEN               25
 #define       REFEREE_ROBOT_POSITION_LEN           25
-#define       REFEREE_ROBOT_BUFF_LEN               10
-#define       REFEREE_AERIAL_ENERGY_LEN            10
+#define       REFEREE_ROBOT_BUFF_LEN               15
+#define       REFEREE_AERIAL_DATA_LEN              11
 #define       REFEREE_INJURY_STATE_LEN             10
 #define       REFEREE_SHOOTER_STATE_LEN            16
 #define       REFEREE_REMAINING_AMMO_LEN           15
 #define       REFEREE_ROBOT_RFID_LEN               13
-#define       REFEREE_DART_CLIENT_LEN              21
-#define       REFEREE_ROBOT_COMMUNICATE_LEN        35
-#define       REFEREE_USER_DEFINED_LEN             26
+#define       REFEREE_DART_CLIENT_LEN              15
+#define       REFEREE_GROUND_POS_LEN               49  	 
+#define       REFEREE_RADAR_PROGRESS_LEN           15    
+#define       REFEREE_SENTRY_DECISION_LEN          13   
+#define       REFEREE_RADAR_DECISION_LEN  		   10
+//#define       REFEREE_ROBOT_COMMUNICATE_LEN        137     			
+#define       REFEREE_USER_DEFINED_LEN             39
+//#define       REFEREE_SMALL_MAP_INTERACT_LEN       24
+//#define       REFEREE_KEYBOARD_REMOTE_LEN          21
+//#define       REFEREE_SMALL_MAP_RADAR_LEN          19
+//#define       REFEREE_CUSTOM_CONTROLLER_LEN        17
+//#define       REFEREE_SENTRY_DATA_LEN              112
+//#define       REFEREE_CUSTOM_DATA_LEN        		 43
 
 typedef struct
 {
@@ -160,12 +168,13 @@ typedef struct
 	
 	uint16_t Cooling_Rate;
 	uint16_t Heat_Max;
-	uint16_t Bullet_Speed_Max;
+	uint16_t Launch_Speed_Max;
 	uint16_t Chassis_Power_Max;
 	
 	float Chassis_Power;
 	float Power_Buffer;
-	uint16_t Shooter_Heat;
+	uint16_t Shooter_Heat_1;
+  uint16_t Shooter_Heat_2;
 	uint8_t Shooting_Frequency;
 	float Shooting_Speed;
 }Referee_Robot_State_t;
@@ -178,8 +187,8 @@ typedef struct
 	
 	struct __attribute__ ((__packed__))
 	{
-		uint8_t Type;
-		uint8_t Progress;
+		uint8_t Type:4;
+		uint8_t Progress:4;
 		uint16_t Remaining_Time;
 		uint64_t Sync_Time_Stamp;
 	}Game_Status;
@@ -214,14 +223,29 @@ typedef struct
 	
 	struct __attribute__ ((__packed__))
 	{
-		uint32_t Type;
+		uint32_t Event_Data;
 	}Event;
+	
+	struct __attribute__ ((__packed__))
+	{
+		uint8_t Reserved;
+		uint8_t Supply_Robot_ID;
+		uint8_t Supply_Projectile_Step;
+		uint8_t Supply_Projectile_Num;
+	}Supply_Station;
 	
 	struct __attribute__ ((__packed__))
 	{
 		uint8_t Card;
 		uint8_t Foul_Robot_ID;
+		uint8_t Count;
 	}Warning;
+	
+	struct __attribute__ ((__packed__))
+	{
+		uint8_t Dart_Remaining_Time;
+		uint16_t Dart_Info;
+	}Dart_Info;
 	
 	struct __attribute__ ((__packed__))
 	{
@@ -229,19 +253,8 @@ typedef struct
 		uint8_t Level;
 		uint16_t Remaining_HP;
 		uint16_t HP_Max;
-		
-		uint16_t Shooter_1_Cooling_Rate_17mm;
-		uint16_t Shooter_1_Heat_Max_17mm;
-		uint16_t Shooter_1_Speed_Limit_17mm;
-		
-		uint16_t Shooter_2_Cooling_Rate_17mm;
-		uint16_t Shooter_2_Heat_Max_17mm;
-		uint16_t Shooter_2_Speed_Limit_17mm;
-		
-		uint16_t Shooter_Cooling_Rate_42mm;
-		uint16_t Shooter_Heat_Max_42mm;
-		uint16_t Shooter_Speed_Limit_42mm;
-		
+		uint16_t Shooter_Cooling_Value;
+		uint16_t Shooter_Heat_Max;
 		uint16_t Chassis_Power_Max;	
 		uint8_t Gimbal_Power_Output:1;
 		uint8_t Chassis_Power_Output:1;
@@ -254,29 +267,38 @@ typedef struct
 		uint16_t Chassis_Current;
 		float Chassis_Power;
 		uint16_t Chassis_Power_Buffer;
-		uint16_t Shooter_1_Heat;
-		uint16_t Shooter_2_Heat;
-		uint16_t Mobile_Shooter_Heat;
-	}Power_n_Heat;
+		uint16_t Shooter_1_17mm_Heat;
+		uint16_t Shooter_2_17mm_Heat;
+		uint16_t Shooter_42mm_Heat;
+	}Power_Heat;
 	
 	struct __attribute__ ((__packed__))
 	{
 		float x;
 		float y;
-		float z;
-		float Yaw;
-	}Location;
+		float Angle;
+	}Robot_Pos;
 	
 	struct __attribute__ ((__packed__))
 	{
-		uint8_t Buff;
+		uint8_t Recovery_Buff;
+		uint8_t Cooling_Buff;
+		uint8_t Defence_Buff;
+		uint8_t Vulnerability_Buff;
+		uint16_t Attack_Buff;
 	}Robot_Buff;
 	
 	struct __attribute__ ((__packed__))
 	{
-		uint8_t Armor_ID;
-		uint8_t Type;
-	}Damage;
+	 uint8_t Aerial_Status;
+	 uint8_t Time_Remaining;
+	}Aerial_Data;
+	
+	struct __attribute__ ((__packed__))
+	{
+	 uint8_t Armor_ID : 4;
+	 uint8_t HP_Deduction_Reason : 4;
+	}Injury_State;
 	
 	struct __attribute__ ((__packed__))
 	{
@@ -297,7 +319,49 @@ typedef struct
 	{
 		uint32_t State;
 	}RFID;
-		
+	
+	struct __attribute__ ((__packed__))
+	{
+		uint8_t Dart_Launch_Opening_Status;
+		uint8_t Reserved;
+		uint16_t Target_Change_Time;
+	  uint16_t Latest_Launch_Cmd_Time;
+	}Dart_Client;
+	
+	struct __attribute__ ((__packed__))
+	{
+		float hero_x;
+	  float hero_y;
+	  float engineer_x;
+	  float engineer_y;
+	  float standard_3_x;
+	  float standard_3_y;
+	  float standard_4_x;
+	  float standard_4_y;
+	  float standard_5_x;
+	  float standard_5_y;
+	}Ground_Pos;
+	
+	struct __attribute__ ((__packed__))
+	{
+		uint8_t Mark_Hero_Progress;
+	  uint8_t Mark_Engineer_Progress;
+	  uint8_t Mark_Standard_3_Progress;
+	  uint8_t Mark_Standard_4_Progress;
+	  uint8_t Mark_Standard_5_Progress;
+	  uint8_t Mark_Sentry_Progress;
+	}Radar_Progress;
+	
+	struct __attribute__ ((__packed__))
+	{
+		uint32_t Sentry_Info;
+	}Sentry_Decision;
+	
+	struct __attribute__ ((__packed__))
+	{
+		uint8_t Radar_Info;
+	}Radar_Decision;
+	
 	uint16_t Info_Update_Frame;
 	uint8_t Offline_Flag;
 } Referee_System_t;

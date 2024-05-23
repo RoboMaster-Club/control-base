@@ -10,6 +10,7 @@
 #include "jetson_orin.h"
 #include "bsp_serial.h"
 #include "bsp_daemon.h"
+#include "ui.h"
 
 extern void IMU_Task(void const *pvParameters);
 
