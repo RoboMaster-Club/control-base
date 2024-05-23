@@ -11,6 +11,7 @@
 #include "usart.h"
 #include "bsp_serial.h"
 
+
 extern int ui_self_id;
 
 void print_message(const uint8_t* message, int length);
