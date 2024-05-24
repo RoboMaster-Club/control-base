@@ -16,7 +16,7 @@
                 "${workspaceFolder}/src/devices/inc",
                 "${workspaceFolder}/src/algo/inc",
                 "${workspaceFolder}/src/bsp/inc",
-                "${workspaceFolder}/src/app/inc",
+                "${workspaceFolder}/src/app/inc"
             ],
             "defines": [
                 "USE_HAL_DRIVER",
