@@ -291,7 +291,7 @@ typedef struct
 	{
 		uint32_t State;
 	}RFID;
-	
+
 	uint16_t Info_Update_Frame;
 	uint8_t Offline_Flag;
 } Referee_System_t;
