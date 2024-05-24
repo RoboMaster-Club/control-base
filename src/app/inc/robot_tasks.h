@@ -87,11 +87,12 @@ void Robot_Tasks_UI(void const *argument)
 {
     portTickType xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
-    const TickType_t TimeIncrement = pdMS_TO_TICKS(100);
+    const TickType_t TimeIncrement = pdMS_TO_TICKS(5000);
     while (1)
     {
-        ui_update_indicator_0();
-        ui_update_indicator_1();
+        // ui_init_indicator_0();
+        // osDelay(5000);
+        // ui_init_indicator_1();
         vTaskDelayUntil(&xLastWakeTime, TimeIncrement);
     }
 }

@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include "ui_types.h"
 #include "bsp_crc.h"
+#include "bsp_uart.h"
+#include "bsp_serial.h"
 
 extern int ui_self_id;
 
