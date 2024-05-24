@@ -57,6 +57,10 @@ void Chassis_Ctrl_Loop()
             float spin_coeff = chassis_rad * SPIN_TOP_OMEGA / (translation_speed + chassis_rad * SPIN_TOP_OMEGA);
             g_chassis_state.omega = SPIN_TOP_OMEGA * spin_coeff;
         }
+        else
+        {
+            g_chassis_state.omega = 0;
+        }
 
         Swerve_Drive(g_chassis_state.x_speed, g_chassis_state.y_speed, g_chassis_state.omega, g_chassis_state.max_speed);
     }
