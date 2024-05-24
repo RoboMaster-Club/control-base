@@ -8,6 +8,7 @@
 #include "Swerve_Locomotion.h"
 
 extern Robot_State_t g_robot_state;
+extern Chassis_State_t g_chassis_state;
 extern Remote_t g_remote;
 extern IMU_t g_imu;
 
@@ -29,15 +30,19 @@ void Chassis_Ctrl_Loop()
         /* power buffer*/
         float power_buffer_frac = Referee_System.Power_n_Heat.Chassis_Power_Buffer / CHASSIS_POWER_BUFFER_MAX_JOULES;
         float current_draw_frac = Referee_System.Power_n_Heat.Chassis_Current / CHASSIS_CURRENT_MAX_AMPS;
-        float speed_limitter = (current_draw_frac + pow(power_buffer_frac, 2)) / 2;
+        float speed_limiter = (current_draw_frac + pow(power_buffer_frac, 2)) / 2;
+
+        g_chassis_state.power_buffer_frac = power_buffer_frac;
+        g_chassis_state.current_draw_frac = current_draw_frac;
+        g_chassis_state.speed_limiter = speed_limiter;
 
         if (current_draw_frac < 0.9f)
         {
-            g_robot_state.chassis_max_speed = CHASSIS_MAX_SPEED_METERS * speed_limitter;
+            g_chassis_state.max_speed = CHASSIS_MAX_SPEED_METERS * speed_limiter;
         }
         else
         {
-            g_robot_state.chassis_max_speed = CHASSIS_MAX_SPEED_METERS;
+            g_chassis_state.max_speed = CHASSIS_MAX_SPEED_METERS;
         }
 
         /*
@@ -47,13 +52,13 @@ void Chassis_Ctrl_Loop()
          */
         if (g_robot_state.spintop_mode)
         {
-            float translation_speed = sqrt(pow(g_robot_state.chassis_x_speed, 2) + pow(g_robot_state.chassis_y_speed, 2));
+            float translation_speed = sqrt(pow(g_chassis_state.x_speed, 2) + pow(g_chassis_state.y_speed, 2));
             float chassis_rad = TRACK_WIDTH * 0.5f * sqrt(2);
             float spin_coeff = chassis_rad * SPIN_TOP_OMEGA / (translation_speed + chassis_rad * SPIN_TOP_OMEGA);
-            g_robot_state.chassis_omega = SPIN_TOP_OMEGA * spin_coeff;
+            g_chassis_state.omega = SPIN_TOP_OMEGA * spin_coeff;
         }
 
-        Swerve_Drive(g_robot_state.chassis_x_speed, g_robot_state.chassis_y_speed, g_robot_state.chassis_omega, g_robot_state.chassis_max_speed);
+        Swerve_Drive(g_chassis_state.x_speed, g_chassis_state.y_speed, g_chassis_state.omega, g_chassis_state.max_speed);
     }
     else
     {

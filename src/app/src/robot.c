@@ -21,6 +21,7 @@ extern DJI_Motor_Handle_t *g_yaw;
 #define GIMBAL_MAX_PITCH (0.4f)
 
 Robot_State_t g_robot_state = {0, 0};
+Chassis_State_t g_chassis_state = {0};
 Key_Prev_t g_key_prev = {0};
 extern Launch_Target_t g_launch_target;
 extern Remote_t g_remote;
@@ -90,8 +91,8 @@ void Robot_Cmd_Loop()
             g_robot_state.vy *= MAX_SPEED;
 
             float theta = DJI_Motor_Get_Absolute_Angle(g_yaw);
-            g_robot_state.chassis_x_speed = -g_robot_state.vy * sin(theta) + g_robot_state.vx * cos(theta);
-            g_robot_state.chassis_y_speed = g_robot_state.vy * cos(theta) + g_robot_state.vx * sin(theta);
+            g_chassis_state.x_speed = -g_robot_state.vy * sin(theta) + g_robot_state.vx * cos(theta);
+            g_chassis_state.y_speed = g_robot_state.vy * cos(theta) + g_robot_state.vx * sin(theta);
 
             if (g_remote.controller.left_switch == DOWN)
             {

@@ -88,7 +88,7 @@ void Swerve_Init()
 
 /* Scale wheel speeds to max possible speed while preserving ratio between modules.*/
 Module_State_Array_t Desaturate_Wheel_Speeds(Module_State_Array_t module_state_array, float max_speed)
-{    
+{
     float highest_speed = fabsf(module_state_array.states[0].speed);
     for (int i = 1; i < NUMBER_OF_MODULES; i++) // start from 1 to find the highest speed
     {
@@ -188,7 +188,7 @@ Module_State_t Optimize_Module_Angle(Module_State_t input_state, float measured_
         curr_angle_normalized += 2.0f * PI;
     }
 
-    float delta = target_angle - curr_angle_normalized;          // calculate the angle delta
+    float delta = target_angle - curr_angle_normalized; // calculate the angle delta
 
     // these conditions essentially create the step function for angles to "snap" too offset from the measured angle to avoid flipping
     if (PI / 2.0f < fabsf(delta) && fabsf(delta) < 3 * PI / 2.0f)
@@ -226,7 +226,7 @@ Module_State_t Optimize_Module_Angle(Module_State_t input_state, float measured_
  */
 void Set_Module_Output(Swerve_Module_t *swerve_module, Module_State_t desired_state)
 {
-#ifdef SWERVE_OPTIMIZE    
+#ifdef SWERVE_OPTIMIZE
     Module_State_t optimized_module_state = Optimize_Module_Angle(desired_state, DJI_Motor_Get_Absolute_Angle(swerve_module->azimuth_motor));
     DJI_Motor_Set_Angle(swerve_module->azimuth_motor, optimized_module_state.angle);
     DJI_Motor_Set_Velocity(swerve_module->drive_motor, optimized_module_state.speed * 60 / (PI * Wheel_Diameter));
