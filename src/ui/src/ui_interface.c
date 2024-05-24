@@ -95,7 +95,7 @@ void print_message(const uint8_t *message, const int length) {
     // DEBUG_PRINTF(&huart6, "\n\n");
     
     for (int i = 0; i < length; i++) {
-        HAL_UART_Transmit(&huart1,&message[i],sizeof(uint8_t),500);
+        HAL_UART_Transmit(&huart6,&message[i],sizeof(uint8_t),500);
     }
 }
 

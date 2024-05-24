@@ -27,4 +27,6 @@ typedef struct
 void Launch_Task_Init(void);
 void Launch_Ctrl_Loop(void);
 
+extern Launch_Target_t g_launch_target;
+
 #endif // LAUNCH_TASK_H

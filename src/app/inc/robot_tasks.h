@@ -5,6 +5,8 @@
 #include "main.h"
 #include "cmsis_os.h"
 
+#include "robot.h"
+#include "launch_task.h"
 #include "motor_task.h"
 #include "debug_task.h"
 #include "jetson_orin.h"
@@ -87,12 +89,54 @@ void Robot_Tasks_UI(void const *argument)
 {
     portTickType xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
-    const TickType_t TimeIncrement = pdMS_TO_TICKS(2000);
+    const TickType_t TimeIncrement = pdMS_TO_TICKS(100);
     while (1)
     {
-        // ui_init_indicator_0();
-        // osDelay(5000);
-        ui_init_indicator_1();
+        if (!g_robot_state.UI_enabled)
+        {
+            ui_remove_indicator_0();
+            ui_init_indicator_0();
+            ui_remove_indicator_1();
+            ui_init_indicator_1();
+            g_robot_state.UI_enabled = 1;
+        }
+        if (g_launch_target.flywheel_enabled)
+        {
+            ui_indicator_1_Flywheel_Select->start_x = 270;
+            ui_indicator_1_Flywheel_Select->end_x = 320;
+        }
+        else
+        {
+            ui_indicator_1_Flywheel_Select->start_x = 335;
+            ui_indicator_1_Flywheel_Select->end_x = 385;
+        }
+        if (g_robot_state.spintop_mode)
+        {
+            ui_indicator_1_Spintop_Select->start_x = 270;
+            ui_indicator_1_Spintop_Select->end_x = 320;
+        }
+        else
+        {
+            ui_indicator_1_Spintop_Select->start_x = 335;
+            ui_indicator_1_Spintop_Select->end_x = 385;
+        }
+        if (g_robot_state.autoaiming_enabled)
+        {
+            ui_indicator_1_Autoaim_Select->start_x = 270;
+            ui_indicator_1_Autoaim_Select->end_x = 320;
+        }
+        else
+        {
+            ui_indicator_1_Autoaim_Select->start_x = 335;
+            ui_indicator_1_Autoaim_Select->end_x = 385;
+        }
+        if (ui_indicator_1_Supercap->number>=100)
+        {
+            ui_indicator_1_Supercap->number = 0;
+        }
+        ui_indicator_1_Supercap->number++;
+        
+        ui_update_indicator_1();
         vTaskDelayUntil(&xLastWakeTime, TimeIncrement);
     }
 }
@@ -116,7 +160,7 @@ void Robot_Tasks_Jetson_Orin(void const *argument)
     const TickType_t TimeIncrement = pdMS_TO_TICKS(JETSON_ORIN_PERIOD);
     while (1)
     {
-        Jetson_Orin_Send_Data();
+        //Jetson_Orin_Send_Data();
         vTaskDelayUntil(&xLastWakeTime, TimeIncrement);
     }
 }

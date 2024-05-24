@@ -50,8 +50,6 @@ void Robot_Init()
     CAN_Service_Init();
     Referee_System_Init(&huart1);
     //Jetson_Orin_Init(&huart6);
-    // ui_init_indicator_0();
-    // ui_init_indicator_1();
     //  Initialize all tasks
     Robot_Tasks_Start();
 }
@@ -184,8 +182,13 @@ void Robot_Cmd_Loop()
             {
                 _toggle_robot_state(&g_robot_state.spintop_mode);
             }
+            if (g_remote.keyboard.V == 1 && g_key_prev.prev_V == 0)
+            {
+                _toggle_robot_state(&g_robot_state.UI_enabled);
+            }
             g_key_prev.prev_B = g_remote.keyboard.B;
             g_key_prev.prev_G = g_remote.keyboard.G;
+            g_key_prev.prev_V = g_remote.keyboard.V;
             /* Keyboard Toggles Start Here */
 
             /* AutoAiming Flag, not used only for debug */

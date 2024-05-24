@@ -30,29 +30,29 @@ void _ui_init_indicator_1_0() {
     ui_indicator_1_Flywheel_Select->figure_tpye = 1;
     ui_indicator_1_Flywheel_Select->layer = 1;
     ui_indicator_1_Flywheel_Select->start_x = 270;
-    ui_indicator_1_Flywheel_Select->start_y = 770;
+    ui_indicator_1_Flywheel_Select->start_y = 780;
     ui_indicator_1_Flywheel_Select->color = 6;
     ui_indicator_1_Flywheel_Select->width = 4;
     ui_indicator_1_Flywheel_Select->end_x = 320;
-    ui_indicator_1_Flywheel_Select->end_y = 800;
+    ui_indicator_1_Flywheel_Select->end_y = 810;
 
     ui_indicator_1_Spintop_Select->figure_tpye = 1;
     ui_indicator_1_Spintop_Select->layer = 1;
-    ui_indicator_1_Spintop_Select->start_x = 337;
-    ui_indicator_1_Spintop_Select->start_y = 730;
+    ui_indicator_1_Spintop_Select->start_x = 335;
+    ui_indicator_1_Spintop_Select->start_y = 740;
     ui_indicator_1_Spintop_Select->color = 6;
     ui_indicator_1_Spintop_Select->width = 4;
-    ui_indicator_1_Spintop_Select->end_x = 387;
-    ui_indicator_1_Spintop_Select->end_y = 760;
+    ui_indicator_1_Spintop_Select->end_x = 385;
+    ui_indicator_1_Spintop_Select->end_y = 770;
 
     ui_indicator_1_Autoaim_Select->figure_tpye = 1;
     ui_indicator_1_Autoaim_Select->layer = 1;
     ui_indicator_1_Autoaim_Select->start_x = 270;
-    ui_indicator_1_Autoaim_Select->start_y = 690;
+    ui_indicator_1_Autoaim_Select->start_y = 700;
     ui_indicator_1_Autoaim_Select->color = 6;
     ui_indicator_1_Autoaim_Select->width = 4;
     ui_indicator_1_Autoaim_Select->end_x = 320;
-    ui_indicator_1_Autoaim_Select->end_y = 720;
+    ui_indicator_1_Autoaim_Select->end_y = 730;
 
     ui_indicator_1_Supercap->figure_tpye = 6;
     ui_indicator_1_Supercap->layer = 1;
