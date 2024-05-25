@@ -130,7 +130,7 @@ void Robot_Tasks_UI(void const *argument)
             ui_indicator_1_Autoaim_Select->start_x = 335;
             ui_indicator_1_Autoaim_Select->end_x = 385;
         }
-        if (ui_indicator_1_Supercap->number>=100)
+        if (ui_indicator_1_Supercap->number>=99)
         {
             ui_indicator_1_Supercap->number = 0;
         }

@@ -7,7 +7,6 @@
 
 #include "ui_interface.h"
 
-extern ui_interface_round_t *ui_indicator_0_Aim_Circle;
 extern ui_interface_line_t *ui_indicator_0_Aim_V_Line;
 extern ui_interface_line_t *ui_indicator_0_Aim_H_Line;
 extern ui_interface_line_t *ui_indicator_0_Pathway_Left;
@@ -18,3 +17,4 @@ void _ui_update_indicator_0_10();
 void _ui_remove_indicator_0_10();
 
 #endif //UI_indicator_0_10_H
+

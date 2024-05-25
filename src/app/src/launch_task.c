@@ -87,7 +87,7 @@ void Launch_Ctrl_Loop() {
 }
 
 void _launch_set_flywheel_vel_based_on_level() {
-    g_launch_target.flywheel_velocity = FLYWHEEL_VELOCITY_23;
+    g_launch_target.flywheel_velocity = FLYWHEEL_VELOCITY_30;
 }
 
 void Feed_Angle_Calc()
