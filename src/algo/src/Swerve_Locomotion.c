@@ -1,5 +1,6 @@
 #include "Swerve_Locomotion.h"
 #include <stdbool.h>
+#include <stdlib.h>
 #include "user_math.h"
 #include "dji_motor.h"
 
@@ -55,10 +56,10 @@ void Swerve_Init()
     Motor_Config_t azimuth_motor_config = {
         .control_mode = POSITION_CONTROL,
         .angle_pid = {
-            .kp = 28000.0f,
-            .ki = 0.0f,
+            .kp = 15000.0f,
+            .kd = 8000.0f,
+            .kf = 5000.0f,
             .output_limit = GM6020_MAX_CURRENT,
-            .integral_limit = 1000.0f,
         }};
 
     // init common PID configuration for drive motors
@@ -66,7 +67,9 @@ void Swerve_Init()
         .control_mode = VELOCITY_CONTROL,
         .velocity_pid = {
             .kp = 500.0f,
+            .ki = 5.0f,
             .output_limit = M3508_MAX_CURRENT,
+            .integral_limit = 3000.0f,
         }};
 
     for (int i = 0; i < NUMBER_OF_MODULES; i++)
@@ -257,6 +260,33 @@ void Swerve_Drive(float x, float y, float omega)
     x *= SWERVE_MAX_SPEED; // convert to m/s
     y *= SWERVE_MAX_SPEED;
     omega *= SWERVE_MAX_ANGLUAR_SPEED; // convert to rad/s
+    #ifdef POWER_CONTROL
+        if(x != 0 || y != 0 || omega > 0.01f)
+        {
+            // power_avg_count++;
+            // g_robot_state.chassis_total_power += Referee_Robot_State.Chassis_Power;
+            // g_robot_state.chassis_avg_power = g_robot_state.chassis_total_power/power_avg_count;
+            // if(g_robot_state.chassis_avg_power < Referee_Robot_State.Chassis_Power_Max*0.5f)
+            //     g_robot_state.power_increment_ratio += 0.001f;
+            // else
+            //     g_robot_state.power_increment_ratio -= 0.001f;
+
+            __MOVING_AVERAGE(g_robot_state.chassis_power_buffer,g_robot_state.chassis_power_index,
+            Referee_Robot_State.Chassis_Power,g_robot_state.chassis_power_count,g_robot_state.chassis_total_power,g_robot_state.chassis_avg_power);
+            if(g_robot_state.chassis_avg_power < (Referee_Robot_State.Chassis_Power_Max*0.7f))
+                g_robot_state.power_increment_ratio += 0.005f;
+            else
+                g_robot_state.power_increment_ratio -= 0.005f;
+        }
+        else
+        {
+            g_robot_state.power_increment_ratio = 1.0f;
+        }
+        __MAX_LIMIT(g_robot_state.power_increment_ratio, 0.8f, 5.0f);
+        x *= g_robot_state.power_increment_ratio; // convert to m/s
+        y *= g_robot_state.power_increment_ratio;
+        omega *= g_robot_state.power_increment_ratio; // convert to rad/s
+    #endif
     Chassis_Speeds_t desired_chassis_speeds = {.x = x, .y = y, .omega = omega};
     Set_Desired_States(Chassis_Speeds_To_Module_States(desired_chassis_speeds));
 

@@ -114,6 +114,7 @@ src/algo/src/pid.c \
 src/algo/src/Swerve_Locomotion.c \
 src/algo/src/wheel_legged_locomotion.c \
 src/algo/src/leg.c \
+src/algo/src/kalman_filter.c \
 src/bsp/src/bsp_can.c \
 src/bsp/src/bsp_delay.c \
 src/bsp/src/bsp_daemon.c \

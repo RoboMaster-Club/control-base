@@ -12,6 +12,14 @@ typedef struct {
   float chassis_x_speed;
   float chassis_y_speed;
   float chassis_omega;
+
+  float chassis_power_buffer[500];
+  uint16_t chassis_power_index;
+  uint16_t chassis_power_count;
+  float chassis_avg_power;
+  float chassis_total_power;
+  float power_increment_ratio;
+
   float gimbal_pitch_angle;
   float gimbal_yaw_angle;
   float vx;

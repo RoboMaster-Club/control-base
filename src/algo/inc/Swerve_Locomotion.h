@@ -4,6 +4,9 @@
 #include "pid.h"
 #include "stdbool.h"
 #include "dji_motor.h"
+#include "robot.h"
+#include "kalman_filter.h"
+#include "referee_system.h"
 #include "math.h"
 
 // PHYSICAL CONSTANTS
@@ -16,6 +19,7 @@
 #define NUMBER_OF_MODULES 4
 
 #define SWERVE_OPTIMIZE
+#define POWER_CONTROL
 
 typedef struct
 {

@@ -38,4 +38,21 @@
             error += 2 * PI;          \
         }                             \
     } while (0);
+
+#define BUFFER_SIZE 500
+#define __MOVING_AVERAGE(buffer, index, update_value, count, sum, average)  \
+    do                                                                      \
+    {                                                                       \
+    if (count < BUFFER_SIZE) {                                              \
+        buffer[index] = update_value;                                       \
+        sum += update_value;                                                \
+        (count)++;                                                          \
+    } else {                                                                \
+        sum -= buffer[index];                                               \
+        buffer[index] = update_value;                                       \
+        sum += update_value;                                                \
+    }                                                                       \
+    index = (index + 1) % BUFFER_SIZE;                                      \
+    average = sum / count;                                                  \
+    } while (0);
 #endif
