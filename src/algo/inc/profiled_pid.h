@@ -7,7 +7,7 @@
 typedef struct
 {
     PID_t pid;
-    Motion_Profile_t profile;
+    Simple_Profile_t profile;
 } ProfiledPID_t;
 
 void ProfiledPID_Init(ProfiledPID_t *profiledPID, float kp, float ki, float kd, float output_limit, float integral_limit, float dead_zone, float max_change);
