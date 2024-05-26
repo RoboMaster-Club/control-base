@@ -15,8 +15,6 @@
 #define Azimuth_Gear_Ratio 1.0f
 #define NUMBER_OF_MODULES 4
 
-#define SWERVE_OPTIMIZE
-
 typedef struct
 {
     float speed; // m/s
@@ -28,7 +26,7 @@ typedef struct
     Module_State_t module_state;
     DJI_Motor_Handle_t *azimuth_motor;
     DJI_Motor_Handle_t *drive_motor;
-}	Swerve_Module_t;
+} Swerve_Module_t;
 
 typedef struct
 {
@@ -41,6 +39,6 @@ typedef struct
 } Module_State_Array_t;
 
 void Swerve_Init(void);
-void Swerve_Drive(float x, float y, float omega);
+void Swerve_Drive(float x, float y, float omega, float max_speed);
 void Swerve_Disable(void);
 #endif

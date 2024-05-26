@@ -15,14 +15,13 @@
 #include "ui.h"
 
 extern DJI_Motor_Handle_t *g_yaw;
-#define SPIN_TOP_OMEGA (1.0f)
 
-#define KEYBOARD_RAMP_COEF (0.004f)
-#define SPINTOP_COEF (0.003f)
-#define CONTROLLER_RAMP_COEF (0.8f)
-#define MAX_SPEED (.6f)
+#define KEYBOARD_RAMP_COEF (0.004f) // TODO hopefully this will be deprecated soon
+#define MAX_SPEED (1.0f)            // was 0.6 TODO hopefully this will be deprecated soon
+#define GIMBAL_MAX_PITCH (0.4f)
 
 Robot_State_t g_robot_state = {0, 0};
+Chassis_State_t g_chassis_state = {0};
 Key_Prev_t g_key_prev = {0};
 extern Launch_Target_t g_launch_target;
 extern Remote_t g_remote;
@@ -49,8 +48,8 @@ void Robot_Init()
     Remote_Init(&huart3);
     CAN_Service_Init();
     Referee_System_Init(&huart1);
-    //Jetson_Orin_Init(&huart6);
-    //  Initialize all tasks
+    // Jetson_Orin_Init(&huart6);
+    //   Initialize all tasks
     Robot_Tasks_Start();
 }
 
@@ -61,6 +60,8 @@ void Robot_Ctrl_Loop()
     Referee_Get_Data();
     Referee_Set_Robot_State();
     Chassis_Ctrl_Loop();
+    Referee_Get_Data();
+    Referee_Set_Robot_State();
     Gimbal_Ctrl_Loop();
     Launch_Ctrl_Loop();
 }
@@ -92,8 +93,8 @@ void Robot_Cmd_Loop()
             g_robot_state.vy *= MAX_SPEED;
 
             float theta = DJI_Motor_Get_Absolute_Angle(g_yaw);
-            g_robot_state.chassis_x_speed = -g_robot_state.vy * sin(theta) + g_robot_state.vx * cos(theta);
-            g_robot_state.chassis_y_speed = g_robot_state.vy * cos(theta) + g_robot_state.vx * sin(theta);
+            g_chassis_state.x_speed = -g_robot_state.vy * sin(theta) + g_robot_state.vx * cos(theta);
+            g_chassis_state.y_speed = g_robot_state.vy * cos(theta) + g_robot_state.vx * sin(theta);
 
             if (g_remote.controller.left_switch == DOWN)
             {
@@ -119,22 +120,12 @@ void Robot_Cmd_Loop()
             }
             g_key_prev.prev_left_switch = g_remote.controller.left_switch;
 
-            if (g_robot_state.spintop_mode)
-            {
-                g_robot_state.chassis_omega = (1 - SPINTOP_COEF) * g_robot_state.chassis_omega + SPINTOP_COEF * SPIN_TOP_OMEGA;
-            }
-            else
-            {
-                g_robot_state.chassis_omega = (1 - SPINTOP_COEF) * g_robot_state.chassis_omega + 0.0f;
-            }
-            /* Chassis ends here */
-
             /* Gimbal starts here */
             if ((g_remote.controller.right_switch == UP) || (g_remote.mouse.right == 1)) // mouse right button auto aim
             {
                 if (g_orin_data.receiving.auto_aiming.yaw != 0 || g_orin_data.receiving.auto_aiming.pitch != 0)
                 {
-                    g_robot_state.gimbal_yaw_angle = (1 - 0.2f) * g_robot_state.gimbal_yaw_angle + (0.2f) * (g_imu.rad.yaw - g_orin_data.receiving.auto_aiming.yaw / 180.0f * PI); // + orin
+                    g_robot_state.gimbal_yaw_angle = (1 - 0.2f) * g_robot_state.gimbal_yaw_angle + (0.2f) * (g_imu.rad.yaw - g_orin_data.receiving.auto_aiming.yaw / 180.0f * PI);         // + orin
                     g_robot_state.gimbal_pitch_angle = (1 - 0.2f) * g_robot_state.gimbal_pitch_angle + (0.2f) * (g_imu.rad.pitch - g_orin_data.receiving.auto_aiming.pitch / 180.0f * PI); // + orin
                 }
             }
@@ -203,18 +194,7 @@ void Robot_Cmd_Loop()
 
             /* Hardware Limits */
             g_robot_state.gimbal_yaw_angle = fmod(g_robot_state.gimbal_yaw_angle, 2 * PI);
-            __MAX_LIMIT(g_robot_state.gimbal_pitch_angle, -0.4f, 0.4f);
-            __MAX_LIMIT(g_robot_state.chassis_x_speed, -MAX_SPEED, MAX_SPEED);
-            __MAX_LIMIT(g_robot_state.chassis_y_speed, -MAX_SPEED, MAX_SPEED);
-
-            /* power buffer*/
-            // float power_buffer = Referee_System.Power_n_Heat.Chassis_Power_Buffer / 60.0f;
-            // if (power_buffer < 0.8f)
-            // {
-            //     g_robot_state.chassis_x_speed *= pow(power_buffer,1);
-            //     g_robot_state.chassis_y_speed *= pow(power_buffer,1);
-            //     g_robot_state.chassis_omega *= pow(power_buffer,1);
-            // }
+            __MAX_LIMIT(g_robot_state.gimbal_pitch_angle, -GIMBAL_MAX_PITCH, GIMBAL_MAX_PITCH);
         }
     }
     else
