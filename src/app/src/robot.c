@@ -12,6 +12,7 @@
 #include "user_math.h"
 #include "referee_system.h"
 #include "buzzer.h"
+#include "ui.h"
 
 extern DJI_Motor_Handle_t *g_yaw;
 
@@ -48,7 +49,7 @@ void Robot_Init()
     Remote_Init(&huart3);
     CAN_Service_Init();
     Referee_System_Init(&huart1);
-    Jetson_Orin_Init(&huart6);
+    //Jetson_Orin_Init(&huart6);
     //  Initialize all tasks
     Robot_Tasks_Start();
 }
@@ -57,6 +58,8 @@ void Robot_Ctrl_Loop()
 {
     // Control loop for the robot
     Robot_Cmd_Loop();
+    Referee_Get_Data();
+    Referee_Set_Robot_State();
     Chassis_Ctrl_Loop();
     Referee_Get_Data();
     Referee_Set_Robot_State();
@@ -135,7 +138,7 @@ void Robot_Cmd_Loop()
             /* Gimbal ends here */
 
             /* Launch control starts here */
-            if (Referee_System.Power_n_Heat.Shooter_1_Heat < 200)
+            if (Referee_System.Power_Heat.Shooter_1_17mm_Heat < 200)
             {
                 if (g_remote.controller.wheel < -50.0f)
                 { // dial wheel forward single fire
@@ -171,8 +174,13 @@ void Robot_Cmd_Loop()
             {
                 _toggle_robot_state(&g_robot_state.spintop_mode);
             }
+            if (g_remote.keyboard.V == 1 && g_key_prev.prev_V == 0)
+            {
+                _toggle_robot_state(&g_robot_state.UI_enabled);
+            }
             g_key_prev.prev_B = g_remote.keyboard.B;
             g_key_prev.prev_G = g_remote.keyboard.G;
+            g_key_prev.prev_V = g_remote.keyboard.V;
             /* Keyboard Toggles Start Here */
 
             /* AutoAiming Flag, not used only for debug */

@@ -28,8 +28,8 @@ void Chassis_Ctrl_Loop()
     if (g_robot_state.enabled)
     {
         /* power buffer*/
-        float power_buffer_frac = Referee_System.Power_n_Heat.Chassis_Power_Buffer / CHASSIS_POWER_BUFFER_MAX_JOULES;
-        float current_draw_frac = Referee_System.Power_n_Heat.Chassis_Current / CHASSIS_CURRENT_MAX_AMPS;
+        float power_buffer_frac = Referee_System.Power_Heat.Chassis_Power_Buffer / CHASSIS_POWER_BUFFER_MAX_JOULES;
+        float current_draw_frac = Referee_System.Power_Heat.Chassis_Current / CHASSIS_CURRENT_MAX_AMPS;
         float speed_limiter = (current_draw_frac + pow(power_buffer_frac, 2)) / 2;
 
         g_chassis_state.power_buffer_frac = power_buffer_frac;
