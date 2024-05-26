@@ -16,9 +16,8 @@
 
 extern DJI_Motor_Handle_t *g_yaw;
 
-#define KEYBOARD_RAMP_COEF (0.004f)
-#define CONTROLLER_RAMP_COEF (0.8f)
-#define MAX_SPEED (0.6f)
+#define KEYBOARD_RAMP_COEF (0.004f) // TODO hopefully this will be deprecated soon
+#define MAX_SPEED (1.0f)            // was 0.6 TODO hopefully this will be deprecated soon
 #define GIMBAL_MAX_PITCH (0.4f)
 
 Robot_State_t g_robot_state = {0, 0};
@@ -49,8 +48,8 @@ void Robot_Init()
     Remote_Init(&huart3);
     CAN_Service_Init();
     Referee_System_Init(&huart1);
-    //Jetson_Orin_Init(&huart6);
-    //  Initialize all tasks
+    // Jetson_Orin_Init(&huart6);
+    //   Initialize all tasks
     Robot_Tasks_Start();
 }
 

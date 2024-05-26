@@ -37,62 +37,6 @@ float Simple_Profile_Update(Simple_Profile_t *simple_profile)
     return simple_profile->current_setpoint;
 }
 
-// Trapezoid Profile functions
-
-void Trapezoid_Profile_Init(Trapezoid_Profile_t *trapezoid_profile, float max_acceleration, float max_deceleration, float max_velocity)
-{
-    trapezoid_profile->max_acceleration = max_acceleration;
-    trapezoid_profile->max_deceleration = max_deceleration;
-    trapezoid_profile->max_velocity = max_velocity;
-    trapezoid_profile->target_setpoint = 0;
-    trapezoid_profile->current_setpoint = 0;
-    trapezoid_profile->current_velocity = 0;
-}
-
-void Trapezoid_Profile_Set_Target(Trapezoid_Profile_t *trapezoid_profile, float target_setpoint)
-{
-    trapezoid_profile->target_setpoint = target_setpoint;
-}
-
-#include "motion_profile.h"
-#include <math.h>
-
-// Simple Profile functions
-
-void Simple_Profile_Init(Simple_Profile_t *simple_profile, float max_change)
-{
-    simple_profile->max_change = max_change;
-    simple_profile->target_setpoint = 0;
-    simple_profile->current_setpoint = 0;
-}
-
-void Simple_Profile_Set_Max_Change(Simple_Profile_t *simple_profile, float max_change)
-{
-    simple_profile->max_change = max_change;
-}
-
-void Simple_Profile_Set_Target(Simple_Profile_t *simple_profile, float target_setpoint)
-{
-    simple_profile->target_setpoint = target_setpoint;
-}
-
-float Simple_Profile_Update(Simple_Profile_t *simple_profile)
-{
-    float setpoint_difference = simple_profile->target_setpoint - simple_profile->current_setpoint;
-
-    // Limit the change in setpoint to max_change
-    if (fabs(setpoint_difference) > simple_profile->max_change)
-    {
-        simple_profile->current_setpoint += copysign(simple_profile->max_change, setpoint_difference);
-    }
-    else
-    {
-        simple_profile->current_setpoint = simple_profile->target_setpoint;
-    }
-
-    return simple_profile->current_setpoint;
-}
-
 // Trapezoidal Profile functions
 
 void Trapezoid_Profile_Init(Trapezoid_Profile_t *trapezoid_profile, float max_acceleration, float max_deceleration, float max_velocity)
