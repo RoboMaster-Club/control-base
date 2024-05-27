@@ -114,6 +114,7 @@ src/algo/src/pid.c \
 src/algo/src/Swerve_Locomotion.c \
 src/algo/src/wheel_legged_locomotion.c \
 src/algo/src/leg.c \
+src/algo/src/kalman_filter.c \
 src/bsp/src/bsp_can.c \
 src/bsp/src/bsp_delay.c \
 src/bsp/src/bsp_daemon.c \
@@ -140,6 +141,7 @@ src/app/src/gimbal_task.c \
 src/app/src/launch_task.c \
 src/app/src/debug_task.c \
 src/app/src/robot.c \
+src/app/src/ui_task.c \
 src/ui/src/ui_interface.c \
 src/ui/src/ui_indicator_0_0.c \
 src/ui/src/ui_indicator_0_1.c \

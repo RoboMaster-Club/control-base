@@ -25,7 +25,7 @@ void Referee_Set_Robot_State(void)
 
     Referee_Robot_State.Cooling_Rate = Referee_System.Robot_State.Shooter_Cooling_Value;
     Referee_Robot_State.Heat_Max = Referee_System.Robot_State.Shooter_Heat_Max;
-    Referee_Robot_State.Launch_Speed_Max = V1_STANDARD_LAUNCH_SPEED_MAX;
+    Referee_Robot_State.Launch_Speed_Max = V3_STANDARD_LAUNCH_SPEED_MAX;
     Referee_Robot_State.Chassis_Power_Max = Referee_System.Robot_State.Chassis_Power_Max;
 
     Referee_Robot_State.Chassis_Power = Referee_System.Power_Heat.Chassis_Power;
