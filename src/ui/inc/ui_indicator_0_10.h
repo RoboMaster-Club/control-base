@@ -7,8 +7,6 @@
 
 #include "ui_interface.h"
 
-extern ui_interface_line_t *ui_indicator_0_Aim_V_Line;
-extern ui_interface_line_t *ui_indicator_0_Aim_H_Line;
 extern ui_interface_line_t *ui_indicator_0_Pathway_Left;
 extern ui_interface_line_t *ui_indicator_0_Pathway_Right;
 

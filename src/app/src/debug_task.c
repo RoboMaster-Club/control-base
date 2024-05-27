@@ -52,6 +52,6 @@ void Debug_Task_Loop(void)
     //     counter = 0;
     // }
     //DEBUG_PRINTF(&huart6, "/*%f,%f*/", g_swerve_fl.azimuth_motor->angle_pid->ref,g_swerve_fl.azimuth_motor->stats->absolute_angle_rad);
-    DEBUG_PRINTF(&huart6, "/*%f,%d*/", Referee_System.Power_Heat.Chassis_Power, Referee_System.Power_Heat.Chassis_Power_Buffer);
+    DEBUG_PRINTF(&huart6, "/*%f,%f*/", g_robot_state.chassis_total_power, Referee_Robot_State.Chassis_Power);
 #endif
 }

@@ -141,6 +141,7 @@ src/app/src/gimbal_task.c \
 src/app/src/launch_task.c \
 src/app/src/debug_task.c \
 src/app/src/robot.c \
+src/app/src/ui_task.c \
 src/ui/src/ui_interface.c \
 src/ui/src/ui_indicator_0_0.c \
 src/ui/src/ui_indicator_0_1.c \

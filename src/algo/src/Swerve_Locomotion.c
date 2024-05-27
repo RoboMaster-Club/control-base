@@ -7,6 +7,7 @@
 Swerve_Module_t g_swerve_fl, g_swerve_rl, g_swerve_rr, g_swerve_fr;
 Swerve_Module_t *swerve_modules[NUMBER_OF_MODULES] = {&g_swerve_fl, &g_swerve_rl, &g_swerve_rr, &g_swerve_fr};
 float last_swerve_angle[NUMBER_OF_MODULES] = {0.0f, 0.0f, 0.0f, 0.0f};
+Kalman_Filter_t power_KF = {.Prev_P = 1.0f, .Q = 0.0001, .R = 5.0f};
 
 // #define SWERVE_OPTIMIZE
 
@@ -261,25 +262,21 @@ void Swerve_Drive(float x, float y, float omega)
     y *= SWERVE_MAX_SPEED;
     omega *= SWERVE_MAX_ANGLUAR_SPEED; // convert to rad/s
     #ifdef POWER_CONTROL
-        if(x != 0 || y != 0 || omega > 0.01f)
+        if(fabs(x) > 0.1f || fabs(y) > 0.1f || fabs(omega) > 0.1f)
         {
-            // power_avg_count++;
-            // g_robot_state.chassis_total_power += Referee_Robot_State.Chassis_Power;
-            // g_robot_state.chassis_avg_power = g_robot_state.chassis_total_power/power_avg_count;
-            // if(g_robot_state.chassis_avg_power < Referee_Robot_State.Chassis_Power_Max*0.5f)
-            //     g_robot_state.power_increment_ratio += 0.001f;
-            // else
-            //     g_robot_state.power_increment_ratio -= 0.001f;
-
             __MOVING_AVERAGE(g_robot_state.chassis_power_buffer,g_robot_state.chassis_power_index,
             Referee_Robot_State.Chassis_Power,g_robot_state.chassis_power_count,g_robot_state.chassis_total_power,g_robot_state.chassis_avg_power);
             if(g_robot_state.chassis_avg_power < (Referee_Robot_State.Chassis_Power_Max*0.7f))
-                g_robot_state.power_increment_ratio += 0.005f;
+                g_robot_state.power_increment_ratio += 0.001f;
             else
-                g_robot_state.power_increment_ratio -= 0.005f;
+                g_robot_state.power_increment_ratio -= 0.001f;
         }
         else
         {
+            memset(g_robot_state.chassis_power_buffer,0,sizeof(g_robot_state.chassis_power_buffer));
+            g_robot_state.chassis_power_index = 0;
+            g_robot_state.chassis_power_count = 0;
+            g_robot_state.chassis_total_power = 0;
             g_robot_state.power_increment_ratio = 1.0f;
         }
         __MAX_LIMIT(g_robot_state.power_increment_ratio, 0.8f, 5.0f);

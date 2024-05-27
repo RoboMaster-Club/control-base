@@ -94,7 +94,6 @@ osDelay(100);               \
 _ui_remove_indicator_0_10();\
 osDelay(100)               
     
-
 #include "ui_indicator_1_0.h"
 
 #define ui_init_indicator_1() \
@@ -108,8 +107,6 @@ osDelay(100)
 #define ui_remove_indicator_1() \
 _ui_remove_indicator_1_0();     \
 osDelay(100)               
-    
-
 
 #ifdef __cplusplus
 }
