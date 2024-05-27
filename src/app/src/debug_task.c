@@ -51,7 +51,7 @@ void Debug_Task_Loop(void)
     // if (counter > 0xFFFFFFFF) {
     //     counter = 0;
     // }
-    //DEBUG_PRINTF(&huart6, "/*%f,%f*/", g_swerve_fl.azimuth_motor->angle_pid->ref,g_swerve_fl.azimuth_motor->stats->absolute_angle_rad);
-    DEBUG_PRINTF(&huart6, "/*%f,%f*/", g_robot_state.chassis_total_power, Referee_Robot_State.Chassis_Power);
+    DEBUG_PRINTF(&huart6, "/*%f,%f*/", g_swerve_fl.drive_motor->velocity_pid->ref,g_swerve_fl.drive_motor->stats->current_vel_rpm);
+    //DEBUG_PRINTF(&huart6, "/*%f,%f*/", g_robot_state.chassis_total_power, Referee_Robot_State.Chassis_Power);
 #endif
 }
