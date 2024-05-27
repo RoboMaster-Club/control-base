@@ -121,7 +121,8 @@ void Robot_Cmd_Loop()
 
             if (g_robot_state.spintop_mode)
             {
-                g_robot_state.chassis_omega = (1 - SPINTOP_COEF) * g_robot_state.chassis_omega + SPINTOP_COEF * SPIN_TOP_OMEGA;
+                g_robot_state.chassis_omega = (1 - SPINTOP_COEF) * g_robot_state.chassis_omega + SPINTOP_COEF * SPIN_TOP_OMEGA - 
+                SPINTOP_COEF*(powf(g_robot_state.chassis_y_speed,2)+powf(g_robot_state.chassis_x_speed,2));
             }
             else
             {

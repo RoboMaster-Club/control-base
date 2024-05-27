@@ -65,9 +65,9 @@ void Swerve_Init()
         .control_mode = VELOCITY_CONTROL,
         .velocity_pid = {
             .kp = 500.0f,
-            .ki = 5.0f,
+            .kd = 200.0f,
+            .kf = 100.0f,
             .output_limit = M3508_MAX_CURRENT,
-            .integral_limit = 3000.0f,
         }};
 
     for (int i = 0; i < NUMBER_OF_MODULES; i++)
