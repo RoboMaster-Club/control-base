@@ -7,6 +7,7 @@
 Swerve_Module_t g_swerve_fl, g_swerve_rl, g_swerve_rr, g_swerve_fr;
 Swerve_Module_t *swerve_modules[NUMBER_OF_MODULES] = {&g_swerve_fl, &g_swerve_rl, &g_swerve_rr, &g_swerve_fr};
 float last_swerve_angle[NUMBER_OF_MODULES] = {0.0f, 0.0f, 0.0f, 0.0f};
+Kalman_Filter_t power_KF = {.Prev_P = 1.0f, .Q = 0.0001, .R = 5.0f};
 
 /**
  * @brief Inverse kinematics matrix for a 4 module swerve, defined counterclockwise from the front left
@@ -68,6 +69,7 @@ void Swerve_Init()
             .kd = 200.0f,
             .kf = 100.0f,
             .output_limit = M3508_MAX_CURRENT,
+            .integral_limit = 3000.0f,
         }};
 
     for (int i = 0; i < NUMBER_OF_MODULES; i++)
