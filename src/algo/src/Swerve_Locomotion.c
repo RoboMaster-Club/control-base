@@ -7,9 +7,6 @@
 Swerve_Module_t g_swerve_fl, g_swerve_rl, g_swerve_rr, g_swerve_fr;
 Swerve_Module_t *swerve_modules[NUMBER_OF_MODULES] = {&g_swerve_fl, &g_swerve_rl, &g_swerve_rr, &g_swerve_fr};
 float last_swerve_angle[NUMBER_OF_MODULES] = {0.0f, 0.0f, 0.0f, 0.0f};
-Kalman_Filter_t power_KF = {.Prev_P = 1.0f, .Q = 0.0001, .R = 5.0f};
-
-// #define SWERVE_OPTIMIZE
 
 /**
  * @brief Inverse kinematics matrix for a 4 module swerve, defined counterclockwise from the front left
@@ -261,7 +258,7 @@ void Swerve_Drive(float x, float y, float omega)
     x *= SWERVE_MAX_SPEED; // convert to m/s
     y *= SWERVE_MAX_SPEED;
     omega *= SWERVE_MAX_ANGLUAR_SPEED; // convert to rad/s
-    #ifdef POWER_CONTROL
+    #ifdef POWER_REGULATION
         if(fabs(x) > 0.1f || fabs(y) > 0.1f || fabs(omega) > 0.1f)
         {
             __MOVING_AVERAGE(g_robot_state.chassis_power_buffer,g_robot_state.chassis_power_index,
