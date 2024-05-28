@@ -58,7 +58,6 @@ void Robot_Ctrl_Loop()
 {
     // Control loop for the robot
     Robot_Cmd_Loop();
-    Referee_Get_Data();
     Referee_Set_Robot_State();
     Chassis_Ctrl_Loop();
     Gimbal_Ctrl_Loop();
@@ -147,7 +146,7 @@ void Robot_Cmd_Loop()
             /* Gimbal ends here */
 
             /* Launch control starts here */
-            if (Referee_System.Power_Heat.Shooter_1_17mm_Heat < 200)
+            if (Referee_Robot_State.Shooter_Heat_1 < (Referee_Robot_State.Heat_Max-40))
             {
                 if (g_remote.controller.wheel < -50.0f)
                 { // dial wheel forward single fire

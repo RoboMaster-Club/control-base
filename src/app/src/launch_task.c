@@ -8,7 +8,7 @@
 extern Robot_State_t g_robot_state;
 extern Remote_t g_remote;
 extern IMU_t g_imu;
-DJI_Motor_Handle_t *g_flywheel_left, *g_flywheel_right, *g_motor_feed, *g_motor_feed;
+DJI_Motor_Handle_t *g_flywheel_left, *g_flywheel_right, *g_motor_feed;
 Launch_Target_t g_launch_target;
 
 void Feed_Angle_Calc(void);
@@ -50,6 +50,8 @@ void Launch_Task_Init() {
         .velocity_pid =
             {
                 .kp = 500.0f,
+                .kd = 200.0f,
+                .kf = 100.0f,
                 .output_limit = M2006_MAX_CURRENT,
             },
         .angle_pid =
