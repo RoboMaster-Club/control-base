@@ -9,13 +9,11 @@
  *
  */
 #include "referee_system.h"
-#include "usart.h"
 
 Referee_System_t Referee_System;
 Referee_Robot_State_t Referee_Robot_State;
-
-void Referee_Get_Data(void);
-void Referee_Set_Robot_State(void);
+UART_Instance_t *g_referee_uart_instance_ptr;
+Daemon_Instance_t *g_referee_daemon_instance_ptr;
 
 void Referee_Set_Robot_State(void)
 {
@@ -35,20 +33,35 @@ void Referee_Set_Robot_State(void)
     Referee_Robot_State.Shooting_Frequency = Referee_System.Shooter.Frequency;
     Referee_Robot_State.Shooting_Speed = Referee_System.Shooter.Speed;
 }
+void Referee_System_Timeout_Callback()
+{
+	// Attemp to reinitialize UART service
+	UART_Service_Init(g_referee_uart_instance_ptr);
+}
 
 void Referee_System_Init(UART_HandleTypeDef *huart)
 {
     Referee_System.huart = huart;
     HAL_UART_Receive_DMA(huart, Referee_System.Buffer, REFEREE_BUFFER_LEN);
+
+    g_referee_uart_instance_ptr = UART_Register(huart, Referee_System.Buffer, REFEREE_BUFFER_LEN, Referee_Get_Data);
+	
+	// register Daemon instance
+	// timeout is defined in the header file
+	uint16_t reload_value = REFEREE_TIMEOUT_MS / DAEMON_PERIOD;
+	uint16_t initial_counter = reload_value;
+	g_referee_daemon_instance_ptr = Daemon_Register(reload_value, initial_counter, Referee_System_Timeout_Callback);
 }
 
 // Get referee system data based on ID
-void Referee_Get_Data(void)
+void Referee_Get_Data(UART_Instance_t *uart_instance)
 {
+    UNUSED(uart_instance);
     for (int n = 0; n < REFEREE_BUFFER_LEN;)
     {
         if (Referee_System.Buffer[n] == REFEREE_FRAME_HEADER_START)
         {
+            Daemon_Reload(g_referee_daemon_instance_ptr);
             switch (Referee_System.Buffer[n + 5] | Referee_System.Buffer[n + 6] << 8)
             {
             case REFEREE_GAME_STATUS:
@@ -151,10 +164,10 @@ void Referee_Get_Data(void)
                     n++;
                 break;
 			case REFEREE_AERIAL_DATA:
-                if (Verify_CRC16_Check_Sum(Referee_System.Buffer + n, REFEREE_AERIAL_DATA))
+                if (Verify_CRC16_Check_Sum(Referee_System.Buffer + n, REFEREE_AERIAL_DATA_LEN))
                 {
                     memcpy(&Referee_System.Aerial_Data, &Referee_System.Buffer[n + 7], sizeof(uint8_t[REFEREE_AERIAL_DATA_LEN-9]));
-                    n += REFEREE_AERIAL_DATA;
+                    n += REFEREE_AERIAL_DATA_LEN;
                 }
                 else
                     n++;

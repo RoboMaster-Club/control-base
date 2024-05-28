@@ -41,7 +41,7 @@ void UART_Service_Init(UART_Instance_t *uart_insatce)
  * @param rx_buffer_size size of the buffer
  * @param callback callback function when UART receive is complete
 */
-UART_Instance_t *UART_Register(UART_HandleTypeDef *huart, uint8_t *rx_buffer, uint8_t rx_buffer_size, void (*callback)(UART_Instance_t *uart_instance))
+UART_Instance_t *UART_Register(UART_HandleTypeDef *huart, uint8_t *rx_buffer, uint16_t rx_buffer_size, void (*callback)(UART_Instance_t *uart_instance))
 {
     UART_Instance_t *uart_instance = (UART_Instance_t *)malloc(sizeof(UART_Instance_t));
     uart_instance->uart_handle = huart;

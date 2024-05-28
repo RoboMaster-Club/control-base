@@ -10,6 +10,7 @@
 #include "referee_system.h"
 #include "jetson_orin.h"
 #include "bsp_daemon.h"
+#include "launch_task.h"
 
 extern Robot_State_t g_robot_state;
 extern DJI_Motor_Handle_t *g_yaw;
@@ -51,7 +52,6 @@ void Debug_Task_Loop(void)
     // if (counter > 0xFFFFFFFF) {
     //     counter = 0;
     // }
-    DEBUG_PRINTF(&huart6, "/*%f,%f*/", g_swerve_fl.drive_motor->velocity_pid->ref,g_swerve_fl.drive_motor->stats->current_vel_rpm);
-    //DEBUG_PRINTF(&huart6, "/*%f,%f*/", g_robot_state.chassis_total_power, Referee_Robot_State.Chassis_Power);
+    DEBUG_PRINTF(&huart6, ">ref:%f\n>act:%f\n",g_motor_feed->velocity_pid->ref,g_motor_feed->stats->current_vel_rpm);
 #endif
 }

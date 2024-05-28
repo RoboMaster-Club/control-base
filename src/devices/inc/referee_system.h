@@ -14,9 +14,12 @@
 
 #include "bsp_crc.h"
 #include "dma.h"
-#include "usart.h"
+#include "bsp_uart.h"
+#include "bsp_daemon.h"
 #include <stdint.h>
 #include <stdbool.h>
+
+#define REFEREE_TIMEOUT_MS 500
 
 //Standard Confrontation
 #define V1_STANDARD_POWER_MAX 120
@@ -296,7 +299,7 @@ typedef struct
 	uint8_t Offline_Flag;
 } Referee_System_t;
 
-void Referee_Get_Data(void);
+void Referee_Get_Data(UART_Instance_t *uart_instance);
 void Referee_Set_Robot_State(void);
 void Referee_System_Init(UART_HandleTypeDef *huart);
 
