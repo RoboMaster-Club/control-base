@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 
-typedef struct {
+typedef struct
+{
   uint8_t enabled;
   uint8_t safely_started;
   uint8_t spintop_mode;
@@ -28,7 +29,8 @@ typedef struct {
   float vy_keyboard;
 } Robot_State_t;
 
-typedef struct {
+typedef struct
+{
   uint8_t prev_B;
   uint8_t prev_G;
   uint8_t prev_V;
