@@ -7,7 +7,7 @@
 #define FRAME_ID 1
 #define GROUP_ID 1
 #define START_ID 0
-#define OBJ_NUM 6
+#define OBJ_NUM 7
 #define FRAME_OBJ_NUM 7
 
 CAT(ui_, CAT(FRAME_OBJ_NUM, _frame_t)) ui_indicator_1_0;
@@ -17,6 +17,7 @@ ui_interface_rect_t *ui_indicator_1_Autoaim_Select = (ui_interface_rect_t *)&(ui
 ui_interface_number_t *ui_indicator_1_Supercap = (ui_interface_number_t *)&(ui_indicator_1_0.data[3]);
 ui_interface_line_t *ui_indicator_1_Aim_V_Line = (ui_interface_line_t *)&(ui_indicator_1_0.data[4]);
 ui_interface_line_t *ui_indicator_1_Aim_H_Line = (ui_interface_line_t *)&(ui_indicator_1_0.data[5]);
+ui_interface_number_t *ui_indicator_1_Level_Indicator = (ui_interface_number_t *)&(ui_indicator_1_0.data[6]);
 
 void _ui_init_indicator_1_0() {
     for (int i = 0; i < OBJ_NUM; i++) {
@@ -82,6 +83,15 @@ void _ui_init_indicator_1_0() {
     ui_indicator_1_Aim_H_Line->end_y = 470;
     ui_indicator_1_Aim_H_Line->color = 3;
     ui_indicator_1_Aim_H_Line->width = 2;
+    
+    ui_indicator_1_Level_Indicator->figure_tpye = 6;
+    ui_indicator_1_Level_Indicator->layer = 1;
+    ui_indicator_1_Level_Indicator->font_size = 20;
+    ui_indicator_1_Level_Indicator->start_x = 1020;
+    ui_indicator_1_Level_Indicator->start_y = 100;
+    ui_indicator_1_Level_Indicator->color = 1;
+    ui_indicator_1_Level_Indicator->number = 1;
+    ui_indicator_1_Level_Indicator->width = 2;
 
     CAT(ui_proc_, CAT(FRAME_OBJ_NUM, _frame))(&ui_indicator_1_0);
     SEND_MESSAGE((uint8_t *) &ui_indicator_1_0, sizeof(ui_indicator_1_0));

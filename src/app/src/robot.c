@@ -174,9 +174,14 @@ void Robot_Cmd_Loop()
             {
                 _toggle_robot_state(&g_robot_state.UI_enabled);
             }
+            if (g_remote.keyboard.Z == 1 && g_key_prev.prev_Z == 0)
+            {
+                Referee_Robot_State.Manual_Level++;
+            }
             g_key_prev.prev_B = g_remote.keyboard.B;
             g_key_prev.prev_G = g_remote.keyboard.G;
             g_key_prev.prev_V = g_remote.keyboard.V;
+            g_key_prev.prev_Z = g_remote.keyboard.Z;
             /* Keyboard Toggles Start Here */
 
             /* AutoAiming Flag, not used only for debug */

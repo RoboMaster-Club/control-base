@@ -21,6 +21,7 @@ extern "C" {
 #include "ui_indicator_0_8.h"
 #include "ui_indicator_0_9.h"
 #include "ui_indicator_0_10.h"
+#include "ui_indicator_0_11.h"
 
 #define ui_init_indicator_0() \
 _ui_init_indicator_0_0(); \
@@ -44,7 +45,9 @@ osDelay(100);             \
 _ui_init_indicator_0_9(); \
 osDelay(100);             \
 _ui_init_indicator_0_10();\
-osDelay(100)              
+osDelay(100);             \
+_ui_init_indicator_0_11();\
+osDelay(100)
 
 #define ui_update_indicator_0() \
 _ui_update_indicator_0_0(); \
@@ -68,7 +71,9 @@ osDelay(100);               \
 _ui_update_indicator_0_9(); \
 osDelay(100);               \
 _ui_update_indicator_0_10();\
-osDelay(100)               
+osDelay(100);               \
+_ui_update_indicator_0_11();\
+osDelay(100)
 
 #define ui_remove_indicator_0() \
 _ui_remove_indicator_0_0(); \
@@ -92,6 +97,8 @@ osDelay(100);               \
 _ui_remove_indicator_0_9(); \
 osDelay(100);               \
 _ui_remove_indicator_0_10();\
+osDelay(100);               \
+_ui_remove_indicator_0_11();\
 osDelay(100)               
     
 #include "ui_indicator_1_0.h"

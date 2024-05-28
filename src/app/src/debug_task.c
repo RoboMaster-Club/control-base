@@ -21,6 +21,7 @@ extern Launch_Target_t g_launch_target;
 extern uint64_t t;
 extern Daemon_Instance_t *g_daemon_instances[3];
 extern Daemon_Instance_t *g_remote_daemon;
+extern Daemon_Instance_t *g_referee_daemon_instance_ptr;
 #define PRINT_RUNTIME_STATS
 #ifdef PRINT_RUNTIME_STATS
 char g_debug_buffer[1024*2] = {0};
@@ -52,6 +53,7 @@ void Debug_Task_Loop(void)
     // if (counter > 0xFFFFFFFF) {
     //     counter = 0;
     // }
-    DEBUG_PRINTF(&huart6, ">ref:%f\n>act:%f\n",g_motor_feed->velocity_pid->ref,g_motor_feed->stats->current_vel_rpm);
+    //DEBUG_PRINTF(&huart6, ">ref:%f\n>act:%f\n",g_motor_feed->velocity_pid->ref,g_motor_feed->stats->current_vel_rpm);
+    DEBUG_PRINTF(&huart6, ">ref:%d\n",g_referee_daemon_instance_ptr->counter);
 #endif
 }
