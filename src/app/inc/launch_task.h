@@ -7,6 +7,8 @@
 #define FLYWHEEL_VELOCITY_23 (6000.0f * M3508_REDUCTION_RATIO)
 #define FLYWHEEL_VELOCITY_30 (7000.0f * M3508_REDUCTION_RATIO)
 #define FEED_HOLE_NUM (6.0f)
+#define LAUNCH_FREQUENCY (12)
+#define LAUNCH_PERIOD (1000.0f/LAUNCH_FREQUENCY)
 #define FEED_1_PROJECTILE_ANGLE (2.0f*PI/FEED_HOLE_NUM)
 #define FEED_FREQUENCY_6 (6.0f / FEED_HOLE_NUM * 60.0f)
 #define FEED_FREQUENCY_12 (12.0f / FEED_HOLE_NUM * 60.0f)
@@ -22,6 +24,9 @@ typedef struct
     uint8_t single_launch_finished_flag;
     uint8_t burst_launch_flag;
     uint8_t flywheel_enabled;
+
+    uint8_t calculated_heat;
+    uint8_t referee_update_count;
 } Launch_Target_t;
 
 void Launch_Task_Init(void);

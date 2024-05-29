@@ -26,7 +26,7 @@
 //#define ROBOT_TYPE_SENTRY
 
 //Standard Default Configuration
-#define DEFAULT_STANDARD_POWER_MAX 200
+#define DEFAULT_STANDARD_POWER_MAX 45
 #define DEFAULT_STANDARD_LAUNCH_SPEED_MAX 30
 #define DEFAULT_STANDARD_HEAT_MAX 200
 #define DEFAULT_STANDARD_COOLING_RATE 10
@@ -248,7 +248,7 @@ typedef struct
 		uint32_t State;
 	}RFID;
 	
-	uint16_t Info_Update_Frame;
+	uint8_t Info_Update_Frame;
 	uint8_t Online_Flag;
 } Referee_System_t;
 

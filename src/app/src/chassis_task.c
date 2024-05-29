@@ -6,7 +6,7 @@
 #include "imu_task.h"
 #include "Swerve_Locomotion.h"
 
-#define SPINTOP_RAMP_COEF (0.003f)
+#define SPINTOP_RAMP_COEF (0.03f)
 #define SPIN_TOP_OMEGA (1.0f)
 
 extern Robot_State_t g_robot_state;
@@ -23,7 +23,6 @@ void Chassis_Task_Init()
 
 void Chassis_Ctrl_Loop()
 {
-
     if (g_robot_state.enabled)
     {
         /*
@@ -34,7 +33,7 @@ void Chassis_Ctrl_Loop()
         if (g_robot_state.spintop_mode)
         {
             float translation_speed = sqrtf(powf(g_robot_state.chassis_x_speed, 2) + powf(g_robot_state.chassis_y_speed, 2));
-            float spin_coeff = chassis_rad * SPIN_TOP_OMEGA / (translation_speed + chassis_rad * SPIN_TOP_OMEGA);
+            float spin_coeff = chassis_rad * SPIN_TOP_OMEGA / (translation_speed*0.1f + chassis_rad * SPIN_TOP_OMEGA);
 
             // ramp up to target omega
             float target_omega = SPIN_TOP_OMEGA * spin_coeff;

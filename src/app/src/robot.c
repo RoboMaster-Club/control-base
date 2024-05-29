@@ -13,6 +13,7 @@
 #include "referee_system.h"
 #include "buzzer.h"
 #include "ui.h"
+#include "user_math.h"
 
 extern DJI_Motor_Handle_t *g_yaw;
 
@@ -177,6 +178,7 @@ void Robot_Cmd_Loop()
             if (g_remote.keyboard.Z == 1 && g_key_prev.prev_Z == 0)
             {
                 Referee_Robot_State.Manual_Level++;
+                __MAX_LIMIT(Referee_Robot_State.Manual_Level,1,10);
             }
             g_key_prev.prev_B = g_remote.keyboard.B;
             g_key_prev.prev_G = g_remote.keyboard.G;

@@ -4,6 +4,7 @@
 #include "remote.h"
 #include "imu_task.h"
 #include "user_math.h"
+#include "referee_system.h"
 
 extern Robot_State_t g_robot_state;
 extern Remote_t g_remote;
@@ -12,7 +13,6 @@ DJI_Motor_Handle_t *g_flywheel_left, *g_flywheel_right, *g_motor_feed;
 Launch_Target_t g_launch_target;
 
 void Feed_Angle_Calc(void);
-void _launch_set_flywheel_vel_based_on_level();
 
 void Launch_Task_Init() {
     Motor_Config_t flywheel_left_config = {
@@ -72,7 +72,7 @@ void Launch_Task_Init() {
 void Launch_Ctrl_Loop() {
     if (g_robot_state.enabled) {
         if (g_launch_target.flywheel_enabled) {
-            _launch_set_flywheel_vel_based_on_level();
+            g_launch_target.flywheel_velocity = FLYWHEEL_VELOCITY_30;
             DJI_Motor_Set_Velocity(g_flywheel_left,g_launch_target.flywheel_velocity);
             DJI_Motor_Set_Velocity(g_flywheel_right,g_launch_target.flywheel_velocity);
             Feed_Angle_Calc();
@@ -86,10 +86,6 @@ void Launch_Ctrl_Loop() {
         DJI_Motor_Disable(g_flywheel_right);
         DJI_Motor_Disable(g_motor_feed);
     }
-}
-
-void _launch_set_flywheel_vel_based_on_level() {
-    g_launch_target.flywheel_velocity = FLYWHEEL_VELOCITY_30;
 }
 
 void Feed_Angle_Calc()

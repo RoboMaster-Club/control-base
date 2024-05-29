@@ -261,27 +261,37 @@ void Swerve_Drive(float x, float y, float omega)
     y *= SWERVE_MAX_SPEED;
     omega *= SWERVE_MAX_ANGLUAR_SPEED; // convert to rad/s
     #ifdef POWER_REGULATION
-        if(fabs(x) > 0.1f || fabs(y) > 0.1f || fabs(omega) > 0.1f)
+        if(Referee_System.Online_Flag)
         {
-            __MOVING_AVERAGE(g_robot_state.chassis_power_buffer,g_robot_state.chassis_power_index,
-            Referee_Robot_State.Chassis_Power,g_robot_state.chassis_power_count,g_robot_state.chassis_total_power,g_robot_state.chassis_avg_power);
-            if(g_robot_state.chassis_avg_power < (Referee_Robot_State.Chassis_Power_Max*0.7f))
-                g_robot_state.power_increment_ratio += 0.001f;
+            if(fabs(x) > 0.1f || fabs(y) > 0.1f || fabs(omega) > 0.1f)
+            {
+                __MOVING_AVERAGE(g_robot_state.chassis_power_buffer,g_robot_state.chassis_power_index,
+                Referee_Robot_State.Chassis_Power,g_robot_state.chassis_power_count,g_robot_state.chassis_total_power,g_robot_state.chassis_avg_power);
+                if(g_robot_state.chassis_avg_power < (Referee_Robot_State.Chassis_Power_Max*0.7f))
+                    g_robot_state.power_increment_ratio += 0.001f;
+                else
+                    g_robot_state.power_increment_ratio -= 0.001f;
+            }
             else
-                g_robot_state.power_increment_ratio -= 0.001f;
-        }
+            {
+                memset(g_robot_state.chassis_power_buffer,0,sizeof(g_robot_state.chassis_power_buffer));
+                g_robot_state.chassis_power_index = 0;
+                g_robot_state.chassis_power_count = 0;
+                g_robot_state.chassis_total_power = 0;
+                g_robot_state.power_increment_ratio = 1.0f;
+            }
+            __MAX_LIMIT(g_robot_state.power_increment_ratio, 0.8f, 5.0f);
+            x *= g_robot_state.power_increment_ratio; // convert to m/s
+            y *= g_robot_state.power_increment_ratio;
+            omega *= g_robot_state.power_increment_ratio; // convert to rad/s
+            }
         else
         {
-            memset(g_robot_state.chassis_power_buffer,0,sizeof(g_robot_state.chassis_power_buffer));
-            g_robot_state.chassis_power_index = 0;
-            g_robot_state.chassis_power_count = 0;
-            g_robot_state.chassis_total_power = 0;
-            g_robot_state.power_increment_ratio = 1.0f;
+            g_robot_state.power_increment_ratio = 1 + Referee_Robot_State.Manual_Level*0.1f;
+            x *= g_robot_state.power_increment_ratio; // convert to m/s
+            y *= g_robot_state.power_increment_ratio;
+            omega *= g_robot_state.power_increment_ratio; // convert to rad/s
         }
-        __MAX_LIMIT(g_robot_state.power_increment_ratio, 0.8f, 5.0f);
-        x *= g_robot_state.power_increment_ratio; // convert to m/s
-        y *= g_robot_state.power_increment_ratio;
-        omega *= g_robot_state.power_increment_ratio; // convert to rad/s
     #endif
     Chassis_Speeds_t desired_chassis_speeds = {.x = x, .y = y, .omega = omega};
     Set_Desired_States(Chassis_Speeds_To_Module_States(desired_chassis_speeds));

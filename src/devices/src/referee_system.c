@@ -41,6 +41,7 @@ void Referee_Set_Robot_State(void)
             Referee_Robot_State.Cooling_Rate = DEFAULT_STANDARD_COOLING_RATE+(Referee_Robot_State.Manual_Level-1)*5;
             Referee_Robot_State.Heat_Max = DEFAULT_STANDARD_HEAT_MAX+(Referee_Robot_State.Manual_Level-1)*50;
             Referee_Robot_State.Launch_Speed_Max = DEFAULT_STANDARD_LAUNCH_SPEED_MAX;
+            Referee_Robot_State.Chassis_Power = (DEFAULT_STANDARD_POWER_MAX-10)+(Referee_Robot_State.Manual_Level-1)*5;
             Referee_Robot_State.Chassis_Power_Max = DEFAULT_STANDARD_POWER_MAX+(Referee_Robot_State.Manual_Level-1)*5;
         #endif
 
@@ -70,7 +71,6 @@ void Referee_System_Init(UART_HandleTypeDef *huart)
 {
     Referee_System.huart = huart;
     Referee_Robot_State.Manual_Level = 1;
-    HAL_UART_Receive_DMA(huart, Referee_System.Buffer, REFEREE_BUFFER_LEN);
 
     g_referee_uart_instance_ptr = UART_Register(huart, Referee_System.Buffer, REFEREE_BUFFER_LEN, Referee_Get_Data);
 	
@@ -91,6 +91,10 @@ void Referee_Get_Data(UART_Instance_t *uart_instance)
         {
             Daemon_Reload(g_referee_daemon_instance_ptr);
             Referee_System.Online_Flag = 1;
+            Referee_System.Info_Update_Frame++;
+            if(Referee_System.Info_Update_Frame > 100)
+                Referee_System.Info_Update_Frame = 0;
+
             switch (Referee_System.Buffer[n + 5] | Referee_System.Buffer[n + 6] << 8)
             {
             case REFEREE_GAME_STATUS:
