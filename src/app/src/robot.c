@@ -135,7 +135,8 @@ void Robot_Cmd_Loop()
             /* Gimbal ends here */
 
             /* Launch control starts here */
-            if (Referee_Robot_State.Shooter_Heat_1 < (Referee_Robot_State.Heat_Max-40))
+            g_launch_target.heat_count++;
+            if (Referee_Robot_State.Shooter_Heat_1 < Referee_Robot_State.Heat_Max)
             {
                 if (g_remote.controller.wheel < -50.0f)
                 { // dial wheel forward single fire
@@ -146,12 +147,14 @@ void Robot_Cmd_Loop()
                 { // dial wheel backward burst fire
                     g_launch_target.single_launch_flag = 0;
                     g_launch_target.burst_launch_flag = 1;
+                    g_launch_target.launch_freq_count++;
                 }
                 else
                 { // dial wheel mid stop fire
                     g_launch_target.single_launch_flag = 0;
                     g_launch_target.single_launch_finished_flag = 0;
                     g_launch_target.burst_launch_flag = 0;
+                    g_launch_target.launch_freq_count = 0;
                 }
             }
             else

@@ -45,7 +45,7 @@ void Debug_Task_Loop(void)
         DEBUG_PRINTF(&huart6, "%s", bottom_border);
     }
     #endif
-    DEBUG_PRINTF(&huart6, ">time:%.1f\n>ref:%f\n",(float) counter / 1000.0f * DEBUG_PERIOD,Referee_Robot_State.Chassis_Power);
+    //DEBUG_PRINTF(&huart6, ">time:%.1f\n>ref:%f\n",(float) counter / 1000.0f * DEBUG_PERIOD,Referee_Robot_State.Chassis_Power);
     // DEBUG_PRINTF(&huart6, ">time:%.1f\n>yaw:%f\n>pitch:%f\n>roll:%f\n", (float) counter / 1000.0f * DEBUG_PERIOD, 
     //             g_imu.deg.yaw, g_imu.deg.pitch, g_imu.deg.roll);
     // DEBUG_PRINTF(&huart6, ">remote_daemon:%d\n", g_remote_daemon->counter);
@@ -53,6 +53,6 @@ void Debug_Task_Loop(void)
     if (counter > 0xFFFFFFFF) {
         counter = 0;
     }
-    //DEBUG_PRINTF(&huart6, ">ref:%f\n>act:%f\n",g_motor_feed->velocity_pid->ref,g_motor_feed->stats->current_vel_rpm);
+    DEBUG_PRINTF(&huart6, ">calc:%d\n>ref:%d\n",g_launch_target.calculated_heat,Referee_Robot_State.Shooter_Heat_1);
 #endif
 }
