@@ -54,5 +54,6 @@ void Debug_Task_Loop(void)
         counter = 0;
     }
     DEBUG_PRINTF(&huart6, ">calc:%d\n>ref:%d\n",g_launch_target.calculated_heat,Referee_Robot_State.Shooter_Heat_1);
+    DEBUG_PRINTF(&huart6, ">feed_angle:%f\n>total_angle:%f\n",g_launch_target.feed_angle,g_motor_feed->stats->total_angle_rad);
 #endif
 }

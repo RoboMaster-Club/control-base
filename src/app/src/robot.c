@@ -155,6 +155,7 @@ void Robot_Cmd_Loop()
                     g_launch_target.single_launch_finished_flag = 0;
                     g_launch_target.burst_launch_flag = 0;
                     g_launch_target.launch_freq_count = 0;
+                    g_launch_target.feed_angle = DJI_Motor_Get_Total_Angle(g_motor_feed);
                 }
             }
             else
