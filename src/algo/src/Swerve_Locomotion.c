@@ -7,7 +7,6 @@
 Swerve_Module_t g_swerve_fl, g_swerve_rl, g_swerve_rr, g_swerve_fr;
 Swerve_Module_t *swerve_modules[NUMBER_OF_MODULES] = {&g_swerve_fl, &g_swerve_rl, &g_swerve_rr, &g_swerve_fr};
 float last_swerve_angle[NUMBER_OF_MODULES] = {0.0f, 0.0f, 0.0f, 0.0f};
-Kalman_Filter_t power_KF = {.Prev_P = 1.0f, .Q = 0.0001, .R = 5.0f};
 
 /**
  * @brief Inverse kinematics matrix for a 4 module swerve, defined counterclockwise from the front left
@@ -42,14 +41,14 @@ void Set_Module_Output(Swerve_Module_t *swerve_module, Module_State_t desired_st
 void Swerve_Init()
 {
     // define constants for each module in an array [0] == fl, [1] == rl, [2] == rr, [3] == fr
-    int azimuth_can_bus_array[NUMBER_OF_MODULES] = {1, 1, 2, 2};
+    int azimuth_can_bus_array[NUMBER_OF_MODULES] = {2, 2, 2, 2};
     int azimuth_speed_controller_id_array[NUMBER_OF_MODULES] = {1, 2, 3, 4};
-    int azimuth_offset_array[NUMBER_OF_MODULES] = {1990, 730, 6060, 1362};
+    int azimuth_offset_array[NUMBER_OF_MODULES] = {2050, 1940, 1430, 150};
     Motor_Reversal_t azimuth_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED};
 
-    int drive_can_bus_array[NUMBER_OF_MODULES] = {1, 1, 2, 2};
+    int drive_can_bus_array[NUMBER_OF_MODULES] = {1, 2, 2, 2};
     int drive_speed_controller_id_array[NUMBER_OF_MODULES] = {1, 2, 3, 4};
-    Motor_Reversal_t drive_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_NORMAL, MOTOR_REVERSAL_NORMAL};
+    Motor_Reversal_t drive_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_NORMAL, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_NORMAL};
 
     // init common PID configuration for azimuth motors
     Motor_Config_t azimuth_motor_config = {

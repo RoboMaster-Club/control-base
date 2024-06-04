@@ -16,8 +16,8 @@ void Feed_Angle_Calc(void);
 
 void Launch_Task_Init() {
     Motor_Config_t flywheel_left_config = {
-        .can_bus = 2,
-        .speed_controller_id = 1,
+        .can_bus = 1,
+        .speed_controller_id = 4,
         .offset = 0,
         .control_mode = VELOCITY_CONTROL,
         .motor_reversal = MOTOR_REVERSAL_REVERSED,
@@ -29,8 +29,8 @@ void Launch_Task_Init() {
     };
 
     Motor_Config_t flywheel_right_config = {
-        .can_bus = 2,
-        .speed_controller_id = 2,
+        .can_bus = 1,
+        .speed_controller_id = 5,
         .offset = 0,
         .control_mode = VELOCITY_CONTROL,
         .motor_reversal = MOTOR_REVERSAL_NORMAL,
@@ -43,7 +43,7 @@ void Launch_Task_Init() {
 
     Motor_Config_t feed_speed_config = {
         .can_bus = 1,
-        .speed_controller_id = 3,
+        .speed_controller_id = 2,
         .offset = 0,
         .control_mode = VELOCITY_CONTROL | POSITION_CONTROL,
         .motor_reversal = MOTOR_REVERSAL_NORMAL,

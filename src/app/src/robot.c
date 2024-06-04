@@ -14,6 +14,7 @@
 #include "buzzer.h"
 #include "ui.h"
 #include "user_math.h"
+#include "Swerve_Locomotion.h"
 
 extern DJI_Motor_Handle_t *g_yaw;
 

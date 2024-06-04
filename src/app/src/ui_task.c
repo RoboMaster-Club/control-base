@@ -2,7 +2,7 @@
 
 void UI_Task_Loop(void)
 {
-    ui_self_id = 3;//Referee_Robot_State.ID;
+    ui_self_id = Referee_Robot_State.ID;
     if (!g_robot_state.UI_enabled)
     {
         ui_remove_indicator_0();
