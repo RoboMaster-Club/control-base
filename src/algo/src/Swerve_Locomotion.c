@@ -6,6 +6,7 @@
 
 Swerve_Module_t g_swerve_fl, g_swerve_rl, g_swerve_rr, g_swerve_fr;
 Swerve_Module_t *swerve_modules[NUMBER_OF_MODULES] = {&g_swerve_fl, &g_swerve_rl, &g_swerve_rr, &g_swerve_fr};
+Module_State_t optimized_module_state;
 float last_swerve_angle[NUMBER_OF_MODULES] = {0.0f, 0.0f, 0.0f, 0.0f};
 
 /**
@@ -43,12 +44,12 @@ void Swerve_Init()
     // define constants for each module in an array [0] == fl, [1] == rl, [2] == rr, [3] == fr
     int azimuth_can_bus_array[NUMBER_OF_MODULES] = {2, 2, 2, 2};
     int azimuth_speed_controller_id_array[NUMBER_OF_MODULES] = {1, 2, 3, 4};
-    int azimuth_offset_array[NUMBER_OF_MODULES] = {2050, 1940, 1430, 150};
+    int azimuth_offset_array[NUMBER_OF_MODULES] = {2050, 1940, 1430, 8150};
     Motor_Reversal_t azimuth_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED};
 
     int drive_can_bus_array[NUMBER_OF_MODULES] = {1, 2, 2, 2};
     int drive_speed_controller_id_array[NUMBER_OF_MODULES] = {1, 2, 3, 4};
-    Motor_Reversal_t drive_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_NORMAL, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_NORMAL};
+    Motor_Reversal_t drive_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_NORMAL, MOTOR_REVERSAL_NORMAL, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED};
 
     // init common PID configuration for azimuth motors
     Motor_Config_t azimuth_motor_config = {
@@ -178,45 +179,22 @@ Module_State_t Optimize_Module_Angle(Module_State_t input_state, float measured_
 {
     Module_State_t optimized_module_state = {0};
     optimized_module_state.speed = input_state.speed;
-    float target_angle = fmodf(input_state.angle, 2.0f * PI); // get positive normalized target angle
-    if (target_angle < 0)
-    {
-        target_angle += 2.0f * PI;
-    }
+    optimized_module_state.angle = input_state.angle;
 
-    float curr_angle_normalized = fmodf(measured_angle, 2 * PI); // get normalized current angle
-    if (curr_angle_normalized < 0)
-    {
-        curr_angle_normalized += 2.0f * PI;
-    }
+    if(measured_angle > PI)
+        measured_angle -= 2*PI;
 
-    float delta = target_angle - curr_angle_normalized;          // calculate the angle delta
+    float angle_diff = optimized_module_state.angle - measured_angle;
 
-    // these conditions essentially create the step function for angles to "snap" too offset from the measured angle to avoid flipping
-    if (PI / 2.0f < fabsf(delta) && fabsf(delta) < 3 * PI / 2.0f)
-    {
-        float beta = PI - fabsf(delta);
-        beta *= (delta > 0 ? 1.0f : -1.0f);
-        target_angle = measured_angle - beta;
-        optimized_module_state.speed = -1.0f * input_state.speed; // invert velocity if optimal angle 180 deg from target
-    }
-    else if (fabsf(delta) >= 3.0f * PI / 2.0f)
-    {
-        if (delta < 0)
-        {
-            target_angle = measured_angle + (2.0f * PI + delta);
-        }
-        else
-        {
-            target_angle = measured_angle - (2.0f * PI - delta);
-        }
-    }
-    else
-    {
-        target_angle = measured_angle + delta;
-    }
+    if((angle_diff >= PI/2 && angle_diff <= 3*PI/2) || (angle_diff <= -PI/2 && angle_diff >= -3*PI/2))
+	{
+		optimized_module_state.angle += (angle_diff > 0) ? -PI:PI;
+		optimized_module_state.speed *= -1.0f;
+	}
 
-    optimized_module_state.angle = target_angle;
+    if (optimized_module_state.angle < 0)
+        optimized_module_state.angle += 2.0f * PI;
+
     return optimized_module_state;
 }
 

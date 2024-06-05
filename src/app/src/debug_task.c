@@ -15,12 +15,13 @@
 extern Robot_State_t g_robot_state;
 extern DJI_Motor_Handle_t *g_yaw;
 extern IMU_t g_imu;
-extern Swerve_Module_t g_swerve_rr;
+extern Swerve_Module_t g_swerve_rl, g_swerve_fr;
 extern Remote_t g_remote; 
 extern Launch_Target_t g_launch_target;
 extern Daemon_Instance_t *g_daemon_instances[3];
 extern Daemon_Instance_t *g_remote_daemon;
 extern Daemon_Instance_t *g_referee_daemon_instance_ptr;
+extern float test_tmd;
 //#define PRINT_RUNTIME_STATS
 #ifdef PRINT_RUNTIME_STATS
 char g_debug_buffer[1024*2] = {0};
@@ -29,7 +30,7 @@ char g_debug_buffer[1024*2] = {0};
 const char* top_border = "\r\n\r\n\r\n/***** System Info *****/\r\n";
 const char* bottom_border = "/***** End of Info *****/\r\n";
 
-#define DEBUG_ENABLED
+//#define DEBUG_ENABLED
 
 void Debug_Task_Loop(void)
 {
@@ -52,7 +53,8 @@ void Debug_Task_Loop(void)
     if (counter > 0xFFFFFFFF) {
         counter = 0;
     }
-    DEBUG_PRINTF(&huart6, ">fl:%d\n>rl:%d\n>rr:%d\n>fr:%d\n",g_swerve_rr.drive_motor->velocity_pid->ref);
-    //DEBUG_PRINTF(&huart6, ">feed_angle:%f\n>total_angle:%f\n",g_launch_target.feed_angle,g_motor_feed->stats->total_angle_rad);
+
+//     DEBUG_PRINTF(&huart1, ">fr_ref_speed:%f\n>fr_actual_speed:%f\n",
+//     g_swerve_fr.drive_motor->velocity_pid->ref,g_swerve_fr.drive_motor->stats->current_vel_rpm);
 #endif
 }
