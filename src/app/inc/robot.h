@@ -2,6 +2,7 @@
 #define ROBOT_H
 
 #include <stdint.h>
+#include "user_math.h"
 
 typedef struct
 {
@@ -14,7 +15,7 @@ typedef struct
   float chassis_y_speed;
   float chassis_omega;
 
-  float chassis_power_buffer[500];
+  float chassis_power_buffer[BUFFER_SIZE];
   uint16_t chassis_power_index;
   uint16_t chassis_power_count;
   float chassis_avg_power;

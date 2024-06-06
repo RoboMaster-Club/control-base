@@ -39,7 +39,7 @@
         }                             \
     } while (0);
 
-#define BUFFER_SIZE 500
+#define BUFFER_SIZE (1000)
 #define __MOVING_AVERAGE(buffer, index, update_value, count, sum, average)  \
     do                                                                      \
     {                                                                       \

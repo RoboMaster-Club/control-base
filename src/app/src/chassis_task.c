@@ -33,7 +33,7 @@ void Chassis_Ctrl_Loop()
         if (g_robot_state.spintop_mode)
         {
             float translation_speed = sqrtf(powf(g_robot_state.chassis_x_speed, 2) + powf(g_robot_state.chassis_y_speed, 2));
-            float spin_coeff = chassis_rad * SPIN_TOP_OMEGA / (translation_speed*0.1f + chassis_rad * SPIN_TOP_OMEGA);
+            float spin_coeff = chassis_rad * SPIN_TOP_OMEGA / (translation_speed*0.2f + chassis_rad * SPIN_TOP_OMEGA);
 
             // ramp up to target omega
             float target_omega = SPIN_TOP_OMEGA * spin_coeff;
