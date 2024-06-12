@@ -244,7 +244,7 @@ void Swerve_Drive(float x, float y, float omega)
             {
                 __MOVING_AVERAGE(g_robot_state.chassis_power_buffer,g_robot_state.chassis_power_index,
                 Referee_Robot_State.Chassis_Power,g_robot_state.chassis_power_count,g_robot_state.chassis_total_power,g_robot_state.chassis_avg_power);
-                if(g_robot_state.chassis_avg_power < (Referee_Robot_State.Chassis_Power_Max*0.7f))
+                if(g_robot_state.chassis_avg_power < (Referee_Robot_State.Chassis_Power_Max*(0.9f-Referee_Robot_State.Level*0.2f)))
                     g_robot_state.power_increment_ratio += 0.001f;
                 else
                     g_robot_state.power_increment_ratio -= 0.001f;

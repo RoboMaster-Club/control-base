@@ -20,7 +20,7 @@ typedef enum Motor_Reversal_e
 typedef struct
 {
     uint8_t can_bus;
-    uint16_t tx_id; // ignore this for 
+    uint16_t tx_id; // ignore this for DJI motors
     uint16_t rx_id; // use can_id for general devices
     uint8_t speed_controller_id; // use speed_contrller_id for dji motors
     uint16_t offset;

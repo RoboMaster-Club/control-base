@@ -15,6 +15,7 @@
 #include "ui.h"
 #include "user_math.h"
 #include "Swerve_Locomotion.h"
+#include "supercap.h"
 
 extern DJI_Motor_Handle_t *g_yaw;
 
@@ -26,6 +27,7 @@ Robot_State_t g_robot_state = {0, 0};
 Key_Prev_t g_key_prev = {0};
 extern Launch_Target_t g_launch_target;
 extern Remote_t g_remote;
+extern Supercap_t g_supercap;
 
 uint8_t g_start_safely = 0;
 
@@ -49,7 +51,8 @@ void Robot_Init()
     Remote_Init(&huart3);
     CAN_Service_Init();
     Referee_System_Init(&huart1);
-    // Jetson_Orin_Init(&huart6);
+    Jetson_Orin_Init(&huart6);
+    Supercap_Init(&g_supercap);
     //   Initialize all tasks
     Robot_Tasks_Start();
 }
@@ -137,7 +140,7 @@ void Robot_Cmd_Loop()
 
             /* Launch control starts here */
             g_launch_target.heat_count++;
-            if (Referee_Robot_State.Shooter_Heat_1 < Referee_Robot_State.Heat_Max)
+            if (1)//Referee_Robot_State.Shooter_Heat_1 < (Referee_Robot_State.Heat_Max-10))
             {
                 if (g_remote.controller.wheel < -50.0f)
                 { // dial wheel forward single fire
