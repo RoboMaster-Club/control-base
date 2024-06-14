@@ -140,7 +140,7 @@ void Robot_Cmd_Loop()
 
             /* Launch control starts here */
             g_launch_target.heat_count++;
-            if (1)//Referee_Robot_State.Shooter_Heat_1 < (Referee_Robot_State.Heat_Max-10))
+            if (Referee_Robot_State.Shooter_Heat_1 < (Referee_Robot_State.Heat_Max-10))
             {
                 if (g_remote.controller.wheel < -50.0f)
                 { // dial wheel forward single fire

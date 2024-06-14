@@ -93,6 +93,10 @@ void Feed_Angle_Calc()
     #ifdef HEAT_CONTROL
         if (Referee_System.Online_Flag)
         {
+            if (Referee_System.Robot_State.Shooter_Power_Output == 0)
+            {
+                g_launch_target.feed_angle = g_motor_feed->stats->total_angle_rad;
+            } 
             if (g_launch_target.heat_count*2 % 100 == 0)
             {
                 g_launch_target.calculated_heat -= Referee_Robot_State.Cooling_Rate/10;
@@ -107,7 +111,6 @@ void Feed_Angle_Calc()
                     {
                         g_launch_target.calculated_heat += 10;
                         g_launch_target.feed_angle += FEED_1_PROJECTILE_ANGLE;
-                        
                     }
                 }
                 DJI_Motor_Set_Control_Mode(g_motor_feed, POSITION_CONTROL_TOTAL_ANGLE);
