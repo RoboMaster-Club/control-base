@@ -1,4 +1,5 @@
 #include "ui_task.h"
+#include "supercap.h"
 
 void UI_Task_Loop(void)
 {
@@ -45,10 +46,9 @@ void UI_Task_Loop(void)
         ui_indicator_1_Aim_H_Line->color = 3;
         ui_indicator_1_Aim_V_Line->color = 3;
     }
-    if (ui_indicator_1_Supercap->number>=99)
-    {
-        ui_indicator_1_Supercap->number = 0;
-    }
+
+    ui_indicator_1_Supercap->number = g_supercap.supercap_percent;
+    
     if(Referee_System.Online_Flag)
     {
         ui_indicator_1_Level_Indicator->number = Referee_Robot_State.Level;

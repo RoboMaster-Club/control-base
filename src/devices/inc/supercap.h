@@ -19,4 +19,6 @@ void Supercap_Init(Supercap_t *g_supercap);
 void Supercap_Decode(CAN_Instance_t *can_instance);
 void Supercap_Send(void);
 
+extern Supercap_t g_supercap;
+
 #endif // __SUPERCAP_H
