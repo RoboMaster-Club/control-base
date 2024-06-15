@@ -15,7 +15,7 @@
 #define FEED_FREQUENCY_20 (20.0f / FEED_HOLE_NUM * 60.0f)
 #define FEED_FREQUENCY_30 (30.0f / FEED_HOLE_NUM * 60.0f)
 
-//#define HEAT_CONTROL
+#define HEAT_CONTROL
 
 typedef struct
 {
