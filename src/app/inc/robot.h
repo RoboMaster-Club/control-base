@@ -36,6 +36,7 @@ typedef struct
   uint8_t prev_G;
   uint8_t prev_V;
   uint8_t prev_Z;
+  uint8_t prev_Shift;
   uint8_t prev_left_switch;
 } Key_Prev_t;
 

@@ -16,6 +16,7 @@
 #include "dma.h"
 #include "bsp_uart.h"
 #include "bsp_daemon.h"
+#include "supercap.h"
 #include <stdint.h>
 #include <stdbool.h>
 

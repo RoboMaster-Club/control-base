@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "bsp_can.h"
 #include "referee_system.h"
+#include "jetson_orin.h"
 
 typedef struct
 {
@@ -13,6 +14,7 @@ typedef struct
     uint8_t send_counter;
 
     uint8_t supercap_percent;
+    uint8_t supercap_enabled_flag;
 } Supercap_t;
 
 void Supercap_Init(Supercap_t *g_supercap);

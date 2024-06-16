@@ -140,7 +140,7 @@ void Robot_Cmd_Loop()
 
             /* Launch control starts here */
             g_launch_target.heat_count++;
-            if (Referee_Robot_State.Shooter_Heat_1 < (Referee_Robot_State.Heat_Max-10))
+            if (Referee_Robot_State.Shooter_Heat_1 < (Referee_Robot_State.Heat_Max-20))
             {
                 if (g_remote.controller.wheel < -50.0f)
                 { // dial wheel forward single fire
@@ -188,10 +188,19 @@ void Robot_Cmd_Loop()
                 Referee_Robot_State.Manual_Level++;
                 __MAX_LIMIT(Referee_Robot_State.Manual_Level,1,10);
             }
+            if (g_remote.keyboard.Shift == 1)
+            {
+                g_supercap.supercap_enabled_flag = 1;
+            }
+            else
+            {
+                g_supercap.supercap_enabled_flag = 0;
+            }
             g_key_prev.prev_B = g_remote.keyboard.B;
             g_key_prev.prev_G = g_remote.keyboard.G;
             g_key_prev.prev_V = g_remote.keyboard.V;
             g_key_prev.prev_Z = g_remote.keyboard.Z;
+            g_key_prev.prev_Shift = g_remote.keyboard.Shift;
             /* Keyboard Toggles Start Here */
 
             /* AutoAiming Flag, not used only for debug */
