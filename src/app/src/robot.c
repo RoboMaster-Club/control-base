@@ -212,6 +212,11 @@ void Robot_Cmd_Loop()
             {
                 g_robot_state.autoaiming_enabled = 0;
             }
+            
+            if(Referee_System.Robot_State.Chassis_Power_Output == 0)
+            {
+                g_robot_state.spintop_mode = 0;
+            }
 
             /* Hardware Limits */
             g_robot_state.gimbal_yaw_angle = fmod(g_robot_state.gimbal_yaw_angle, 2 * PI);

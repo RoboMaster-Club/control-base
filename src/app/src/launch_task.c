@@ -93,7 +93,7 @@ void Feed_Angle_Calc()
     #ifdef HEAT_CONTROL
         if (Referee_System.Online_Flag)
         {
-            if (Referee_System.Robot_State.Shooter_Power_Output == 0)
+            if (Referee_System.Robot_State.Shooter_Power_Output == 0 || !g_launch_target.burst_launch_flag)
             {
                 g_launch_target.feed_angle = g_motor_feed->stats->total_angle_rad;
             } 
