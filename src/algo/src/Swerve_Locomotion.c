@@ -53,13 +53,23 @@ void Swerve_Init()
 
     // init common PID configuration for azimuth motors
     Motor_Config_t azimuth_motor_config = {
-        .control_mode = POSITION_CONTROL,
-        .angle_pid = {
-            .kp = 15000.0f,
-            .kd = 8000.0f,
-            .kf = 5000.0f,
-            .output_limit = GM6020_MAX_CURRENT,
-        }};
+        .control_mode = POSITION_VELOCITY_SERIES,
+        .angle_pid =
+            {
+                .kp = 200.0f,
+                .kd = 50.0f,
+                .output_limit = 100.0f,
+            },
+        .velocity_pid =
+            {
+                .kp = 200.0f,
+                .ki = 0.0f,
+                .kf = 0.0f,
+                .feedforward_limit = 5000.0f,
+                .integral_limit = 5000.0f,
+                .output_limit = GM6020_MAX_CURRENT,
+            },
+        };
 
     // init common PID configuration for drive motors
     Motor_Config_t drive_motor_config = {
@@ -240,31 +250,32 @@ void Swerve_Drive(float x, float y, float omega)
     #ifdef POWER_REGULATION
         if(Referee_System.Online_Flag)
         {
-            if(fabs(x) > 0.1f || fabs(y) > 0.1f || fabs(omega) > 0.1f)
-            {
-                __MOVING_AVERAGE(g_robot_state.chassis_power_buffer,g_robot_state.chassis_power_index,
-                Referee_Robot_State.Chassis_Power,g_robot_state.chassis_power_count,g_robot_state.chassis_total_power,g_robot_state.chassis_avg_power);
-                if(g_robot_state.chassis_avg_power < (Referee_Robot_State.Chassis_Power_Max*(0.7f)))
-                    g_robot_state.power_increment_ratio += 0.001f;
-                else
-                    g_robot_state.power_increment_ratio -= 0.001f;
-            }
-            else
-            {
-                memset(g_robot_state.chassis_power_buffer,0,sizeof(g_robot_state.chassis_power_buffer));
-                g_robot_state.chassis_power_index = 0;
-                g_robot_state.chassis_power_count = 0;
-                g_robot_state.chassis_total_power = 0;
-                g_robot_state.power_increment_ratio = 1.0f;
-            }
-            __MAX_LIMIT(g_robot_state.power_increment_ratio, 0.8f, 5.0f);
+            // if(fabs(x) > 0.1f || fabs(y) > 0.1f || fabs(omega) > 0.1f)
+            // {
+            //     __MOVING_AVERAGE(g_robot_state.chassis_power_buffer,g_robot_state.chassis_power_index,
+            //     Referee_Robot_State.Chassis_Power,g_robot_state.chassis_power_count,g_robot_state.chassis_total_power,g_robot_state.chassis_avg_power);
+            //     if(g_robot_state.chassis_avg_power < (Referee_Robot_State.Chassis_Power_Max*(0.9f)))
+            //         g_robot_state.power_increment_ratio += 0.001f;
+            //     else
+            //         g_robot_state.power_increment_ratio -= 0.001f;
+            // }
+            // else
+            // {
+            //     memset(g_robot_state.chassis_power_buffer,0,sizeof(g_robot_state.chassis_power_buffer));
+            //     g_robot_state.chassis_power_index = 0;
+            //     g_robot_state.chassis_power_count = 0;
+            //     g_robot_state.chassis_total_power = 0;
+            //     g_robot_state.power_increment_ratio = 1.0f;
+            // }
+            // __MAX_LIMIT(g_robot_state.power_increment_ratio, 0.6f, 3.0f);
+            g_robot_state.power_increment_ratio = 1 + Referee_Robot_State.Level*0.08f + g_supercap.supercap_enabled_flag*0.7f;
             x *= g_robot_state.power_increment_ratio; // convert to m/s
             y *= g_robot_state.power_increment_ratio;
             omega *= g_robot_state.power_increment_ratio; // convert to rad/s
             }
         else
         {
-            g_robot_state.power_increment_ratio = 1 + Referee_Robot_State.Manual_Level*0.1f;
+            g_robot_state.power_increment_ratio = 1 + Referee_Robot_State.Manual_Level*0.08f + g_supercap.supercap_enabled_flag*0.7f;
             x *= g_robot_state.power_increment_ratio; // convert to m/s
             y *= g_robot_state.power_increment_ratio;
             omega *= g_robot_state.power_increment_ratio; // convert to rad/s

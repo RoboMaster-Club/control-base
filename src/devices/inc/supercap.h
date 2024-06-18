@@ -6,6 +6,8 @@
 #include "referee_system.h"
 #include "jetson_orin.h"
 
+#define SUPERCAP_POWER (20)
+
 typedef struct
 {
     uint8_t can_bus;

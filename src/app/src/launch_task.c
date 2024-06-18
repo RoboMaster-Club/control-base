@@ -56,7 +56,7 @@ void Launch_Task_Init() {
             },
         .angle_pid =
             {
-                .kp = 400000.0f,
+                .kp = 450000.0f,
                 .kd = 15000000.0f,
                 .ki = 0.1f,
                 .output_limit = M2006_MAX_CURRENT,
@@ -102,7 +102,7 @@ void Feed_Angle_Calc()
                 g_launch_target.calculated_heat -= Referee_Robot_State.Cooling_Rate/10;
                 __MAX_LIMIT(g_launch_target.calculated_heat,0,Referee_Robot_State.Heat_Max);
             }
-            if (g_launch_target.burst_launch_flag) 
+            if (g_launch_target.burst_launch_flag && !g_launch_target.reverse_flag) 
             {
                 if (g_launch_target.launch_freq_count*2 > LAUNCH_PERIOD)
                 {
@@ -114,8 +114,15 @@ void Feed_Angle_Calc()
                     }
                 }
                 DJI_Motor_Set_Control_Mode(g_motor_feed, POSITION_CONTROL_TOTAL_ANGLE);
-                        DJI_Motor_Set_Angle(g_motor_feed,g_launch_target.feed_angle);
-            }   
+                DJI_Motor_Set_Angle(g_motor_feed,g_launch_target.feed_angle);
+            }
+            if(g_launch_target.reverse_flag && !g_launch_target.prev_reverse_flag)
+            {
+                g_launch_target.feed_angle -= FEED_1_PROJECTILE_ANGLE;
+                DJI_Motor_Set_Control_Mode(g_motor_feed, POSITION_CONTROL_TOTAL_ANGLE);
+                DJI_Motor_Set_Angle(g_motor_feed,g_launch_target.feed_angle);
+            
+            }
         }
     #else 
         if (g_launch_target.single_launch_flag && !g_launch_target.single_launch_finished_flag) {

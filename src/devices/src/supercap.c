@@ -17,7 +17,7 @@ void Supercap_Decode(CAN_Instance_t *can_instance)
 {
     // Send supercap data
     uint8_t *data = can_instance->rx_buffer;
-    g_supercap.supercap_percent = (data[0]-20)*2;
+    g_supercap.supercap_percent = (data[0]-30)*3.0f;
 }
 
 void Supercap_Send(void)

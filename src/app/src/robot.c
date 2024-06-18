@@ -51,7 +51,7 @@ void Robot_Init()
     Remote_Init(&huart3);
     CAN_Service_Init();
     Referee_System_Init(&huart1);
-    Jetson_Orin_Init(&huart6);
+    //Jetson_Orin_Init(&huart6);
     Supercap_Init(&g_supercap);
     //   Initialize all tasks
     Robot_Tasks_Start();
@@ -140,7 +140,8 @@ void Robot_Cmd_Loop()
 
             /* Launch control starts here */
             g_launch_target.heat_count++;
-            if (Referee_Robot_State.Shooter_Heat_1 < (Referee_Robot_State.Heat_Max-20))
+            g_launch_target.prev_burst_launch_flag = g_launch_target.burst_launch_flag;
+            if (Referee_Robot_State.Shooter_Heat_1 < (Referee_Robot_State.Heat_Max-10))
             {
                 if (g_remote.controller.wheel < -50.0f)
                 { // dial wheel forward single fire
@@ -188,11 +189,19 @@ void Robot_Cmd_Loop()
                 Referee_Robot_State.Manual_Level++;
                 __MAX_LIMIT(Referee_Robot_State.Manual_Level,1,10);
             }
-            if (g_remote.keyboard.Shift == 1)
+            if (g_remote.keyboard.Shift)
             {
                 g_supercap.supercap_enabled_flag = 1;
             }
             else
+            {
+                g_supercap.supercap_enabled_flag = 0;
+            }
+            if(g_remote.controller.wheel > 50.0f && !g_launch_target.flywheel_enabled)
+            {
+                g_supercap.supercap_enabled_flag = 1;
+            }
+             else
             {
                 g_supercap.supercap_enabled_flag = 0;
             }
@@ -204,13 +213,16 @@ void Robot_Cmd_Loop()
             /* Keyboard Toggles Start Here */
 
             /* AutoAiming Flag, not used only for debug */
-            if ((g_remote.mouse.right == 1) || (g_remote.controller.right_switch == UP))
+            g_launch_target.prev_reverse_flag = g_launch_target.reverse_flag;
+            if (g_remote.mouse.right == 1 || (g_remote.controller.wheel < -50.0f && g_launch_target.flywheel_enabled)
+               || (!g_launch_target.burst_launch_flag && g_launch_target.prev_burst_launch_flag))
             {
-                g_robot_state.autoaiming_enabled = 1;
+                g_launch_target.reverse_flag = 1;
+                g_launch_target.calculated_heat = Referee_Robot_State.Shooter_Heat_1;
             }
             else
             {
-                g_robot_state.autoaiming_enabled = 0;
+                g_launch_target.reverse_flag = 0;
             }
             
             if(Referee_System.Robot_State.Chassis_Power_Output == 0)

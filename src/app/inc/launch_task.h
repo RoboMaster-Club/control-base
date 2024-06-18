@@ -25,11 +25,15 @@ typedef struct
     uint8_t single_launch_flag;
     uint8_t single_launch_finished_flag;
     uint8_t burst_launch_flag;
+    uint8_t prev_burst_launch_flag;
     uint8_t flywheel_enabled;
 
     int16_t calculated_heat;
     uint16_t heat_count;
     uint16_t launch_freq_count;
+
+    uint8_t reverse_flag;
+    uint8_t prev_reverse_flag;
 } Launch_Target_t;
 
 void Launch_Task_Init(void);

@@ -30,12 +30,12 @@ char g_debug_buffer[1024*2] = {0};
 const char* top_border = "\r\n\r\n\r\n/***** System Info *****/\r\n";
 const char* bottom_border = "/***** End of Info *****/\r\n";
 
-//#define DEBUG_ENABLED
+#define DEBUG_ENABLED
 
 void Debug_Task_Loop(void)
 {
 #ifdef DEBUG_ENABLED
-    static uint32_t counter = 0;
+    //static uint32_t counter = 0;
     #ifdef PRINT_RUNTIME_STATS
     if (counter % 100 == 0) // Print every 100 cycles
     {
@@ -49,12 +49,12 @@ void Debug_Task_Loop(void)
     // DEBUG_PRINTF(&huart6, ">time:%.1f\n>yaw:%f\n>pitch:%f\n>roll:%f\n", (float) counter / 1000.0f * DEBUG_PERIOD, 
     //             g_imu.deg.yaw, g_imu.deg.pitch, g_imu.deg.roll);
     // DEBUG_PRINTF(&huart6, ">remote_daemon:%d\n", g_remote_daemon->counter);
-    counter++;
-    if (counter > 0xFFFFFFFF) {
-        counter = 0;
-    }
+    // counter++;
+    // if (counter > 0xFFFFFFFF) {
+    //     counter = 0;
+    // }
 
-//     DEBUG_PRINTF(&huart1, ">fr_ref_speed:%f\n>fr_actual_speed:%f\n",
-//     g_swerve_fr.drive_motor->velocity_pid->ref,g_swerve_fr.drive_motor->stats->current_vel_rpm);
+    DEBUG_PRINTF(&huart6, ">target_angle:%f\n>actual_angle:%f\n",
+    g_swerve_fr.azimuth_motor->angle_pid->ref,g_swerve_fr.azimuth_motor->stats->absolute_angle_rad);
 #endif
 }
