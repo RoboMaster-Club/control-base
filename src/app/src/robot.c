@@ -189,19 +189,11 @@ void Robot_Cmd_Loop()
                 Referee_Robot_State.Manual_Level++;
                 __MAX_LIMIT(Referee_Robot_State.Manual_Level,1,10);
             }
-            if (g_remote.keyboard.Shift)
+            if (g_remote.keyboard.Shift == 1 || (g_remote.controller.wheel > 50.0f && !g_launch_target.flywheel_enabled))
             {
                 g_supercap.supercap_enabled_flag = 1;
             }
             else
-            {
-                g_supercap.supercap_enabled_flag = 0;
-            }
-            if(g_remote.controller.wheel > 50.0f && !g_launch_target.flywheel_enabled)
-            {
-                g_supercap.supercap_enabled_flag = 1;
-            }
-             else
             {
                 g_supercap.supercap_enabled_flag = 0;
             }

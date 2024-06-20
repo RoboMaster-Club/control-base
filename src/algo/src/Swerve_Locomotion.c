@@ -268,14 +268,14 @@ void Swerve_Drive(float x, float y, float omega)
             //     g_robot_state.power_increment_ratio = 1.0f;
             // }
             // __MAX_LIMIT(g_robot_state.power_increment_ratio, 0.6f, 3.0f);
-            g_robot_state.power_increment_ratio = 1 + Referee_Robot_State.Level*0.08f + g_supercap.supercap_enabled_flag*0.7f;
+            g_robot_state.power_increment_ratio = 0.9f + Referee_Robot_State.Level*0.11f + g_supercap.supercap_enabled_flag*0.6f;
             x *= g_robot_state.power_increment_ratio; // convert to m/s
             y *= g_robot_state.power_increment_ratio;
             omega *= g_robot_state.power_increment_ratio; // convert to rad/s
             }
         else
         {
-            g_robot_state.power_increment_ratio = 1 + Referee_Robot_State.Manual_Level*0.08f + g_supercap.supercap_enabled_flag*0.7f;
+            g_robot_state.power_increment_ratio = 0.9f + Referee_Robot_State.Manual_Level*0.11f + g_supercap.supercap_enabled_flag*0.6f;
             x *= g_robot_state.power_increment_ratio; // convert to m/s
             y *= g_robot_state.power_increment_ratio;
             omega *= g_robot_state.power_increment_ratio; // convert to rad/s

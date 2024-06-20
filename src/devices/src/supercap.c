@@ -24,14 +24,7 @@ void Supercap_Send(void)
 {
     // Send supercap data
     uint8_t *data = supercap_can_instance->tx_buffer;
-    if (g_orin_data.sending.game_start_flag)
-    {
-        data[0] = Referee_Robot_State.Chassis_Power_Max;
-    }
-    else
-    {
-        data[0] = 90;
-    }
+    data[0] = Referee_Robot_State.Chassis_Power_Max;
     
     CAN_Transmit(supercap_can_instance);
 }
