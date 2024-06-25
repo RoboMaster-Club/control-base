@@ -13,6 +13,9 @@
 #include "referee_system.h"
 #include "buzzer.h"
 #include "ui.h"
+#include "user_math.h"
+#include "Swerve_Locomotion.h"
+#include "supercap.h"
 
 extern DJI_Motor_Handle_t *g_yaw;
 
@@ -24,6 +27,7 @@ Robot_State_t g_robot_state = {0, 0};
 Key_Prev_t g_key_prev = {0};
 extern Launch_Target_t g_launch_target;
 extern Remote_t g_remote;
+extern Supercap_t g_supercap;
 
 uint8_t g_start_safely = 0;
 
@@ -47,7 +51,8 @@ void Robot_Init()
     Remote_Init(&huart3);
     CAN_Service_Init();
     Referee_System_Init(&huart1);
-    // Jetson_Orin_Init(&huart6);
+    //Jetson_Orin_Init(&huart6);
+    Supercap_Init(&g_supercap);
     //   Initialize all tasks
     Robot_Tasks_Start();
 }
@@ -134,7 +139,9 @@ void Robot_Cmd_Loop()
             /* Gimbal ends here */
 
             /* Launch control starts here */
-            if (Referee_Robot_State.Shooter_Heat_1 < (Referee_Robot_State.Heat_Max-40))
+            g_launch_target.heat_count++;
+            g_launch_target.prev_burst_launch_flag = g_launch_target.burst_launch_flag;
+            if (Referee_Robot_State.Shooter_Heat_1 < (Referee_Robot_State.Heat_Max-10))
             {
                 if (g_remote.controller.wheel < -50.0f)
                 { // dial wheel forward single fire
@@ -145,12 +152,15 @@ void Robot_Cmd_Loop()
                 { // dial wheel backward burst fire
                     g_launch_target.single_launch_flag = 0;
                     g_launch_target.burst_launch_flag = 1;
+                    g_launch_target.launch_freq_count++;
                 }
                 else
                 { // dial wheel mid stop fire
                     g_launch_target.single_launch_flag = 0;
                     g_launch_target.single_launch_finished_flag = 0;
                     g_launch_target.burst_launch_flag = 0;
+                    g_launch_target.launch_freq_count = 0;
+                    g_launch_target.feed_angle = DJI_Motor_Get_Total_Angle(g_motor_feed);
                 }
             }
             else
@@ -174,19 +184,42 @@ void Robot_Cmd_Loop()
             {
                 _toggle_robot_state(&g_robot_state.UI_enabled);
             }
-            g_key_prev.prev_B = g_remote.keyboard.B;
-            g_key_prev.prev_G = g_remote.keyboard.G;
-            g_key_prev.prev_V = g_remote.keyboard.V;
-            /* Keyboard Toggles Start Here */
-
-            /* AutoAiming Flag, not used only for debug */
-            if ((g_remote.mouse.right == 1) || (g_remote.controller.right_switch == UP))
+            if (g_remote.keyboard.Z == 1 && g_key_prev.prev_Z == 0)
             {
-                g_robot_state.autoaiming_enabled = 1;
+                Referee_Robot_State.Manual_Level++;
+                __MAX_LIMIT(Referee_Robot_State.Manual_Level,1,10);
+            }
+            if (g_remote.keyboard.Shift == 1 || (g_remote.controller.wheel > 50.0f && !g_launch_target.flywheel_enabled))
+            {
+                g_supercap.supercap_enabled_flag = 1;
             }
             else
             {
-                g_robot_state.autoaiming_enabled = 0;
+                g_supercap.supercap_enabled_flag = 0;
+            }
+            g_key_prev.prev_B = g_remote.keyboard.B;
+            g_key_prev.prev_G = g_remote.keyboard.G;
+            g_key_prev.prev_V = g_remote.keyboard.V;
+            g_key_prev.prev_Z = g_remote.keyboard.Z;
+            g_key_prev.prev_Shift = g_remote.keyboard.Shift;
+            /* Keyboard Toggles Start Here */
+
+            /* AutoAiming Flag, not used only for debug */
+            g_launch_target.prev_reverse_flag = g_launch_target.reverse_flag;
+            if (g_remote.mouse.right == 1 || (g_remote.controller.wheel < -50.0f && g_launch_target.flywheel_enabled)
+               || (!g_launch_target.burst_launch_flag && g_launch_target.prev_burst_launch_flag))
+            {
+                g_launch_target.reverse_flag = 1;
+                g_launch_target.calculated_heat = Referee_Robot_State.Shooter_Heat_1;
+            }
+            else
+            {
+                g_launch_target.reverse_flag = 0;
+            }
+            
+            if(Referee_System.Robot_State.Chassis_Power_Output == 0)
+            {
+                g_robot_state.spintop_mode = 0;
             }
 
             /* Hardware Limits */

@@ -19,7 +19,7 @@
 #define NUMBER_OF_MODULES 4
 
 #define SWERVE_OPTIMIZE
-#define POWER_CONTROL
+#define POWER_REGULATION
 
 typedef struct
 {

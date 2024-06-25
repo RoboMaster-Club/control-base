@@ -6,8 +6,8 @@
 
 Swerve_Module_t g_swerve_fl, g_swerve_rl, g_swerve_rr, g_swerve_fr;
 Swerve_Module_t *swerve_modules[NUMBER_OF_MODULES] = {&g_swerve_fl, &g_swerve_rl, &g_swerve_rr, &g_swerve_fr};
+Module_State_t optimized_module_state;
 float last_swerve_angle[NUMBER_OF_MODULES] = {0.0f, 0.0f, 0.0f, 0.0f};
-Kalman_Filter_t power_KF = {.Prev_P = 1.0f, .Q = 0.0001, .R = 5.0f};
 
 /**
  * @brief Inverse kinematics matrix for a 4 module swerve, defined counterclockwise from the front left
@@ -42,24 +42,34 @@ void Set_Module_Output(Swerve_Module_t *swerve_module, Module_State_t desired_st
 void Swerve_Init()
 {
     // define constants for each module in an array [0] == fl, [1] == rl, [2] == rr, [3] == fr
-    int azimuth_can_bus_array[NUMBER_OF_MODULES] = {1, 1, 2, 2};
+    int azimuth_can_bus_array[NUMBER_OF_MODULES] = {2, 2, 2, 2};
     int azimuth_speed_controller_id_array[NUMBER_OF_MODULES] = {1, 2, 3, 4};
-    int azimuth_offset_array[NUMBER_OF_MODULES] = {1990, 730, 6060, 1362};
+    int azimuth_offset_array[NUMBER_OF_MODULES] = {2050, 1940, 1430, 8150};
     Motor_Reversal_t azimuth_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED};
 
-    int drive_can_bus_array[NUMBER_OF_MODULES] = {1, 1, 2, 2};
+    int drive_can_bus_array[NUMBER_OF_MODULES] = {1, 2, 2, 2};
     int drive_speed_controller_id_array[NUMBER_OF_MODULES] = {1, 2, 3, 4};
-    Motor_Reversal_t drive_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_NORMAL, MOTOR_REVERSAL_NORMAL};
+    Motor_Reversal_t drive_motor_reversal_array[NUMBER_OF_MODULES] = {MOTOR_REVERSAL_NORMAL, MOTOR_REVERSAL_NORMAL, MOTOR_REVERSAL_REVERSED, MOTOR_REVERSAL_REVERSED};
 
     // init common PID configuration for azimuth motors
     Motor_Config_t azimuth_motor_config = {
-        .control_mode = POSITION_CONTROL,
-        .angle_pid = {
-            .kp = 15000.0f,
-            .kd = 8000.0f,
-            .kf = 5000.0f,
-            .output_limit = GM6020_MAX_CURRENT,
-        }};
+        .control_mode = POSITION_VELOCITY_SERIES,
+        .angle_pid =
+            {
+                .kp = 200.0f,
+                .kd = 50.0f,
+                .output_limit = 100.0f,
+            },
+        .velocity_pid =
+            {
+                .kp = 200.0f,
+                .ki = 0.0f,
+                .kf = 0.0f,
+                .feedforward_limit = 5000.0f,
+                .integral_limit = 5000.0f,
+                .output_limit = GM6020_MAX_CURRENT,
+            },
+        };
 
     // init common PID configuration for drive motors
     Motor_Config_t drive_motor_config = {
@@ -179,45 +189,22 @@ Module_State_t Optimize_Module_Angle(Module_State_t input_state, float measured_
 {
     Module_State_t optimized_module_state = {0};
     optimized_module_state.speed = input_state.speed;
-    float target_angle = fmodf(input_state.angle, 2.0f * PI); // get positive normalized target angle
-    if (target_angle < 0)
-    {
-        target_angle += 2.0f * PI;
-    }
+    optimized_module_state.angle = input_state.angle;
 
-    float curr_angle_normalized = fmodf(measured_angle, 2 * PI); // get normalized current angle
-    if (curr_angle_normalized < 0)
-    {
-        curr_angle_normalized += 2.0f * PI;
-    }
+    if(measured_angle > PI)
+        measured_angle -= 2*PI;
 
-    float delta = target_angle - curr_angle_normalized;          // calculate the angle delta
+    float angle_diff = optimized_module_state.angle - measured_angle;
 
-    // these conditions essentially create the step function for angles to "snap" too offset from the measured angle to avoid flipping
-    if (PI / 2.0f < fabsf(delta) && fabsf(delta) < 3 * PI / 2.0f)
-    {
-        float beta = PI - fabsf(delta);
-        beta *= (delta > 0 ? 1.0f : -1.0f);
-        target_angle = measured_angle - beta;
-        optimized_module_state.speed = -1.0f * input_state.speed; // invert velocity if optimal angle 180 deg from target
-    }
-    else if (fabsf(delta) >= 3.0f * PI / 2.0f)
-    {
-        if (delta < 0)
-        {
-            target_angle = measured_angle + (2.0f * PI + delta);
-        }
-        else
-        {
-            target_angle = measured_angle - (2.0f * PI - delta);
-        }
-    }
-    else
-    {
-        target_angle = measured_angle + delta;
-    }
+    if((angle_diff >= PI/2 && angle_diff <= 3*PI/2) || (angle_diff <= -PI/2 && angle_diff >= -3*PI/2))
+	{
+		optimized_module_state.angle += (angle_diff > 0) ? -PI:PI;
+		optimized_module_state.speed *= -1.0f;
+	}
 
-    optimized_module_state.angle = target_angle;
+    if (optimized_module_state.angle < 0)
+        optimized_module_state.angle += 2.0f * PI;
+
     return optimized_module_state;
 }
 
@@ -261,27 +248,38 @@ void Swerve_Drive(float x, float y, float omega)
     y *= SWERVE_MAX_SPEED;
     omega *= SWERVE_MAX_ANGLUAR_SPEED; // convert to rad/s
     #ifdef POWER_REGULATION
-        if(fabs(x) > 0.1f || fabs(y) > 0.1f || fabs(omega) > 0.1f)
+        if(Referee_System.Online_Flag)
         {
-            __MOVING_AVERAGE(g_robot_state.chassis_power_buffer,g_robot_state.chassis_power_index,
-            Referee_Robot_State.Chassis_Power,g_robot_state.chassis_power_count,g_robot_state.chassis_total_power,g_robot_state.chassis_avg_power);
-            if(g_robot_state.chassis_avg_power < (Referee_Robot_State.Chassis_Power_Max*0.7f))
-                g_robot_state.power_increment_ratio += 0.001f;
-            else
-                g_robot_state.power_increment_ratio -= 0.001f;
-        }
+            // if(fabs(x) > 0.1f || fabs(y) > 0.1f || fabs(omega) > 0.1f)
+            // {
+            //     __MOVING_AVERAGE(g_robot_state.chassis_power_buffer,g_robot_state.chassis_power_index,
+            //     Referee_Robot_State.Chassis_Power,g_robot_state.chassis_power_count,g_robot_state.chassis_total_power,g_robot_state.chassis_avg_power);
+            //     if(g_robot_state.chassis_avg_power < (Referee_Robot_State.Chassis_Power_Max*(0.9f)))
+            //         g_robot_state.power_increment_ratio += 0.001f;
+            //     else
+            //         g_robot_state.power_increment_ratio -= 0.001f;
+            // }
+            // else
+            // {
+            //     memset(g_robot_state.chassis_power_buffer,0,sizeof(g_robot_state.chassis_power_buffer));
+            //     g_robot_state.chassis_power_index = 0;
+            //     g_robot_state.chassis_power_count = 0;
+            //     g_robot_state.chassis_total_power = 0;
+            //     g_robot_state.power_increment_ratio = 1.0f;
+            // }
+            // __MAX_LIMIT(g_robot_state.power_increment_ratio, 0.6f, 3.0f);
+            g_robot_state.power_increment_ratio = 0.9f + Referee_Robot_State.Level*0.11f + g_supercap.supercap_enabled_flag*0.6f;
+            x *= g_robot_state.power_increment_ratio; // convert to m/s
+            y *= g_robot_state.power_increment_ratio;
+            omega *= g_robot_state.power_increment_ratio; // convert to rad/s
+            }
         else
         {
-            memset(g_robot_state.chassis_power_buffer,0,sizeof(g_robot_state.chassis_power_buffer));
-            g_robot_state.chassis_power_index = 0;
-            g_robot_state.chassis_power_count = 0;
-            g_robot_state.chassis_total_power = 0;
-            g_robot_state.power_increment_ratio = 1.0f;
+            g_robot_state.power_increment_ratio = 0.9f + Referee_Robot_State.Manual_Level*0.11f + g_supercap.supercap_enabled_flag*0.6f;
+            x *= g_robot_state.power_increment_ratio; // convert to m/s
+            y *= g_robot_state.power_increment_ratio;
+            omega *= g_robot_state.power_increment_ratio; // convert to rad/s
         }
-        __MAX_LIMIT(g_robot_state.power_increment_ratio, 0.8f, 5.0f);
-        x *= g_robot_state.power_increment_ratio; // convert to m/s
-        y *= g_robot_state.power_increment_ratio;
-        omega *= g_robot_state.power_increment_ratio; // convert to rad/s
     #endif
     Chassis_Speeds_t desired_chassis_speeds = {.x = x, .y = y, .omega = omega};
     Set_Desired_States(Chassis_Speeds_To_Module_States(desired_chassis_speeds));

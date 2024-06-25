@@ -10,12 +10,14 @@
 #include "bsp_crc.h"
 #include "bsp_uart.h"
 #include "bsp_serial.h"
+#include "referee_system.h"
 
 extern int ui_self_id;
+extern UART_Instance_t *g_referee_uart_instance_ptr;
 
 void print_message(const uint8_t* message, int length);
 
-#define SEND_MESSAGE(message, length) HAL_UART_Transmit_DMA(&huart1,message,length) //print_message(message, length)
+#define SEND_MESSAGE(message, length) UART_Transmit(g_referee_uart_instance_ptr,message,length,UART_DMA) //print_message(message, length)
 
 void ui_proc_1_frame(ui_1_frame_t *msg);
 void ui_proc_2_frame(ui_2_frame_t *msg);

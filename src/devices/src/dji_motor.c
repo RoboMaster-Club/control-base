@@ -7,7 +7,7 @@
 
 DJI_Motor_Handle_t *g_dji_motors[MAX_DJI_MOTORS] = {NULL};
 uint8_t g_dji_motor_count = 0;
-
+float test_tmd;
 DJI_Send_Group_t *g_dji_send_group[MAX_DJI_MOTOR_GROUPS] = {NULL};
 uint8_t g_dji_motor_group_count = 0;
 
@@ -195,7 +195,7 @@ float DJI_Motor_Get_Absolute_Angle(DJI_Motor_Handle_t *motor_handle)
         return motor_handle->stats->absolute_angle_rad;
         break;
     case MOTOR_REVERSAL_REVERSED:
-        return -motor_handle->stats->absolute_angle_rad;
+        return -motor_handle->stats->absolute_angle_rad + 2*PI;
         break;
     }
     return -1;
@@ -239,7 +239,7 @@ void DJI_Motor_Set_Angle(DJI_Motor_Handle_t *motor_handle, float angle)
         motor_handle->angle_pid->ref = angle;
         break;
     case MOTOR_REVERSAL_REVERSED:
-        motor_handle->angle_pid->ref = -angle;
+        motor_handle->angle_pid->ref = -angle+2*PI;
         break;
     default:
         break;
@@ -435,18 +435,28 @@ void DJI_Motor_Decode(CAN_Instance_t *can_instance)
     motor->current_torq = (int16_t)(data[4] << 8 | data[5]);
     motor->temp = data[6];
 
+    motor->last_absolute_angle_rad = motor->absolute_angle_rad;
     motor->absolute_angle_rad = motor->current_tick - motor->encoder_offset;
+    if(motor->absolute_angle_rad >= 8192)
+    {
+        motor->absolute_angle_rad -= 8192;
+    }
+    else if(motor->absolute_angle_rad < 0)
+    {
+        motor->absolute_angle_rad += 8192;
+    }
     /* absolute angle */
     __MAP(motor->absolute_angle_rad, 0, 8192, 0, 2 * PI);
 
     /* angle wrap */
-    if (motor->current_tick - motor->last_tick > DJI_HALF_MAX_TICKS)
+    if (motor->absolute_angle_rad - motor->last_absolute_angle_rad > PI)
     {
         motor->total_round--;
     }
-    else if (motor->current_tick - motor->last_tick < -4096)
+    else if (motor->absolute_angle_rad - motor->last_absolute_angle_rad < -PI)
     {
         motor->total_round++;
     }
+    #pragma message "there are some problem with total_angle_rad"
     motor->total_angle_rad = ((motor->total_round) * 2 * PI + motor->absolute_angle_rad) * motor->reduction_ratio;
 }

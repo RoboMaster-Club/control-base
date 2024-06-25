@@ -39,6 +39,7 @@ typedef struct DJI_Motor_Stats_s {
     uint16_t encoder_offset;
     int32_t total_round;
     float absolute_angle_rad;
+    float last_absolute_angle_rad;
     float total_angle_rad;
     float reduction_ratio;
 } DJI_Motor_Stats_t;

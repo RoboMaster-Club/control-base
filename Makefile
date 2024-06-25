@@ -135,6 +135,7 @@ src/devices/src/remote.c \
 src/devices/src/imu_task.c \
 src/devices/src/referee_system.c \
 src/devices/src/jetson_orin.c \
+src/devices/src/supercap.c \
 src/app/src/motor_task.c \
 src/app/src/chassis_task.c \
 src/app/src/gimbal_task.c \
@@ -154,6 +155,7 @@ src/ui/src/ui_indicator_0_7.c \
 src/ui/src/ui_indicator_0_8.c \
 src/ui/src/ui_indicator_0_9.c \
 src/ui/src/ui_indicator_0_10.c \
+src/ui/src/ui_indicator_0_11.c \
 src/ui/src/ui_indicator_1_0.c 
 
 # ASM sources

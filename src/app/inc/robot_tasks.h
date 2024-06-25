@@ -89,7 +89,7 @@ void Robot_Tasks_UI(void const *argument)
 {
     portTickType xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
-    const TickType_t TimeIncrement = pdMS_TO_TICKS(100);
+    const TickType_t TimeIncrement = pdMS_TO_TICKS(1);
     while (1)
     {
         UI_Task_Loop();
@@ -116,7 +116,7 @@ void Robot_Tasks_Jetson_Orin(void const *argument)
     const TickType_t TimeIncrement = pdMS_TO_TICKS(JETSON_ORIN_PERIOD);
     while (1)
     {
-        //Jetson_Orin_Send_Data();
+        Jetson_Orin_Send_Data();
         vTaskDelayUntil(&xLastWakeTime, TimeIncrement);
     }
 }
