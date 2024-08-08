@@ -1,6 +1,6 @@
 # Purdue Robomasters Control Base
 
-This repository contains the shared control code between Purdue Robomasters robots.
+This repository contains the shared control code between Purdue RoboMaster robots.
 
 ## Repository Initialization Guide
 
@@ -103,7 +103,7 @@ If you don't want to mess with the system path, you could also add local openocd
 
 ## Usage
 
-### Building the Project
+### Building and Flashing
 
 Open the Command Palette in VSCode using [Ctrl+Shift+P].
 Then, select **Tasks: Run Build Tasks** and pick the appropriate build/flash task.
@@ -113,13 +113,13 @@ Then, select **Tasks: Run Build Tasks** and pick the appropriate build/flash tas
 
 > You can use the shortcut [Ctrl+Shift+B] or [Cmd+Shift+B].
 
-### Debugging the Project
+### Debugging
 
 Navigate to [Run and Debug] in VSCode or press [Ctrl+Shift+D].
 Select the appropriate launch configuration, depending on if you are using stlink or cmsis-dap debugger.
 
-- **Windows:** dap/stlink (Windows)
-- **MacOS/Linux:** dap/stlink (Darwin)
+- **Windows:** dap/stlink (Windows).
+- **MacOS/Linux:** dap/stlink.
 
 > Click on the green play button or press [F5] to start debugging.
 
@@ -160,15 +160,16 @@ Motor_Config_t yaw_motor_config = {
 
 ## Development Conventions
 
-**All names must use snake_case.**
+**Code Formatting**:
 
 ```c
+// All names must use snake_case.
+
 // Variable names are all lowercase.
 float example_float = 1.5f;
 
-// Macros should be all UPPERCASE, and enclosed by ()
+// Macros should be all UPPERCASE, and enclosed by ().
 #define EXAMPLE_MACRO (3.14f)
-
 
 // Function names should capitalize the first letter of each word.
 float Example_Function() {}
@@ -176,12 +177,11 @@ float Example_Function() {}
 // typedef names should capitalize the first letter of each word and end in \_t.
 typedef struct _Example_Struct_s Example_Typedef_t {}
 
-
 // Enum names should capitalized the first letter of each word and end in \_e.
 enum Example_Enum_e {};
 
-// In general, indent code blocks for functions and if statments as such,
-// but for switches put cases in the same line.
+/* In general, indent code blocks for functions and if statements as such,
+but for switches put cases in the same line. 8*/
 void Example_Func()
 {
    if (some_condition)
