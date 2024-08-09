@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "dap (Win)",
+            "name": "dap (Windows)",
             "cwd": "${workspaceRoot}",
             "executable": "${workspaceRoot}\\build\\control-base.elf",
             "request": "launch",
@@ -21,7 +21,7 @@
             "preLaunchTask": "build (Windows)" // build before debug
         },
         {
-            "name": "stlink (Win)",
+            "name": "stlink (Windows)",
             "cwd": "${workspaceRoot}",
             "executable": "${workspaceRoot}\\build\\control-base.elf",
             "request": "launch",
