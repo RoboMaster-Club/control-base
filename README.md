@@ -15,6 +15,7 @@ git submodule update --init
 ### Install Tools
 
 **VSCode**: Download VSCode from [here](https://code.visualstudio.com/download).
+
 **Package Manager**:
 
 - **Windows**: Install [MSYS2](https://www.msys2.org/).
