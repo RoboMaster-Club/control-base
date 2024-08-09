@@ -32,7 +32,7 @@ pacman -S mingw-w64-x86_64-arm-none-eabi-gcc
 pacman -S mingw-w64-x86_64-gdb-multiarch
 ```
 
-> Refer to [Common Issues](#common-issues) section for local pointer to OpenOCD and GNU toolchain
+> Refer to the [Common Issues](#common-issues) section for local pointer to OpenOCD and GNU toolchain.
 
 - **MacOS**: Run these commands in your terminal.
 
@@ -52,7 +52,7 @@ sudo apt install gcc-arm-none-eabi gdb-arm-none-eabi
 
 **Check installation and environment variables**:
 
-- **Windows**: Add `C:\msys64\mingw64\bin` to `PATH`
+- **Windows**: Add `C:\msys64\mingw64\bin` to `PATH`.
 - **MacOS/Linux**: Check tool path installation using `which` (eg. `which openocd`). Remember the path for `arm-non-eabi-gdb`, as this will be used to configure the debug extension.
 
 ### Set Up VSCode
@@ -60,7 +60,7 @@ sudo apt install gcc-arm-none-eabi gdb-arm-none-eabi
 **Install VSCode extensions**:
 
 - Install the VSCode extension [Cortex-Debug](https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug) to enable ARM microcontroller debugging.
-- Edit the extension setting .json file
+- Edit the extension setting .json file.
 
 **Modify Extension settings**: Add GDB path by opening your VSCode `settings.json` in VSCode and add the following to the end of the file. The default installation paths are shown, but you should use the path you found by using `which`.
 
@@ -73,33 +73,6 @@ sudo apt install gcc-arm-none-eabi gdb-arm-none-eabi
 ```
 "C_Cpp.default.compilerPath": "C:/msys64/mingw64/bin/arm-none-eabi-gcc.exe"
 ```
-
-## Common Issues
-
-### 1. Windows fails to initializing cmsis-dap debugger.
-
-Solution: Go to device manager and uninstall the usb device (probably having some error message in the list). Unplug and plug in the debugger again.
-
-### 2. Tools (OpenOCD, make tools) not found
-
-```
-Failed to launch OpenOCD GDB Server:...
-```
-
-or
-
-```
-mingw32-make: The term 'mingw32-make' is not recognized as a name of a cmdlet, function, script file, or executable program.
-Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
-```
-
-**Solution 1:**
-Add openocd.exe to system environmental variable. If you followed the installation instruction in this README file, then OpenOCD should be install at default location `C:\msys64\mingw64\bin\openocd.exe`, for windows user. Add `C:\msys64\mingw64\bin` to system executable path.
-
-**Solution 2:**
-If you don't want to mess with the system path, you could also add local openocd path in `.vscode/launch.json`. Add attribute `serverpath` by adding `"serverpath": "C:\\msys64\\mingw64\\bin\\openocd.exe"` in configuration.
-
-> restarting terminal is liekly needed for new environment variable to take effect.
 
 ## Usage
 
@@ -116,12 +89,12 @@ Then, select **Tasks: Run Build Tasks** and pick the appropriate build/flash tas
 ### Debugging
 
 Navigate to [Run and Debug] in VSCode or press [Ctrl+Shift+D].
-Select the appropriate launch configuration, depending on if you are using stlink or cmsis-dap debugger.
+Select the appropriate launch configuration, depending on if you are using ST-LINK or CMSIS-DAP debugger.
 
 - **Windows:** dap/stlink (Windows).
 - **MacOS/Linux:** dap/stlink.
 
-> Click on the green play button or press [F5] to start debugging.
+> Click on the green play button or press [F5] to start a debug session.
 
 ### Motor Config Example
 
@@ -205,12 +178,43 @@ void Example_Func()
    }
 ```
 
+## Common Issues
+
+### 1. Windows fails to initializing CMSIS-DAP debugger.
+
+Solution: Go to device manager and uninstall the usb device (probably having some error message in the list). Unplug and plug in the debugger again.
+
+### 2. Tools (OpenOCD, make tools) not found
+
+```
+Failed to launch OpenOCD GDB Server:...
+```
+
+or
+
+```
+mingw32-make: The term 'mingw32-make' is not recognized as a name of a cmdlet, function, script file, or executable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+```
+
+**Solution 1:**
+Add openocd.exe to system environmental variable. If you followed the installation instruction in this README file, then OpenOCD should be install at default location `C:\msys64\mingw64\bin\openocd.exe`, for windows user. Add `C:\msys64\mingw64\bin` to system executable path.
+
+**Solution 2:**
+If you don't want to mess with the system path, you could also add local openocd path in `.vscode/launch.json`. Add attribute `serverpath` by adding `"serverpath": "C:\\msys64\\mingw64\\bin\\openocd.exe"` in configuration.
+
+> restarting the terminal is likely needed for new environment variables to take effect.
+
+## Standard Debug Procedure
+
+These are common errors to check for:
+
+- Ensure the IMU is firmly attached.
+- Verify the remote functionality, especially the dial wheel.
+- Confirm the debugger is properly connected.
+- Check the connection of wired peripherals.
+
 ## Modifications
 
-- Change `samepleFreq` in [MahonyAHRS.c](Algo/Src/MahonyAHRS.c?plain=1#L23), this will affect the fusion result
-- Initialize a task for imu in FreeRTOS environment
-
-## Debug SOP
-
-- Check IMU is attched firmly
-- Check remote functioning (especially the dial wheel)
+- Change `samepleFreq` in [MahonyAHRS.c](Algo/Src/MahonyAHRS.c#L23), this will affect the fusion result.
+- Initialize a task for imu in FreeRTOS environment.
