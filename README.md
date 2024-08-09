@@ -216,5 +216,5 @@ These are common errors to check for:
 
 ## Modifications
 
-- Change `samepleFreq` in [MahonyAHRS.c](Algo/Src/MahonyAHRS.c#L23), this will affect the fusion result.
+- Change `samepleFreq` in [MahonyAHRS.c](src/algo/src/MahonyAHRS.c#L23), this will affect the fusion result.
 - Initialize a task for imu in FreeRTOS environment.
