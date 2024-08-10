@@ -5,10 +5,13 @@
             "label": "build",
             "type": "shell",
             "osx": {
-                "command": "make -j24 V=1"
+                "command": "make -j V=1"
+            },
+            "linux": {
+                "command": "make -j V=1"
             },
             "windows": {
-                "command": "mingw32-make -j24 V=1"
+                "command": "mingw32-make -j V=1"
             },
             "group": {
                 "kind": "build",
@@ -27,29 +30,26 @@
             }
         },
         {
-            "label": "rebuild",
-            "type": "shell",
-            "osx": {
-                "command": "git submodule update; make clean_unix; make -j24 V=1"
-            },
-            "windows": {
-                "command": "git submodule update; mingw32-make clean; mingw32-make -j24 V=1"
-            }
-        },
-        {
             "label": "clean",
             "type": "shell",
             "osx": {
-                "command": "make clean_unix"
+                "command": "git submodule update; make clean_unix"
+            },
+            "linux": {
+                "command": "git submodule update; make clean_unix"
             },
             "windows": {
-                "command": "mingw32-make clean"
-            }
+                "command": "git submodule update; mingw32-make clean"
+            },
+            "problemMatcher": []
         },
         {
             "label": "flash",
             "type": "shell",
             "osx": {
+                "command": "make download"
+            },
+            "linux": {
                 "command": "make download"
             },
             "windows": {
@@ -63,6 +63,15 @@
             "dependsOn": [
                 "build",
                 "flash"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "rebuild",
+            "type": "shell",
+            "dependsOn": [
+                "clean",
+                "build"
             ],
             "problemMatcher": []
         }
