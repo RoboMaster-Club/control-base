@@ -64,6 +64,7 @@
                 "build",
                 "flash"
             ],
+            "dependsOrder": "sequence",
             "problemMatcher": []
         },
         {
@@ -73,6 +74,7 @@
                 "clean",
                 "build"
             ],
+            "dependsOrder": "sequence",
             "problemMatcher": []
         }
     ]
