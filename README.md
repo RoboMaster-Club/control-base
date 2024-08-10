@@ -77,25 +77,22 @@ sudo apt install gcc-arm-none-eabi gdb-arm-none-eabi
 
 ## Usage
 
-### Building and Flashing
+### Tasks
 
-Open the Command Palette in VSCode using [Ctrl+Shift+P].
-Then, select **Tasks: Run Build Tasks** and pick the appropriate build/flash task.
+VSCode tasks are used to do things like build, clean, or flash the project. Task configurations are located in `tasks.json`
 
-- **Windows:** build/flash (Windows).
-- **MacOS/Linux:** build/flash.
+- Open the Command Palette in VSCode using [Ctrl/Cmd+Shift+P].
+- Then, select **Tasks: Run Tasks** and pick the appropriate task.
 
-> You can use the shortcut [Ctrl+Shift+B] or [Cmd+Shift+B].
+> You can use the shortcut [Ctrl/Cmd+Shift+B] to run the default build task.
 
 ### Debugging
 
-Navigate to [Run and Debug] in VSCode or press [Ctrl+Shift+D].
-Select the appropriate launch configuration, depending on if you are using ST-LINK or CMSIS-DAP debugger.
+A debug session can be used to test and diagnose issues. Debug configurations are located in `launch.json`
 
-- **Windows:** dap/stlink (Windows).
-- **MacOS/Linux:** dap/stlink.
-
-> Click on the green play button or press [F5] to start a debug session.
+- Navigate to **Run and Debug** in VSCode or use [Ctrl/Cmd+Shift+D].
+- Select the appropriate launch configuration, depending on if you are using ST-LINK or CMSIS-DAP debugger.
+- Click on the green play button or press [F5] to start a debug session.
 
 ### Motor Config Example
 
