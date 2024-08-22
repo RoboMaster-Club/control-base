@@ -1,0 +1,19 @@
+# Build Files Ignore
+*.o
+*.d
+*.crf
+
+# Directory Ignore
+.vscode/*
+MDK-ARM/*
+build/*
+
+# Other File in Source Folder
+.mxproject
+
+# Include the MDK file (for compiling and the vscode reference)
+!MDK-ARM/Control_Base_Template.uvprojx
+!MDK-ARM/startup_stm32f407xx.s
+!.vscode/c_cpp_properties.json
+!.vscode/tasks.json
+!.vscode/launch.json
