@@ -1,19 +1,24 @@
 {
     "version": "2.0.0",
     "tasks": [
-        /* For Unix-Like (Linux and MacOS) */
         {
             "label": "build",
             "type": "shell",
-            "command": "make -j24 V=1",
-            "args": [],
+            "osx": {
+                "command": "make -j V=1"
+            },
+            "linux": {
+                "command": "make -j V=1"
+            },
+            "windows": {
+                "command": "mingw32-make -j V=1"
+            },
             "group": {
                 "kind": "build",
-                "isDefault": false
+                "isDefault": true
             },
             "problemMatcher": {
-                "owner": "cpp",
-                "fileLocation": ["absolute"],
+                "fileLocation": "absolute",
                 "pattern": {
                     "regexp": "^(.*):(\\d+):(\\d+):\\s+(warning|error):\\s+(.*)$",
                     "file": 1,
@@ -25,74 +30,52 @@
             }
         },
         {
-            "label": "rebuild",
-            "type": "shell",
-            "command": "git submodule update; make clean_unix; make -j24 V=1",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "problemMatcher": [],
-        },
-        {
             "label": "clean",
             "type": "shell",
-            "command": "make clean_unix",
-            "group": {
-                "kind": "build",
-                "isDefault": false
+            "osx": {
+                "command": "git submodule update; make clean_unix"
+            },
+            "linux": {
+                "command": "git submodule update; make clean_unix"
+            },
+            "windows": {
+                "command": "git submodule update; mingw32-make clean"
             },
             "problemMatcher": []
         },
         {
             "label": "flash",
             "type": "shell",
-            "command": "make -j24 V=1; make download",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            }
-        },
-        
-        /* For Windows */
-        {
-            "label": "build (Windows)",
-            "type": "shell",
-            "command": "mingw32-make -j24 V=1",
-            "group": {
-                "kind": "build",
-                "isDefault": false
+            "osx": {
+                "command": "make download"
+            },
+            "linux": {
+                "command": "make download"
+            },
+            "windows": {
+                "command": "mingw32-make download_powershell"
             },
             "problemMatcher": []
         },
         {
-            "label": "rebuild (Windows)",
+            "label": "build and flash",
             "type": "shell",
-            "command": "git submodule update; mingw32-make clean; mingw32-make -j24 V=1",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "problemMatcher": [],
-        },
-        {
-            "label": "clean (Windows)",
-            "type": "shell",
-            "command": "mingw32-make clean",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
+            "dependsOn": [
+                "build",
+                "flash"
+            ],
+            "dependsOrder": "sequence",
             "problemMatcher": []
         },
         {
-            "label": "flash (Windows)",
+            "label": "rebuild",
             "type": "shell",
-            "command": "mingw32-make -j24 V=1; mingw32-make download_powershell",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            }
+            "dependsOn": [
+                "clean",
+                "build"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
         }
     ]
 }
