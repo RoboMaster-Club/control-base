@@ -109,54 +109,11 @@ lib/CMSIS-DSP/Source/FastMathFunctions/FastMathFunctionsF16.c \
 lib/CMSIS-DSP/Source/DistanceFunctions/DistanceFunctionsF16.c \
 lib/CMSIS-DSP/Source/BayesFunctions/BayesFunctionsF16.c \
 lib/CMSIS-DSP/Source/SVMFunctions/SVMFunctionsF16.c \
-src/algo/src/MahonyAHRS.c \
-src/algo/src/pid.c \
-src/algo/src/Swerve_Locomotion.c \
-src/algo/src/wheel_legged_locomotion.c \
-src/algo/src/leg.c \
-src/algo/src/kalman_filter.c \
-src/bsp/src/bsp_can.c \
-src/bsp/src/bsp_delay.c \
-src/bsp/src/bsp_daemon.c \
-src/bsp/src/bsp_pwm.c \
-src/bsp/src/bsp_spi.c \
-src/bsp/src/bsp_serial.c \
-src/bsp/src/bsp_crc.c \
-src/bsp/src/bsp_uart.c \
-src/devices/src/bmi088driver.c \
-src/devices/src/bmi088middleware.c \
-src/devices/src/buzzer.c \
-src/devices/src/dji_motor.c \
-src/devices/src/dm_motor.c \
-src/devices/src/ist8310driver.c \
-src/devices/src/ist8310driver_middleware.c \
-src/devices/src/mf_motor.c \
-src/devices/src/remote.c \
-src/devices/src/imu_task.c \
-src/devices/src/referee_system.c \
-src/devices/src/jetson_orin.c \
-src/devices/src/supercap.c \
-src/app/src/motor_task.c \
-src/app/src/chassis_task.c \
-src/app/src/gimbal_task.c \
-src/app/src/launch_task.c \
-src/app/src/debug_task.c \
-src/app/src/robot.c \
-src/app/src/ui_task.c \
-src/ui/src/ui_interface.c \
-src/ui/src/ui_indicator_0_0.c \
-src/ui/src/ui_indicator_0_1.c \
-src/ui/src/ui_indicator_0_2.c \
-src/ui/src/ui_indicator_0_3.c \
-src/ui/src/ui_indicator_0_4.c \
-src/ui/src/ui_indicator_0_5.c \
-src/ui/src/ui_indicator_0_6.c \
-src/ui/src/ui_indicator_0_7.c \
-src/ui/src/ui_indicator_0_8.c \
-src/ui/src/ui_indicator_0_9.c \
-src/ui/src/ui_indicator_0_10.c \
-src/ui/src/ui_indicator_0_11.c \
-src/ui/src/ui_indicator_1_0.c 
+$(wildcard src/algo/src/*.c) \
+$(wildcard src/bsp/src/*.c) \
+$(wildcard src/devices/src/*.c) \
+$(wildcard src/app/src/*.c) \
+$(wildcard src/ui/src/*.c) \
 
 # ASM sources
 ASM_SOURCES =  \
@@ -334,4 +291,8 @@ download:
 test_download:
 	openocd -d4 -f config/openocd_cmsis_dap.cfg -c init -c halt -c "program $(BUILD_DIR)/$(TARGET).bin 0x08000000 verify reset" -c "reset run" -c shutdown
 
+
+print_sources:
+	@echo "C sources:" $(C_SOURCES)
+	@echo "ASM sources:" $(ASM_SOURCES)
 # *** EOF ***
