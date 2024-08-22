@@ -1,9 +1,0 @@
-[submodule "typec-board-base"]
-	path = typec-board-base
-	url = https://github.com/RoboMaster-Club/typec-board-base.git
-[submodule "typea-board-base"]
-	path = typea-board-base
-	url = https://github.com/RoboMaster-Club/typea_board_base.git
-[submodule "CMSIS-DSP"]
-	path = CMSIS-DSP
-	url = https://github.com/ARM-software/CMSIS-DSP.git
