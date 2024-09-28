@@ -1,8 +1,9 @@
 #ifndef BSP_SERIAL
 #define BSP_SERIAL
 #include <stdio.h>
-#include "robot_param.h"
 #include "usart.h"
+
+#define DEBUG
 
 #ifdef DEBUG
 #define DEBUG_PRINTF(huart, format, ...) debug_printf((huart), (format), ##__VA_ARGS__)
