@@ -34,12 +34,12 @@ void calculate_omni_kinematics(omni_chassis_state_t *input, omni_physical_consta
     float v_x = input->v_x;
     float v_y = input->v_y;
     float omega = input->omega;
-    float (*k_mat)[3] = omni_physical_constants->kinematics_matrix;
+    float(*k_mat)[3] = omni_physical_constants->kinematics_matrix;
     // Calculate the wheel velocities by multiplying the IK matrix by the chassis velocities
     input->phi_dot_1 = k_mat[0][0] * v_x + k_mat[0][1] * v_y + k_mat[0][2] * omega;
-    input->phi_dot_1 = k_mat[1][0] * v_x + k_mat[1][1] * v_y + k_mat[1][2] * omega;
-    input->phi_dot_1 = k_mat[2][0] * v_x + k_mat[2][1] * v_y + k_mat[2][2] * omega;
-    input->phi_dot_1 = k_mat[3][0] * v_x + k_mat[3][1] * v_y + k_mat[3][2] * omega;
+    input->phi_dot_2 = k_mat[1][0] * v_x + k_mat[1][1] * v_y + k_mat[1][2] * omega;
+    input->phi_dot_3 = k_mat[2][0] * v_x + k_mat[2][1] * v_y + k_mat[2][2] * omega;
+    input->phi_dot_4 = k_mat[3][0] * v_x + k_mat[3][1] * v_y + k_mat[3][2] * omega;
 }
 
 /**
@@ -55,10 +55,12 @@ void desaturate_wheel_speeds(omni_chassis_state_t *input, omni_physical_constant
     highest_wheel_speed = fmaxf(highest_wheel_speed, fabsf(input->phi_dot_3));
     highest_wheel_speed = fmaxf(highest_wheel_speed, fabsf(input->phi_dot_4));
 
+    float max_angular_velocity = omni_physical_constants->max_speed / omni_physical_constants->R;
+
     // scale down the wheel speeds if they exceed the maximum speed
-    if (highest_wheel_speed > 0.0f)
+    if (fabsf(highest_wheel_speed) > max_angular_velocity)
     {
-        float desaturation_coefficient = fabsf(omni_physical_constants->max_speed / highest_wheel_speed);
+        float desaturation_coefficient = fabsf(max_angular_velocity / highest_wheel_speed);
         input->phi_dot_1 *= desaturation_coefficient;
         input->phi_dot_2 *= desaturation_coefficient;
         input->phi_dot_3 *= desaturation_coefficient;
