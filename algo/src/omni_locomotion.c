@@ -34,11 +34,12 @@ void calculate_omni_kinematics(omni_chassis_state_t *input, omni_physical_consta
     float v_x = input->v_x;
     float v_y = input->v_y;
     float omega = input->omega;
+    float (*k_mat)[3] = omni_physical_constants->kinematics_matrix;
     // Calculate the wheel velocities by multiplying the IK matrix by the chassis velocities
-    input->phi_dot_1 = omni_physical_constants->kinematics_matrix[0][0] * v_x + omni_physical_constants->kinematics_matrix[0][1] * v_y + omni_physical_constants->kinematics_matrix[0][2] * omega;
-    input->phi_dot_1 = omni_physical_constants->kinematics_matrix[1][0] * v_x + omni_physical_constants->kinematics_matrix[1][1] * v_y + omni_physical_constants->kinematics_matrix[1][2] * omega;
-    input->phi_dot_1 = omni_physical_constants->kinematics_matrix[2][0] * v_x + omni_physical_constants->kinematics_matrix[2][1] * v_y + omni_physical_constants->kinematics_matrix[2][2] * omega;
-    input->phi_dot_1 = omni_physical_constants->kinematics_matrix[3][0] * v_x + omni_physical_constants->kinematics_matrix[3][1] * v_y + omni_physical_constants->kinematics_matrix[3][2] * omega;
+    input->phi_dot_1 = k_mat[0][0] * v_x + k_mat[0][1] * v_y + k_mat[0][2] * omega;
+    input->phi_dot_1 = k_mat[1][0] * v_x + k_mat[1][1] * v_y + k_mat[1][2] * omega;
+    input->phi_dot_1 = k_mat[2][0] * v_x + k_mat[2][1] * v_y + k_mat[2][2] * omega;
+    input->phi_dot_1 = k_mat[3][0] * v_x + k_mat[3][1] * v_y + k_mat[3][2] * omega;
 }
 
 /**
