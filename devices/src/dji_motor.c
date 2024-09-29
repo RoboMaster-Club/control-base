@@ -51,10 +51,10 @@ uint8_t DJI_Motor_Assign_To_Group(DJI_Motor_Handle_t *motor_handle, uint16_t tx_
     new_group->can_instance->can_bus = can_bus;
     // allocate memory for tx_header
     new_group->can_instance->tx_header = malloc(sizeof(CAN_TxHeaderTypeDef));
-    new_group->can_instance->tx_header->StdId = tx_id; // set id (the actual id that will be send)
-    new_group->can_instance->tx_header->IDE = CAN_ID_STD; // standard id (check CAN documentation for more information)
+    new_group->can_instance->tx_header->StdId = tx_id;      // set id (the actual id that will be send)
+    new_group->can_instance->tx_header->IDE = CAN_ID_STD;   // standard id (check CAN documentation for more information)
     new_group->can_instance->tx_header->RTR = CAN_RTR_DATA; // data frame (check CAN documentation for more information)
-    new_group->can_instance->tx_header->DLC = 8; // 8 bytes of data (check CAN documentation for more information)
+    new_group->can_instance->tx_header->DLC = 8;            // 8 bytes of data (check CAN documentation for more information)
     // change register indicator to include the new motor. This will be used in @ref DJI_Motor_Send()
     new_group->register_device_indicator = (1 << real_id);
     // output current pointer of the motor
@@ -93,15 +93,18 @@ DJI_Motor_Handle_t *DJI_Motor_Init(Motor_Config_t *config, DJI_Motor_Type_t type
     motor_handle->output_current = 0;
 
     // Initialize PID controllers (bitwise AND to check if the control mode is enabled)
-    if ((motor_handle->control_mode & VELOCITY_CONTROL) == VELOCITY_CONTROL) {
+    if ((motor_handle->control_mode & VELOCITY_CONTROL) == VELOCITY_CONTROL)
+    {
         motor_handle->velocity_pid = malloc(sizeof(PID_t));
         memcpy(motor_handle->velocity_pid, &config->velocity_pid, sizeof(PID_t));
     }
-    if ((motor_handle->control_mode & POSITION_CONTROL) == POSITION_CONTROL) {
+    if ((motor_handle->control_mode & POSITION_CONTROL) == POSITION_CONTROL)
+    {
         motor_handle->angle_pid = malloc(sizeof(PID_t));
         memcpy(motor_handle->angle_pid, &config->angle_pid, sizeof(PID_t));
     }
-    if ((motor_handle->control_mode & TORQUE_CONTROL) == TORQUE_CONTROL) {
+    if ((motor_handle->control_mode & TORQUE_CONTROL) == TORQUE_CONTROL)
+    {
         motor_handle->torque_pid = malloc(sizeof(PID_t));
         memcpy(motor_handle->torque_pid, &config->torque_pid, sizeof(PID_t));
     }
@@ -195,7 +198,7 @@ float DJI_Motor_Get_Absolute_Angle(DJI_Motor_Handle_t *motor_handle)
         return motor_handle->stats->absolute_angle_rad;
         break;
     case MOTOR_REVERSAL_REVERSED:
-        return -motor_handle->stats->absolute_angle_rad + 2*PI;
+        return -motor_handle->stats->absolute_angle_rad + 2 * PI;
         break;
     }
     return -1;
@@ -239,7 +242,7 @@ void DJI_Motor_Set_Angle(DJI_Motor_Handle_t *motor_handle, float angle)
         motor_handle->angle_pid->ref = angle;
         break;
     case MOTOR_REVERSAL_REVERSED:
-        motor_handle->angle_pid->ref = -angle+2*PI;
+        motor_handle->angle_pid->ref = -angle + 2 * PI;
         break;
     default:
         break;
@@ -364,9 +367,9 @@ void DJI_Motor_Current_Calc()
 
 /**
  * Iteration through the registered send groups and send the motor torques.
- * Send groups are initialized in @ref DJI_Motor_Assign_To_Group(), which is called 
+ * Send groups are initialized in @ref DJI_Motor_Assign_To_Group(), which is called
  * during initialization in @ref DJI_Motor_Init()
-*/
+ */
 void DJI_Motor_Send()
 {
     // Calculate motor current based on control mode for all motors
@@ -437,11 +440,11 @@ void DJI_Motor_Decode(CAN_Instance_t *can_instance)
 
     motor->last_absolute_angle_rad = motor->absolute_angle_rad;
     motor->absolute_angle_rad = motor->current_tick - motor->encoder_offset;
-    if(motor->absolute_angle_rad >= 8192)
+    if (motor->absolute_angle_rad >= 8192)
     {
         motor->absolute_angle_rad -= 8192;
     }
-    else if(motor->absolute_angle_rad < 0)
+    else if (motor->absolute_angle_rad < 0)
     {
         motor->absolute_angle_rad += 8192;
     }
@@ -457,6 +460,27 @@ void DJI_Motor_Decode(CAN_Instance_t *can_instance)
     {
         motor->total_round++;
     }
-    #pragma message "there are some problem with total_angle_rad"
+#pragma message "there are some problem with total_angle_rad"
     motor->total_angle_rad = ((motor->total_round) * 2 * PI + motor->absolute_angle_rad) * motor->reduction_ratio;
+}
+
+void DJI_Motor_Disable_All()
+{
+    for (int i = 0; i < g_dji_motor_count; i++)
+    {
+        if (g_dji_motors[i] == NULL)
+        {
+            continue;
+        }
+        DJI_Motor_Disable(g_dji_motors[i]);
+    }
+}
+
+void DJI_Motor_Enable_All()
+{
+    for (int i = 0; i < g_dji_motor_count; i++)
+    {
+        // set the motor state to enabled
+        g_dji_motors[i]->disabled = 0;
+    }
 }
