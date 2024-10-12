@@ -114,3 +114,13 @@ void optimize_module_angles(swerve_chassis_state_t *chassis_state, float measure
         }
     }
 }
+
+/* 
+ * Convert the chassis state from m/s to ticks per second
+ * @param chassis_state: the chassis state to convert
+ */
+void convert_to_tps(swerve_chassis_state_t *chassis_state, float wheel_diameter) {
+    for (int i = 0; i < NUMBER_OF_MODULES; i++) {
+        chassis_state->states[i].speed *= 60 / (PI * wheel_diameter); // convert from mps to tps
+    }
+}

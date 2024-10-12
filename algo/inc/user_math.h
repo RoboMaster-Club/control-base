@@ -59,4 +59,15 @@
         index = (index + 1) % BUFFER_SIZE;                                 \
         average = sum / count;                                             \
     } while (0);
-#endif
+
+#define __IS_TOGGLED(input, prev_input) \
+    (input == 1 && prev_input == 0)
+
+// transition means go from a different state to a target state
+#define __IS_TRANSITIONED(input, prev_input, transition_val) \
+    ((input == transition_val) && (prev_input != transition_val))
+
+#define __SLEW_RATE_LIMIT(curr, delta, ramp) \
+    curr = (1 - (ramp)) * (curr) + (ramp) * (delta)
+
+#endif // USER_MATH_H

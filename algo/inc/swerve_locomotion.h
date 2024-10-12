@@ -35,5 +35,6 @@ swerve_constants_t swerve_init(float track_width, float wheel_base, float wheel_
 void calculate_swerve_kinematics(swerve_chassis_state_t *chassis_state, swerve_constants_t *swerve_constants);
 void desaturate_wheel_speeds(swerve_chassis_state_t *chassis_state, swerve_constants_t *swerve_constants);
 void optimize_module_angles(swerve_chassis_state_t *chassis_state, float measured_angles[NUMBER_OF_MODULES]);
+void convert_to_tps(swerve_chassis_state_t *chassis_state, float wheel_diameter);
 
 #endif // SWERVE_LOCOMOTION_H
