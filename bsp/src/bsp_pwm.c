@@ -77,24 +77,3 @@ void PWM_Set_Duty_Ratio(PWM_Instance_t *pwm, float dutyratio)
     __HAL_TIM_SetCompare(pwm->htim, pwm->channel, dutyratio * (pwm->htim->Instance->ARR));
 }
 
-// Set the PWM corresponding timer clock source frequency
-// tim2~7,12~14:APB1  tim1,8~11:APB2
-uint32_t PWM_Get_Tclk(TIM_HandleTypeDef *htim)
-{
-    uintptr_t tclk_temp = ((uintptr_t)((htim)->Instance));
-    if (
-        (tclk_temp <= (APB1PERIPH_BASE + 0x2000UL)) &&
-        (tclk_temp >= (APB1PERIPH_BASE + 0x0000UL)))
-    {
-        return (HAL_RCC_GetPCLK1Freq() * (APBPrescTable[(RCC->CFGR & RCC_CFGR_PPRE1) >> RCC_CFGR_PPRE1_Pos] == 0 ? 1 : 2));
-    }
-    else if (
-        ((tclk_temp <= (APB2PERIPH_BASE + 0x0400UL)) &&
-         (tclk_temp >= (APB2PERIPH_BASE + 0x0000UL))) ||
-        ((tclk_temp <= (APB2PERIPH_BASE + 0x4800UL)) &&
-         (tclk_temp >= (APB2PERIPH_BASE + 0x4000UL))))
-    {
-        return (HAL_RCC_GetPCLK2Freq() * (APBPrescTable[(RCC->CFGR & RCC_CFGR_PPRE1) >> RCC_CFGR_PPRE1_Pos] == 0 ? 1 : 2));
-    }
-    return 0;
-}
