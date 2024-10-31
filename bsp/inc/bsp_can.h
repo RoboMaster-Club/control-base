@@ -2,9 +2,7 @@
 #define CAN_H
 
 #include "FreeRTOS.h"
-#ifndef STM32H723xx
-#define STM32H723xx
-#endif
+
 #ifdef STM32H723xx
 #define FDCAN_IN_USE
 #include "fdcan.h"

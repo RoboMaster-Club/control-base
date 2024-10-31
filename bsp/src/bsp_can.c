@@ -5,9 +5,10 @@ static CAN_Instance_t *g_can1_can_instances[CAN_MAX_DEVICE] = {NULL};
 static uint8_t g_can1_device_count = 0;
 static CAN_Instance_t *g_can2_can_instances[CAN_MAX_DEVICE] = {NULL};
 static uint8_t g_can2_device_count = 0;
+#ifdef FDCAN_IN_USE
 static CAN_Instance_t *g_can3_can_instances[CAN_MAX_DEVICE] = {NULL};
 static uint8_t g_can3_device_count = 0;
-
+#endif
 #ifdef CAN_IN_USE
 /**
  * Initialize the CAN filter for a CAN instance @ref typedef CAN_Instance_t
@@ -187,6 +188,21 @@ void HAL_CAN_RxFifo1MsgPendingCallback(CAN_HandleTypeDef *hcan)
 #endif
 
 #ifdef FDCAN_IN_USE
+/**
+ * @brief  CAN Service Initialization
+*/
+void CAN_Service_Init()
+{
+    /* Start CAN Communication */
+    HAL_FDCAN_Start(&hfdcan1);
+    HAL_FDCAN_Start(&hfdcan2);
+
+    /* Activate Interrupt */
+    HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0);
+    HAL_FDCAN_ActivateNotification(&hfdcan2, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0);
+    HAL_FDCAN_ActivateNotification(&hfdcan3, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0);
+}
+
 void CAN_Filter_Init(CAN_Instance_t *can_instance)
 {
     FDCAN_FilterTypeDef fdcan_filter;
@@ -310,4 +326,29 @@ uint32_t CAN_Get_Tx_ID(CAN_Instance_t *can_instance)
     return can_instance->tx_header->Identifier;
 }
 
+/**
+ * @brief  Transmit a CAN message
+*/
+HAL_StatusTypeDef CAN_Transmit(CAN_Instance_t *can_instance)
+{
+    // Select the correct CAN bus
+    FDCAN_HandleTypeDef *hfdcan;
+    switch(can_instance->can_bus)
+    {
+        case 1:
+            hfdcan = &hfdcan1;
+            break;
+        case 2:
+            hfdcan = &hfdcan2;
+            break;
+        case 3:
+            hfdcan = &hfdcan3;
+            break;
+        default:
+            return HAL_ERROR;
+    }
+
+    // Transmit the message
+    return HAL_FDCAN_AddMessageToTxFifoQ(hfdcan, can_instance->tx_header, can_instance->tx_buffer);
+}
 #endif
