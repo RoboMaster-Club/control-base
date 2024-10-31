@@ -43,7 +43,7 @@
 #define WHOLE_NOTE_DURATION (2000)
 
 #define SYSTEM_INITIALIZING {{Note_C4, EIGHTH_NOTE_DURATION }, \
-                             {Note_E4, EIGHTH_NOTE_DURATION }, \
+                             {Note_00, EIGHTH_NOTE_DURATION }, \
                              {Note_G4, EIGHTH_NOTE_DURATION }, \
                              {Note_C5, EIGHTH_NOTE_DURATION }, \
                              {Note_E5, EIGHTH_NOTE_DURATION }, \
