@@ -91,11 +91,11 @@ void IMU_Task_Temp() {
     case 1:
     {
         uint16_t temp_pwm = (uint16_t) PID(&g_imu_temp_pid, 40 - g_imu.bmi088_raw.temp);
-        __HAL_TIM_SetCompare(&IMU_HEATER_TIMER_NUM, TIM_CHANNEL_1, temp_pwm);
+        __HAL_TIM_SetCompare(&IMU_HEATER_TIMER_NUM, IMU_HEATER_TIMER_CHANNEL, temp_pwm);
         break;
     }
     case 0:
-        __HAL_TIM_SetCompare(&IMU_HEATER_TIMER_NUM, TIM_CHANNEL_1, 4999);
+        __HAL_TIM_SetCompare(&IMU_HEATER_TIMER_NUM, IMU_HEATER_TIMER_CHANNEL, 4999);
         break;
 
     default:
