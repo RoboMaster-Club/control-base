@@ -8,7 +8,7 @@
  * @param max_speed - the maximum speed of the robot [m/s]
  * @return omni_physical_constants_t - the physical constants of the omni drive
  */
-omni_physical_constants_t init_omni(float R, float d, float theta, float max_speed)
+omni_physical_constants_t omni_init(float R, float d, float theta, float max_speed)
 {
     // Initialize the physical constants of the omni drive
     omni_physical_constants_t omni_physical_constants = {
@@ -29,7 +29,7 @@ omni_physical_constants_t init_omni(float R, float d, float theta, float max_spe
  * @param input - the input state of the omni chassis
  * @param omni_physical_constants - the physical constants of the omni drive
  */
-void calculate_omni_kinematics(omni_chassis_state_t *input, omni_physical_constants_t *omni_physical_constants)
+void omni_calculate_kinematics(omni_chassis_state_t *input, omni_physical_constants_t *omni_physical_constants)
 {
     float v_x = input->v_x;
     float v_y = input->v_y;
@@ -47,7 +47,7 @@ void calculate_omni_kinematics(omni_chassis_state_t *input, omni_physical_consta
  * @param input - the input state of the omni chassis
  * @param omni_physical_constants - the physical constants of the omni drive
  */
-void desaturate_wheel_speeds(omni_chassis_state_t *input, omni_physical_constants_t *omni_physical_constants)
+void omni_desaturate_wheel_speeds(omni_chassis_state_t *input, omni_physical_constants_t *omni_physical_constants)
 {
     // find the highest wheel speed
     float highest_wheel_speed = fabsf(input->phi_dot_1);
@@ -72,7 +72,7 @@ void desaturate_wheel_speeds(omni_chassis_state_t *input, omni_physical_constant
  * Convert the chassis state from m/s to ticks per second
  * @param chassis_state: the chassis state to convert
  */
-void convert_to_tps(omni_chassis_state_t *chassis_state) {
+void omni_convert_to_tps(omni_chassis_state_t *chassis_state) {
     chassis_state->phi_dot_1 *=  8192 / (2 * M_PI);
     chassis_state->phi_dot_2 *=  8192 / (2 * M_PI);
     chassis_state->phi_dot_3 *=  8192 / (2 * M_PI);

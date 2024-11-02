@@ -32,9 +32,9 @@ typedef struct
 } swerve_constants_t;
 
 swerve_constants_t swerve_init(float track_width, float wheel_base, float wheel_diameter, float max_speed, float max_angular_speed);
-void calculate_swerve_kinematics(swerve_chassis_state_t *chassis_state, swerve_constants_t *swerve_constants);
-void desaturate_wheel_speeds(swerve_chassis_state_t *chassis_state, swerve_constants_t *swerve_constants);
-void optimize_module_angles(swerve_chassis_state_t *chassis_state, float measured_angles[NUMBER_OF_MODULES]);
-void convert_to_tps(swerve_chassis_state_t *chassis_state, float wheel_diameter);
+void swerve_calculate_kinematics(swerve_chassis_state_t *chassis_state, swerve_constants_t *swerve_constants);
+void swerve_desaturate_wheel_speeds(swerve_chassis_state_t *chassis_state, swerve_constants_t *swerve_constants);
+void swerve_optimize_module_angles(swerve_chassis_state_t *chassis_state, float measured_angles[NUMBER_OF_MODULES]);
+void swerve_convert_to_tps(swerve_chassis_state_t *chassis_state, float wheel_diameter, float gear_ratio, float tpr);
 
 #endif // SWERVE_LOCOMOTION_H

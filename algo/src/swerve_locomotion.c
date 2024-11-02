@@ -22,7 +22,7 @@ swerve_constants_t swerve_init(float track_width, float wheel_base, float wheel_
     return swerve_constants;
 }
 
-void calculate_swerve_kinematics(swerve_chassis_state_t *chassis_state, swerve_constants_t *swerve_constants) {
+void swerve_calculate_kinematics(swerve_chassis_state_t *chassis_state, swerve_constants_t *swerve_constants) {
     float v_x = chassis_state->v_x;
     float v_y = chassis_state->v_y;
     float omega = chassis_state->omega;
@@ -72,7 +72,7 @@ void calculate_swerve_kinematics(swerve_chassis_state_t *chassis_state, swerve_c
     }
 }
 
-void desaturate_wheel_speeds(swerve_chassis_state_t *chassis_state, swerve_constants_t *swerve_constants) {
+void swerve_desaturate_wheel_speeds(swerve_chassis_state_t *chassis_state, swerve_constants_t *swerve_constants) {
     float highest_speed = fabsf(chassis_state->states[0].speed);
     for (int i = 1; i < NUMBER_OF_MODULES; i++) // start from 1 to find the highest speed
     {
@@ -91,7 +91,7 @@ void desaturate_wheel_speeds(swerve_chassis_state_t *chassis_state, swerve_const
     }
 }
 
-void optimize_module_angles(swerve_chassis_state_t *chassis_state, float measured_angles[NUMBER_OF_MODULES]) {
+void swerve_optimize_module_angles(swerve_chassis_state_t *chassis_state, float measured_angles[NUMBER_OF_MODULES]) {
     for (int i = 0; i < NUMBER_OF_MODULES; i++)
     {
         if (measured_angles[i] > PI) {
@@ -118,9 +118,12 @@ void optimize_module_angles(swerve_chassis_state_t *chassis_state, float measure
 /* 
  * Convert the chassis state from m/s to ticks per second
  * @param chassis_state: the chassis state to convert
+ * @param wheel_diameter: the diameter of the wheel
+ * @param gear_ratio
+ * @param tpr: tickes per rotation
  */
-void convert_to_tps(swerve_chassis_state_t *chassis_state, float wheel_diameter) {
+void swerve_convert_to_tps(swerve_chassis_state_t *chassis_state, float wheel_diameter, float gear_ratio, float tpr) {
     for (int i = 0; i < NUMBER_OF_MODULES; i++) {
-        chassis_state->states[i].speed *= 60 / (PI * wheel_diameter); // convert from mps to tps
+        chassis_state->states[i].speed *= 1 / (2 * PI * wheel_diameter / 2) / tpr / gear_ratio; // convert from mps to tps
     }
 }
