@@ -68,7 +68,7 @@ void omni_desaturate_wheel_speeds(omni_chassis_state_t *input, omni_physical_con
     }
 }
 
-/* 
+/**
  * Convert the chassis state from m/s to ticks per second
  * @param chassis_state: the chassis state to convert
  */

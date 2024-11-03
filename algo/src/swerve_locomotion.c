@@ -1,7 +1,16 @@
 #include "swerve_locomotion.h"
 
-swerve_constants_t swerve_init(float track_width, float wheel_base, float wheel_diameter, float max_speed, float max_angular_speed)
-{
+/**
+ * @brief Initializes the swerve drive constants.
+ *
+ * @param track_width The distance between the left and right wheels.
+ * @param wheel_base The distance between the front and rear wheels.
+ * @param wheel_diameter The diameter of the wheels.
+ * @param max_speed The maximum speed of the swerve drive.
+ * @param max_angular_speed The maximum angular speed of the swerve drive.
+ * @return Initialized swerve constants.
+ */
+swerve_constants_t swerve_init(float track_width, float wheel_base, float wheel_diameter, float max_speed, float max_angular_speed) {
     swerve_constants_t swerve_constants = {
         .track_width = track_width,
         .wheel_base = wheel_base,
@@ -16,12 +25,19 @@ swerve_constants_t swerve_init(float track_width, float wheel_base, float wheel_
             {0, 1, +(wheel_base / 2)}, // rear right
             {1, 0, +(track_width / 2)},
             {0, 1, +(wheel_base / 2)}, // front right
-            {1, 0, -(track_width / 2)}}
+            {1, 0, -(track_width / 2)}
+        }
     };
 
     return swerve_constants;
 }
 
+/**
+ * @brief Calculates swerve drive kinematics.
+ *
+ * @param chassis_state Pointer to the chassis state structure.
+ * @param swerve_constants Pointer to the swerve constants structure.
+ */
 void swerve_calculate_kinematics(swerve_chassis_state_t *chassis_state, swerve_constants_t *swerve_constants) {
     float v_x = chassis_state->v_x;
     float v_y = chassis_state->v_y;
@@ -72,6 +88,12 @@ void swerve_calculate_kinematics(swerve_chassis_state_t *chassis_state, swerve_c
     }
 }
 
+/**
+ * @brief Desaturates wheel speeds to ensure they do not exceed the max speed.
+ *
+ * @param chassis_state Pointer to the chassis state structure.
+ * @param swerve_constants Pointer to the swerve constants structure.
+ */
 void swerve_desaturate_wheel_speeds(swerve_chassis_state_t *chassis_state, swerve_constants_t *swerve_constants) {
     float highest_speed = fabsf(chassis_state->states[0].speed);
     for (int i = 1; i < NUMBER_OF_MODULES; i++) // start from 1 to find the highest speed
@@ -91,6 +113,13 @@ void swerve_desaturate_wheel_speeds(swerve_chassis_state_t *chassis_state, swerv
     }
 }
 
+
+/**
+ * @brief Optimizes the angles of the swerve modules to minimize rotation.
+ *
+ * @param chassis_state Pointer to the swerve chassis state structure.
+ * @param measured_angles Array of measured angles for each module.
+ */
 void swerve_optimize_module_angles(swerve_chassis_state_t *chassis_state, float measured_angles[NUMBER_OF_MODULES]) {
     for (int i = 0; i < NUMBER_OF_MODULES; i++)
     {
@@ -115,15 +144,16 @@ void swerve_optimize_module_angles(swerve_chassis_state_t *chassis_state, float 
     }
 }
 
-/* 
- * Convert the chassis state from m/s to ticks per second
- * @param chassis_state: the chassis state to convert
- * @param wheel_diameter: the diameter of the wheel
- * @param gear_ratio
- * @param tpr: tickes per rotation
+/**
+ * @brief Converts module speeds from m/s to t/s.
+ *
+ * @param chassis_state Pointer to the chassis state structure.
+ * @param wheel_diameter Diameter of the wheel in meters.
+ * @param gear_ratio Gear ratio of the swerve module.
+ * @param tpr Ticks per revolution of the encoder.
  */
 void swerve_convert_to_tps(swerve_chassis_state_t *chassis_state, float wheel_diameter, float gear_ratio, float tpr) {
     for (int i = 0; i < NUMBER_OF_MODULES; i++) {
-        chassis_state->states[i].speed *= 1 / (2 * PI * wheel_diameter / 2) / tpr / gear_ratio; // convert from mps to tps
+        chassis_state->states[i].speed *= 1 / (2 * PI * wheel_diameter / 2) / tpr / gear_ratio;
     }
 }
