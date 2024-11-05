@@ -78,6 +78,26 @@ CAN_Instance_t *CAN_Device_Register(uint8_t _can_bus, uint16_t _tx_id, uint16_t 
     return can_instance;
 }
 
+
+CAN_Instance_t *CAN_Device_Register_Tx_Only(uint8_t _can_bus, uint16_t _tx_id)
+{
+    CAN_Instance_t *can_instance = malloc(sizeof(CAN_Instance_t));
+    
+    // define can bus, can id, callback function
+    can_instance->can_bus = _can_bus;
+    can_instance->rx_id = 0x00;
+    can_instance->can_module_callback = NULL;
+    
+    // allocate memory for tx_header and rx_header
+    can_instance->tx_header = malloc(sizeof(CAN_TxHeaderTypeDef));
+    can_instance->tx_header->StdId = _tx_id;
+    can_instance->tx_header->IDE = CAN_ID_STD;
+    can_instance->tx_header->RTR = CAN_RTR_DATA;
+    can_instance->tx_header->DLC = 0x08;
+
+    return can_instance;
+}
+
 /**
  * @brief  CAN Service Initialization
 */
