@@ -106,10 +106,12 @@ void swerve_desaturate_wheel_speeds(swerve_chassis_state_t *chassis_state, swerv
         return;
     }
 
-    float desaturation_coefficient = fabsf(swerve_constants->max_speed / highest_speed);
-    for (int i = 0; i < NUMBER_OF_MODULES; i++)
-    {
-        chassis_state->states[i].speed = chassis_state->states[i].speed * desaturation_coefficient;
+    if (highest_speed > swerve_constants->max_speed) {
+        float desaturation_coefficient = fabsf(swerve_constants->max_speed / highest_speed);
+        for (int i = 0; i < NUMBER_OF_MODULES; i++)
+        {
+            chassis_state->states[i].speed = chassis_state->states[i].speed * desaturation_coefficient;
+        }
     }
 }
 
@@ -145,15 +147,14 @@ void swerve_optimize_module_angles(swerve_chassis_state_t *chassis_state, float 
 }
 
 /**
- * @brief Converts module speeds from m/s to t/s.
- *
- * @param chassis_state Pointer to the chassis state structure.
- * @param wheel_diameter Diameter of the wheel in meters.
- * @param gear_ratio Gear ratio of the swerve module.
- * @param tpr Ticks per revolution of the encoder.
+ * Convert the chassis state from m/s to ticks per second
+ * @param chassis_state: the chassis state to convert
+ * @param wheel_diameter: the diameter of the wheel
+ * @param gear_ratio
+ * @param tpr: ticks per rotation
  */
 void swerve_convert_to_tps(swerve_chassis_state_t *chassis_state, float wheel_diameter, float gear_ratio, float tpr) {
     for (int i = 0; i < NUMBER_OF_MODULES; i++) {
-        chassis_state->states[i].speed *= 1 / (2 * PI * wheel_diameter / 2) / tpr / gear_ratio;
+        chassis_state->states[i].speed *= ((tpr * gear_ratio) / (PI * wheel_diameter)); // convert from mps to tps
     }
 }
