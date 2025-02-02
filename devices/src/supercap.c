@@ -14,7 +14,7 @@ struct rx_data
 void Supercap_Init(Supercap_t *g_supercap)
 {
     // Initialize supercap
-    g_supercap->can_bus = 1;
+    g_supercap->can_bus = 1; // can 2
     g_supercap->tx_id = 0x2C8;
     g_supercap->rx_id = 0x2C7;
     supercap_can_instance =
@@ -38,8 +38,8 @@ void Supercap_Send(void)
 {
     // Send supercap data
     uint16_t *supercap_tx = (uint16_t *) supercap_can_instance->tx_buffer;
-    supercap_tx[0] = 40;
-    supercap_tx[1] = 40;
+    supercap_tx[0] = 0x003C;
+    supercap_tx[1] = 0x003C;
     supercap_tx[2] = 0x2012;
     supercap_tx[3] = 0x0112;
     // ! do not write more than 8 bytes to the buffer
