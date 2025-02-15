@@ -150,7 +150,7 @@ void swerve_optimize_module_angles(swerve_chassis_state_t *chassis_state, float 
 }
 
 /**
- * Convert the chassis state from m/s to ticks per second
+ * Convert the chassis state from m/s to rotations per minute
  * @param chassis_state: the chassis state to convert
  * @param wheel_diameter: the diameter of the wheel
  */

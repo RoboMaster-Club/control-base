@@ -72,7 +72,7 @@ void omni_desaturate_wheel_speeds(omni_chassis_state_t *input, omni_physical_con
 }
 
 /**
- * Convert the chassis state from rad/s to rpm
+ * Convert the chassis state from rad/s to rotations per minute
  * @param chassis_state: the chassis state to convert
  */
 void omni_convert_to_rpm(omni_chassis_state_t *chassis_state) {

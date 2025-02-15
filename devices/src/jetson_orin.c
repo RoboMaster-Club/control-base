@@ -23,12 +23,14 @@ void Jetson_Orin_Rx_Callback(UART_Instance_t *uart_instance)
 		// Decode data
 		g_orin_data.receiving.frame_id = g_orin_data.rx_buffer[0];
 		g_orin_data.receiving.frame_type = g_orin_data.rx_buffer[1];
+		// ! TODO make an ENUM!!!!!
 		switch (g_orin_data.receiving.frame_type)
 		{
 		case 0:
-			memcpy(&g_orin_data.receiving.float_byte.data[0], &g_orin_data.rx_buffer[4], 8 * sizeof(uint8_t));
+			memcpy(&g_orin_data.receiving.float_byte.data[0], &g_orin_data.rx_buffer[4], 12 * sizeof(uint8_t));
 			g_orin_data.receiving.auto_aiming.yaw = g_orin_data.receiving.float_byte.data[0];
 			g_orin_data.receiving.auto_aiming.pitch = g_orin_data.receiving.float_byte.data[1];
+			g_orin_data.receiving.auto_aiming.fire = g_orin_data.receiving.float_byte.data_bytes[8];
 			break;
 
 		case 1:
@@ -38,7 +40,6 @@ void Jetson_Orin_Rx_Callback(UART_Instance_t *uart_instance)
 			g_orin_data.receiving.navigation.yaw_angular_rate = g_orin_data.receiving.float_byte.data[2];
 			g_orin_data.receiving.navigation.state = g_orin_data.rx_buffer[16];
 			break;
-
 		case 2:
 			g_orin_data.receiving.heart_beat.a = g_orin_data.rx_buffer[2];
 			g_orin_data.receiving.heart_beat.b = g_orin_data.rx_buffer[3];
@@ -80,34 +81,35 @@ void Jetson_Orin_Init(UART_HandleTypeDef *huartx)
 
 void Jetson_Orin_Send_Data(void)
 {
-	if (g_jetson_orin_initialized == 1)
-	{
-		// update data to be sent
-		g_orin_data.sending.pitch_angle = g_imu.rad.pitch;
-		g_orin_data.sending.pitch_angular_rate = g_imu.bmi088_raw.gyro[1];
-		g_orin_data.sending.yaw_angular_rate = g_imu.bmi088_raw.gyro[2];
-		g_orin_data.sending.position_x = 0;
-		g_orin_data.sending.position_y = 0;
-		g_orin_data.sending.orientation = g_imu.rad.yaw;
-		g_orin_data.sending.velocity_x = 0;
-		g_orin_data.sending.velocity_y = 0;
-		g_orin_data.sending.game_start_flag = (Referee_System.Game_Status.Progress == 4) ? 1 : 0; // 4 for match begin
-		g_orin_data.sending.enemy_color_flag = (Referee_Robot_State.ID > 11) ? 1 : 0;			  // ID > 11 means myself is blue, which means enemy is red
-
-		// float to byte conversion
-		g_orin_data.sending.float_byte.data[0] = g_orin_data.sending.pitch_angle;
-		g_orin_data.sending.float_byte.data[1] = g_orin_data.sending.pitch_angular_rate;
-		g_orin_data.sending.float_byte.data[2] = g_orin_data.sending.yaw_angular_rate;
-		g_orin_data.sending.float_byte.data[3] = g_orin_data.sending.position_x;
-		g_orin_data.sending.float_byte.data[4] = g_orin_data.sending.position_y;
-		g_orin_data.sending.float_byte.data[5] = g_orin_data.sending.orientation;
-		g_orin_data.sending.float_byte.data[6] = g_orin_data.sending.velocity_x;
-		g_orin_data.sending.float_byte.data[7] = g_orin_data.sending.velocity_y;
-
-		g_orin_data.tx_buffer[0] = 0xAA;
-		g_orin_data.tx_buffer[1] = g_orin_data.sending.enemy_color_flag << 1 | g_orin_data.sending.game_start_flag;
-		memcpy(&g_orin_data.tx_buffer[2], &g_orin_data.sending.float_byte.data_bytes[0], 32 * sizeof(uint8_t));
-
-		UART_Transmit(g_orin_uart_instance_ptr, g_orin_data.tx_buffer, sizeof(g_orin_data.tx_buffer), UART_DMA);
+	if (!g_jetson_orin_initialized) {
+		return;
 	}
+
+	// update data to be sent
+	g_orin_data.sending.pitch_angle = g_imu.rad.pitch;
+	g_orin_data.sending.pitch_angular_rate = g_imu.bmi088_raw.gyro[1];
+	g_orin_data.sending.yaw_angular_rate = g_imu.bmi088_raw.gyro[2];
+	g_orin_data.sending.position_x = 0;
+	g_orin_data.sending.position_y = 0;
+	g_orin_data.sending.orientation = g_imu.rad.yaw;
+	g_orin_data.sending.velocity_x = 0;
+	g_orin_data.sending.velocity_y = 0;
+	g_orin_data.sending.game_start_flag = (Referee_System.Game_Status.Progress == 4) ? 1 : 0; // 4 for match begin
+	g_orin_data.sending.enemy_color_flag = (Referee_Robot_State.ID > 11) ? 1 : 0;			  // ID > 11 means myself is blue, which means enemy is red
+
+	// float to byte conversion
+	g_orin_data.sending.float_byte.data[0] = g_orin_data.sending.pitch_angle;
+	g_orin_data.sending.float_byte.data[1] = g_orin_data.sending.pitch_angular_rate;
+	g_orin_data.sending.float_byte.data[2] = g_orin_data.sending.yaw_angular_rate;
+	g_orin_data.sending.float_byte.data[3] = g_orin_data.sending.position_x;
+	g_orin_data.sending.float_byte.data[4] = g_orin_data.sending.position_y;
+	g_orin_data.sending.float_byte.data[5] = g_orin_data.sending.orientation;
+	g_orin_data.sending.float_byte.data[6] = g_orin_data.sending.velocity_x;
+	g_orin_data.sending.float_byte.data[7] = g_orin_data.sending.velocity_y;
+
+	g_orin_data.tx_buffer[0] = 0xAA;
+	g_orin_data.tx_buffer[1] = g_orin_data.sending.enemy_color_flag << 1 | g_orin_data.sending.game_start_flag;
+	memcpy(&g_orin_data.tx_buffer[2], &g_orin_data.sending.float_byte.data_bytes[0], 32 * sizeof(uint8_t));
+
+	UART_Transmit(g_orin_uart_instance_ptr, g_orin_data.tx_buffer, sizeof(g_orin_data.tx_buffer), UART_DMA);
 }
