@@ -5,10 +5,10 @@ static CAN_Instance_t *g_can1_can_instances[CAN_MAX_DEVICE] = {NULL};
 static uint8_t g_can1_device_count = 0;
 static CAN_Instance_t *g_can2_can_instances[CAN_MAX_DEVICE] = {NULL};
 static uint8_t g_can2_device_count = 0;
-// #ifdef FDCAN_IN_USE // Defined in Makefile_dm_mc02
+#ifdef FDCAN_IN_USE // Defined in Makefile_dm_mc02
 static CAN_Instance_t *g_can3_can_instances[CAN_MAX_DEVICE] = {NULL};
 static uint8_t g_can3_device_count = 0;
-// #endif
+#endif
 #ifdef CAN_IN_USE
 /**
  * Initialize the CAN filter for a CAN instance @ref typedef CAN_Instance_t
