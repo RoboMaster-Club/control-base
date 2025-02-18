@@ -7,6 +7,3 @@
 [submodule "CMSIS-DSP"]
 	path = CMSIS-DSP
 	url = https://github.com/ARM-software/CMSIS-DSP.git
-[submodule "dm-mc02-board-base"]
-	path = dm-mc02-board-base
-	url = https://github.com/RoboMaster-Club/dm-mc02-board-base.git
