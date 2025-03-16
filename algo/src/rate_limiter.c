@@ -10,6 +10,7 @@ void rate_limiter_init(rate_limiter_t *rate_limiter, float rate_limit)
 {
     rate_limiter->rate_limit = rate_limit;
     rate_limiter->prev_value = 0;
+    rate_limiter->prev_time = xTaskGetTickCount();
 }
 
 /**
