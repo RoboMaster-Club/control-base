@@ -1,5 +1,8 @@
 #include "omni_locomotion.h"
 
+#include <math.h>
+#include "user_math.h"
+
 /**
  * @brief Initialize the physical constants of the omni drive
  * @param R - the wheel diameter [m]
@@ -69,12 +72,12 @@ void omni_desaturate_wheel_speeds(omni_chassis_state_t *input, omni_physical_con
 }
 
 /**
- * Convert the chassis state from m/s to ticks per second
+ * Convert the chassis state from rad/s to rotations per minute
  * @param chassis_state: the chassis state to convert
  */
-void omni_convert_to_tps(omni_chassis_state_t *chassis_state) {
-    chassis_state->phi_dot_1 *=  8192 / (2 * M_PI);
-    chassis_state->phi_dot_2 *=  8192 / (2 * M_PI);
-    chassis_state->phi_dot_3 *=  8192 / (2 * M_PI);
-    chassis_state->phi_dot_4 *=  8192 / (2 * M_PI);
+void omni_convert_to_rpm(omni_chassis_state_t *chassis_state) {
+    chassis_state->phi_dot_1 *=  60.0f / (2.0f * PI);
+    chassis_state->phi_dot_2 *=  60.0f / (2.0f * PI);
+    chassis_state->phi_dot_3 *=  60.0f / (2.0f * PI);
+    chassis_state->phi_dot_4 *=  60.0f / (2.0f * PI);
 }

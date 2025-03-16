@@ -1,7 +1,6 @@
 #ifndef JETSON_ORIN_H
 #define JETSON_ORIN_H
 
-#include <stdint.h>
 #include "bsp_uart.h"
 #include "referee_system.h"
 
@@ -44,17 +43,18 @@ typedef struct
 
         struct
         {
+            float yaw;
+            float pitch;
+            uint8_t fire;
+        } auto_aiming;
+
+        struct
+        {
             float x_vel;            // m/s
             float y_vel;            // m/s
             float yaw_angular_rate; // rad/s
             uint8_t state;          // 0 for stationary, 1 for moving, 2 for spinning
         } navigation;
-
-        struct
-        {
-            float yaw;
-            float pitch;
-        } auto_aiming;
 
         struct
         {

@@ -1,5 +1,8 @@
 #include "swerve_locomotion.h"
 
+#include <math.h>
+#include "user_math.h"
+
 /**
  * @brief Initializes the swerve drive constants.
  *
@@ -147,14 +150,12 @@ void swerve_optimize_module_angles(swerve_chassis_state_t *chassis_state, float 
 }
 
 /**
- * Convert the chassis state from m/s to ticks per second
+ * Convert the chassis state from m/s to rotations per minute
  * @param chassis_state: the chassis state to convert
  * @param wheel_diameter: the diameter of the wheel
- * @param gear_ratio
- * @param tpr: ticks per rotation
  */
-void swerve_convert_to_tps(swerve_chassis_state_t *chassis_state, float wheel_diameter, float gear_ratio, float tpr) {
+ void swerve_convert_to_rpm(swerve_chassis_state_t *chassis_state, swerve_constants_t *swerve_constants) {
     for (int i = 0; i < NUMBER_OF_MODULES; i++) {
-        chassis_state->states[i].speed *= ((tpr * gear_ratio) / (PI * wheel_diameter)); // convert from mps to tps
+        chassis_state->states[i].speed *= 60 / (PI * swerve_constants->wheel_diameter);
     }
 }

@@ -1,8 +1,6 @@
 #ifndef OMNI_LOCOMOTION_h
 #define OMNI_LOCOMOTION_h
 
-#include <math.h>
-
 typedef struct
 {
     float v_x;   // x velocity
@@ -28,6 +26,6 @@ typedef struct
 omni_physical_constants_t omni_init(float R, float d, float theta, float max_speed);
 void omni_calculate_kinematics(omni_chassis_state_t *input, omni_physical_constants_t *omni_physical_constants);
 void omni_desaturate_wheel_speeds(omni_chassis_state_t *input, omni_physical_constants_t *omni_physical_constants);
-void omni_convert_to_tps(omni_chassis_state_t *chassis_state);
+void omni_convert_to_rpm(omni_chassis_state_t *chassis_state);
 
 #endif // OMNI_LOCOMOTION_h

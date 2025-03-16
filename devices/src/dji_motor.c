@@ -1,9 +1,11 @@
 #include "dji_motor.h"
 
+#include <stdint.h>
 #include <stdlib.h>
 #include "bsp_can.h"
 #include "user_math.h"
 #include "motor.h"
+#include <math.h>
 
 DJI_Motor_Handle_t *g_dji_motors[MAX_DJI_MOTORS] = {NULL};
 uint8_t g_dji_motor_count = 0;
@@ -482,5 +484,30 @@ void DJI_Motor_Enable_All()
     {
         // set the motor state to enabled
         g_dji_motors[i]->disabled = 0;
+    }
+}
+
+uint8_t DJI_Motor_Is_At_Angle(DJI_Motor_Handle_t *motor_handle, float tolerance) {
+    if (fabsf(motor_handle->angle_pid->prev_error) < tolerance) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+uint8_t DJI_Motor_Is_At_Velocity(DJI_Motor_Handle_t *motor_handle, float tolerance) {
+    if (fabsf(motor_handle->velocity_pid->prev_error) < tolerance)
+    {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+uint8_t DJI_Motor_Is_At_Torque(DJI_Motor_Handle_t *motor_handle, float tolerance) {
+    if (fabsf(motor_handle->torque_pid->prev_error) < tolerance) {
+        return 1;
+    } else {
+        return 0;
     }
 }

@@ -112,11 +112,11 @@ void DJI_Motor_Send(void);
  */
 void DJI_Motor_Set_Torque(DJI_Motor_Handle_t *motor, float torque);
 
-/**
+/**      
  * @brief Set the target motor velocity
  *
  * @param motor the motor handle of the motor to control
- * @param velocity the target velocity
+ * @param velocity the target velocity (in rpm after gear reduction)
  */
 void DJI_Motor_Set_Velocity(DJI_Motor_Handle_t *motor, float velocity);
 
@@ -167,5 +167,20 @@ void DJI_Motor_Disable_All();
  *
  */
 void DJI_Motor_Enable_All();
+
+/**
+ * @brief Check if motor is at reference angle
+ */
+uint8_t DJI_Motor_Is_At_Angle(DJI_Motor_Handle_t *motor_handle, float tolerance);
+
+/**
+ * @brief Check if motor is at reference velocity
+ */
+uint8_t DJI_Motor_Is_At_Velocity(DJI_Motor_Handle_t *motor_handle, float tolerance);
+
+/**
+ * @brief Check if motor is at reference torque
+ */
+uint8_t DJI_Motor_Is_At_Torque(DJI_Motor_Handle_t *motor_handle, float tolerance);
 
 #endif
